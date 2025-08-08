@@ -73,7 +73,7 @@ export type LicenseTermsInput = Omit<
   /** The default minting fee to be paid when minting a license. */
   defaultMintingFee: TokenAmountInput;
   /** The expiration period of the license. */
-  expiration: bigint | string | number;
+  expiration: bigint | number;
   /** The maximum revenue that can be generated from the commercial use of the work. */
   commercialRevCeiling: TokenAmountInput;
   /** The maximum revenue that can be generated from the derivative use of the work. */
@@ -141,7 +141,7 @@ export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
 export type AttachLicenseTermsRequest = {
   /** The address of the IP ID to which the license terms are being attached. */
   ipId: Address;
-  licenseTermsId: string | number | bigint;
+  licenseTermsId: bigint | number;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -158,7 +158,7 @@ export type AttachLicenseTermsResponse = {
 
 export type MintLicenseTokensRequest = {
   licensorIpId: Address;
-  licenseTermsId: string | number | bigint;
+  licenseTermsId: bigint | number;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -167,7 +167,7 @@ export type MintLicenseTokensRequest = {
   /** The maximum minting fee that the caller is willing to pay. if set to 0 then no limit. */
   maxMintingFee: TokenAmountInput;
   /** The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%). */
-  maxRevenueShare: number | string;
+  maxRevenueShare: number;
   /**
    * The amount of license tokens to mint.
    * @default 1
@@ -197,7 +197,7 @@ export enum PIL_TYPE {
   CREATIVE_COMMONS_ATTRIBUTION,
 }
 
-export type LicenseTermsId = string | number | bigint;
+export type LicenseTermsId = bigint | number;
 
 export type PredictMintingLicenseFeeRequest = {
   licensorIpId: Address;

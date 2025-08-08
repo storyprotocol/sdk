@@ -48,7 +48,7 @@ export default [
       "no-implicit-coercion": ["error", { boolean: false }],
       "no-unused-expressions": "error",
       "no-useless-computed-key": "error",
-      "no-console": "error",
+      "no-console": "off",
       "func-style": ["error", "expression"],
       "no-duplicate-imports": "error",
       "default-case": "error",

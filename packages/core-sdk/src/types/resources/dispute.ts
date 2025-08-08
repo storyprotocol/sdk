@@ -20,7 +20,7 @@ export type RaiseDisputeRequest = WithTxOptions & {
    */
   targetTag: DisputeTargetTag;
   /** The liveness is the time window (in seconds) in which a counter dispute can be presented (30days). */
-  liveness: bigint | number | string;
+  liveness: bigint | number;
   /**
    * The amount of wrapper IP that the dispute initiator pays upfront into a pool.
    * To counter that dispute the opposite party of the dispute has to place a bond of the same amount.
@@ -42,7 +42,7 @@ export type RaiseDisputeResponse = {
 };
 
 export type CancelDisputeRequest = {
-  disputeId: number | string | bigint;
+  disputeId: bigint | number;
   /**
    * Additional data used in the cancellation process.
    *
@@ -58,7 +58,7 @@ export type CancelDisputeResponse = {
 };
 
 export type ResolveDisputeRequest = {
-  disputeId: number | string | bigint;
+  disputeId: bigint | number;
   /**
    * Additional data used in the resolution process.
    *
@@ -78,7 +78,7 @@ export type TagIfRelatedIpInfringedRequest = {
     /** The ipId to tag */
     ipId: Address;
     /** The dispute id that tagged the related infringing ipId */
-    disputeId: number | string | bigint;
+    disputeId: bigint | number;
   }[];
   options?: {
     /**

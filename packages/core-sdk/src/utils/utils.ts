@@ -13,6 +13,7 @@ import {
 } from "viem";
 
 import { aeneid, mainnet } from "./chain";
+import { TokenAmountInput } from "../types/common";
 import { ChainIds, SupportedChainIds } from "../types/config";
 
 export const waitTxAndFilterLog = async <
@@ -111,4 +112,26 @@ export const validateAddresses = function (addresses: string[]): Address[] {
 
 export const getTokenAmountDisplay = function (amount: bigint, unit = "IP"): string {
   return `${formatEther(amount)}${unit}`;
+};
+
+/**
+ * Converts TokenAmountInput to bigint, supporting backward compatibility with string values.
+ * @param amount - The amount to convert (bigint, number, or string)
+ * @returns The amount as bigint
+ * @deprecated Use toBigInt instead for new code
+ */
+export const convertToBigInt = function (amount: bigint | number | string): bigint {
+  if (typeof amount === 'string') {
+    return BigInt(amount);
+  }
+  return BigInt(amount);
+};
+
+/**
+ * Converts TokenAmountInput to bigint.
+ * @param amount - The amount to convert (bigint or number)
+ * @returns The amount as bigint
+ */
+export const toBigInt = function (amount: TokenAmountInput): bigint {
+  return BigInt(amount);
 };

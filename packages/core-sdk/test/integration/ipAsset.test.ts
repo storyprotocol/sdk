@@ -114,7 +114,7 @@ describe("IP Asset Functions", () => {
         licenseTermsIds: [noCommercialLicenseTermsId],
         maxMintingFee: 0n,
         maxRts: 5 * 10 ** 6,
-        maxRevenueShare: "0",
+        maxRevenueShare: 0,
       });
       expect(response.txHash).to.be.a("string");
     });
@@ -148,7 +148,7 @@ describe("IP Asset Functions", () => {
         licenseTermsIds: [licenseResponse.licenseTermsId!],
         maxMintingFee: 100n,
         maxRts: 5 * 10 ** 6,
-        maxRevenueShare: "100",
+        maxRevenueShare: 100,
       });
       expect(response.txHash).to.be.a("string");
     });
@@ -199,7 +199,7 @@ describe("IP Asset Functions", () => {
         licenseTermsIds: [noCommercialLicenseTermsId, noCommercialLicenseTermsId],
         maxMintingFee: 0n,
         maxRts: 5 * 10 ** 6,
-        maxRevenueShare: "0",
+        maxRevenueShare: 0,
       });
 
       expect(response.txHash).to.be.a("string");
@@ -334,7 +334,7 @@ describe("IP Asset Functions", () => {
           licenseTermsIds: [licenseTermsId!],
           maxMintingFee: 0n,
           maxRts: 5 * 10 ** 6,
-          maxRevenueShare: "0",
+          maxRevenueShare: 0,
         },
         deadline: 1000n,
       });
@@ -1003,7 +1003,7 @@ describe("IP Asset Functions", () => {
             licenseTermsIds: [licenseTermsId],
             maxMintingFee: 0n,
             maxRts: 5 * 10 ** 6,
-            maxRevenueShare: "0",
+            maxRevenueShare: 0,
           },
           royaltyShares: [
             {
@@ -1760,7 +1760,7 @@ describe("IP Asset Functions", () => {
             licenseTermsIds: [noCommercialLicenseTermsId],
             maxMintingFee: 0n,
             maxRts: 5 * 10 ** 6,
-            maxRevenueShare: "0",
+            maxRevenueShare: 0,
           },
           {
             childIpId: childIpId2,
@@ -1768,7 +1768,7 @@ describe("IP Asset Functions", () => {
             licenseTermsIds: [noCommercialLicenseTermsId],
             maxMintingFee: 0n,
             maxRts: 5 * 10 ** 6,
-            maxRevenueShare: "0",
+            maxRevenueShare: 0,
           },
         ],
       });
@@ -1904,7 +1904,7 @@ describe("IP Asset Functions", () => {
               licenseTermsIds: [noCommercialLicenseTermsId!],
               maxMintingFee: 0n,
               maxRts: 5 * 10 ** 6,
-              maxRevenueShare: "0",
+              maxRevenueShare: 0,
             },
           },
           {
@@ -1914,7 +1914,7 @@ describe("IP Asset Functions", () => {
               licenseTermsIds: [noCommercialLicenseTermsId!],
               maxMintingFee: 0n,
               maxRts: 5 * 10 ** 6,
-              maxRevenueShare: "0",
+              maxRevenueShare: 0,
             },
           },
         ],

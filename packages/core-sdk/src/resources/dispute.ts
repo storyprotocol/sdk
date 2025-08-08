@@ -1,5 +1,7 @@
 import { encodeAbiParameters, Hash, Hex, maxUint256, PublicClient, stringToHex } from "viem";
 
+import { TokenAmountInput } from "../types/common";
+
 import {
   ArbitrationPolicyUmaClient,
   DisputeModuleClient,
@@ -27,7 +29,7 @@ import { contractCallWithFees } from "../utils/feeUtils";
 import { convertCIDtoHashIPFS } from "../utils/ipfs";
 import { getAssertionDetails, getMinimumBond } from "../utils/oov3";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { validateAddress } from "../utils/utils";
+import { validateAddress, convertToBigInt } from "../utils/utils";
 
 export class DisputeClient {
   public disputeModuleClient: DisputeModuleClient;
@@ -49,11 +51,33 @@ export class DisputeClient {
   }
 
   /**
-   * Raises a dispute on a given ipId.
+   * @deprecated Use raiseDisputeV2 instead. String values for bond are no longer supported.
+   */
+  public async raiseDispute(
+    request: RaiseDisputeRequest & { bond?: bigint | string | number },
+  ): Promise<RaiseDisputeResponse> {
+    // Show deprecation warning for string values
+    if (request.bond && typeof request.bond === 'string') {
+      console.warn(
+        "DEPRECATION WARNING: String values for bond are deprecated. " +
+        "Use bigint or number instead. String values will be removed in the next major version."
+      );
+    }
+    
+    return this.raiseDisputeV2({
+      ...request,
+      bond: request.bond ? convertToBigInt(request.bond) : undefined,
+    });
+  }
+
+  /**
+   * Raises a dispute on a given ipId with proper type safety.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/dispute/IDisputeModule.sol#L64 | `DisputeRaised`} event.
    */
-  public async raiseDispute(request: RaiseDisputeRequest): Promise<RaiseDisputeResponse> {
+  public async raiseDisputeV2(
+    request: RaiseDisputeRequest & { bond?: TokenAmountInput },
+  ): Promise<RaiseDisputeResponse> {
     try {
       const liveness = BigInt(request.liveness);
       const [minLiveness, maxLiveness] = await Promise.all([

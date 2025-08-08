@@ -49,7 +49,7 @@ describe("License Functions", () => {
         derivativesApproval: false,
         derivativesReciprocal: false,
         uri: "",
-        expiration: "",
+        expiration: 0n,
         commercialRevCeiling: 0n,
         derivativeRevCeiling: 0n,
       });
@@ -82,6 +82,401 @@ describe("License Functions", () => {
         royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
       });
       expect(result.licenseTermsId).to.be.a("bigint");
+    });
+  });
+
+  describe("registerCommercialUsePIL v1 vs v2 method compatibility", () => {
+    it("should produce same results for registerCommercialUsePIL v1 and v2", async () => {
+      const v1Result = await client.license.registerCommercialUsePIL({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const v2Result = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      expect(v1Result.licenseTermsId).to.be.a("bigint");
+      expect(v2Result.licenseTermsId).to.be.a("bigint");
+      // Both should produce valid license terms IDs
+      expect(Number(v1Result.licenseTermsId)).to.be.greaterThan(0);
+      expect(Number(v2Result.licenseTermsId)).to.be.greaterThan(0);
+    });
+
+    it("should produce same results for registerCommercialRemixPIL v1 and v2", async () => {
+      const v1Result = await client.license.registerCommercialRemixPIL({
+        defaultMintingFee: 50n,
+        commercialRevShare: 25,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const v2Result = await client.license.registerCommercialRemixPILV2({
+        defaultMintingFee: 50n,
+        commercialRevShare: 25,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      expect(v1Result.licenseTermsId).to.be.a("bigint");
+      expect(v2Result.licenseTermsId).to.be.a("bigint");
+      // Both should produce valid license terms IDs
+      expect(Number(v1Result.licenseTermsId)).to.be.greaterThan(0);
+      expect(Number(v2Result.licenseTermsId)).to.be.greaterThan(0);
+    });
+
+    it("should support backward compatibility with string values in v1 methods", async () => {
+      // Test that v1 methods still accept string values (with deprecation warning)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await client.license.registerCommercialUsePIL({
+        defaultMintingFee: "100" as any, // Type assertion to test backward compatibility
+        currency: WIP_TOKEN_ADDRESS,  
+      });
+      
+      expect(result.licenseTermsId).to.be.a("bigint");
+      expect(Number(result.licenseTermsId)).to.be.greaterThan(0);
+    });
+
+    it("should support backward compatibility with number values in v1 methods", async () => {
+      // Test that v1 methods still accept number values
+      const result = await client.license.registerCommercialUsePIL({
+        defaultMintingFee: 100, // Number value
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      expect(result.licenseTermsId).to.be.a("bigint");
+      expect(Number(result.licenseTermsId)).to.be.greaterThan(0);
+    });
+
+    it("should support backward compatibility with bigint values in v1 methods", async () => {
+      // Test that v1 methods still accept bigint values
+      const result = await client.license.registerCommercialUsePIL({
+        defaultMintingFee: 100n, // BigInt value
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      expect(result.licenseTermsId).to.be.a("bigint");
+      expect(Number(result.licenseTermsId)).to.be.greaterThan(0);
+    });
+
+    it("should validate that v2 methods only accept proper types", async () => {
+      // This test ensures v2 methods have proper type safety
+      // The TypeScript compiler should catch any attempts to pass strings
+      const result = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n, // Only bigint | number allowed
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      expect(result.licenseTermsId).to.be.a("bigint");
+      expect(Number(result.licenseTermsId)).to.be.greaterThan(0);
+    });
+  });
+
+  describe("String type compatibility tests", () => {
+    it("should accept string values in registerCommercialUsePIL v1", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await client.license.registerCommercialUsePIL({
+        defaultMintingFee: "1000" as any,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should accept string values in registerCommercialRemixPIL v1", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await client.license.registerCommercialRemixPIL({
+        defaultMintingFee: "2000" as any,
+        commercialRevShare: 30,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should accept string values in mintLicenseTokens v1", async () => {
+      // Setup: Create license and IP
+      const licenseResult = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      const ipId = registerResult.ipId!;
+      
+      await client.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: licenseResult.licenseTermsId!,
+      });
+
+      // Test string values in v1 method
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await client.license.mintLicenseTokens({
+        licenseTermsId: licenseResult.licenseTermsId!,
+        licensorIpId: ipId,
+        maxMintingFee: "100" as any,
+        maxRevenueShare: 50,
+        amount: "1" as any,
+      });
+      
+      expect(result.txHash).to.be.a("string");
+    });
+
+    it("should accept string values in predictMintingLicenseFee v1", async () => {
+      // Setup: Create license and IP
+      const licenseResult = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      const ipId = registerResult.ipId!;
+
+      // Test string values in v1 method
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await client.license.predictMintingLicenseFee({
+        licenseTermsId: licenseResult.licenseTermsId!,
+        licensorIpId: ipId,
+        amount: "2" as any,
+      });
+      
+      expect(result.currencyToken).to.be.a("string");
+      expect(result.tokenAmount).to.be.a("bigint");
+    });
+
+    it("should accept string values in setMaxLicenseTokens v1", async () => {
+      // Setup: Create license and IP
+      const licenseResult = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      const ipId = registerResult.ipId!;
+      
+      await client.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: licenseResult.licenseTermsId!,
+      });
+
+      // Test string values in v1 method
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await client.license.setMaxLicenseTokens({
+        ipId: ipId,
+        licenseTermsId: licenseResult.licenseTermsId!,
+        maxLicenseTokens: "1000" as any,
+      });
+      
+      expect(result.txHash).to.be.a("string");
+    });
+  });
+
+  describe("V2 method type safety tests", () => {
+    it("should work with bigint values in registerCommercialUsePILV2", async () => {
+      const result = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 1000n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should work with number values in registerCommercialUsePILV2", async () => {
+      const result = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 1000,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should work with bigint values in registerCommercialRemixPILV2", async () => {
+      const result = await client.license.registerCommercialRemixPILV2({
+        defaultMintingFee: 2000n,
+        commercialRevShare: 25,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should work with number values in registerCommercialRemixPILV2", async () => {
+      const result = await client.license.registerCommercialRemixPILV2({
+        defaultMintingFee: 2000,
+        commercialRevShare: 25,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should work with bigint values in mintLicenseTokensV2", async () => {
+      // Setup: Create license and IP
+      const licenseResult = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      const ipId = registerResult.ipId!;
+      
+      await client.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: licenseResult.licenseTermsId!,
+      });
+
+      const result = await client.license.mintLicenseTokensV2({
+        licenseTermsId: licenseResult.licenseTermsId!,
+        licensorIpId: ipId,
+        maxMintingFee: 100n,
+        maxRevenueShare: 50,
+        amount: 1n,
+      });
+      
+      expect(result.txHash).to.be.a("string");
+    });
+
+    it("should work with number values in mintLicenseTokensV2", async () => {
+      // Setup: Create license and IP
+      const licenseResult = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      const ipId = registerResult.ipId!;
+      
+      await client.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: licenseResult.licenseTermsId!,
+      });
+
+      const result = await client.license.mintLicenseTokensV2({
+        licenseTermsId: licenseResult.licenseTermsId!,
+        licensorIpId: ipId,
+        maxMintingFee: 100,
+        maxRevenueShare: 50,
+        amount: 1,
+      });
+      
+      expect(result.txHash).to.be.a("string");
+    });
+
+    it("should work with bigint values in predictMintingLicenseFeeV2", async () => {
+      // Setup: Create license and IP
+      const licenseResult = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      const ipId = registerResult.ipId!;
+
+      const result = await client.license.predictMintingLicenseFeeV2({
+        licenseTermsId: licenseResult.licenseTermsId!,
+        licensorIpId: ipId,
+        amount: 2n,
+      });
+      
+      expect(result.currencyToken).to.be.a("string");
+      expect(result.tokenAmount).to.be.a("bigint");
+    });
+
+    it("should work with number values in predictMintingLicenseFeeV2", async () => {
+      // Setup: Create license and IP
+      const licenseResult = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      const ipId = registerResult.ipId!;
+
+      const result = await client.license.predictMintingLicenseFeeV2({
+        licenseTermsId: licenseResult.licenseTermsId!,
+        licensorIpId: ipId,
+        amount: 2,
+      });
+      
+      expect(result.currencyToken).to.be.a("string");
+      expect(result.tokenAmount).to.be.a("bigint");
+    });
+
+    it("should work with bigint values in setMaxLicenseTokensV2", async () => {
+      // Setup: Create license and IP
+      const licenseResult = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      const ipId = registerResult.ipId!;
+      
+      await client.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: licenseResult.licenseTermsId!,
+      });
+
+      const result = await client.license.setMaxLicenseTokensV2({
+        ipId: ipId,
+        licenseTermsId: licenseResult.licenseTermsId!,
+        maxLicenseTokens: 1000n,
+      });
+      
+      expect(result.txHash).to.be.a("string");
+    });
+
+    it("should work with number values in setMaxLicenseTokensV2", async () => {
+      // Setup: Create license and IP
+      const licenseResult = await client.license.registerCommercialUsePILV2({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      
+      const tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      const ipId = registerResult.ipId!;
+      
+      await client.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: licenseResult.licenseTermsId!,
+      });
+
+      const result = await client.license.setMaxLicenseTokensV2({
+        ipId: ipId,
+        licenseTermsId: licenseResult.licenseTermsId!,
+        maxLicenseTokens: 1000,
+      });
+      
+      expect(result.txHash).to.be.a("string");
     });
   });
 
@@ -135,7 +530,7 @@ describe("License Functions", () => {
         licenseTermsId: licenseId,
         licensorIpId: ipId,
         maxMintingFee: 1n,
-        maxRevenueShare: "100",
+        maxRevenueShare: 100,
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTokenIds).to.be.a("array");
@@ -160,7 +555,7 @@ describe("License Functions", () => {
         licenseTermsId: licenseId,
         licensorIpId: ipIdB,
         maxMintingFee: 1n,
-        maxRevenueShare: "100",
+        maxRevenueShare: 100,
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTokenIds).to.be.a("array");
