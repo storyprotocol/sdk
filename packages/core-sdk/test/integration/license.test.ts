@@ -126,11 +126,12 @@ describe("License Functions", () => {
 
     it("should support backward compatibility with string values in v1 methods", async () => {
       // Test that v1 methods still accept string values (with deprecation warning)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       const result = await client.license.registerCommercialUsePIL({
         defaultMintingFee: "100" as any, // Type assertion to test backward compatibility
         currency: WIP_TOKEN_ADDRESS,  
       });
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       
       expect(result.licenseTermsId).to.be.a("bigint");
       expect(Number(result.licenseTermsId)).to.be.greaterThan(0);
@@ -173,21 +174,23 @@ describe("License Functions", () => {
 
   describe("String type compatibility tests", () => {
     it("should accept string values in registerCommercialUsePIL v1", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       const result = await client.license.registerCommercialUsePIL({
         defaultMintingFee: "1000" as any,
         currency: WIP_TOKEN_ADDRESS,
       });
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       expect(result.licenseTermsId).to.be.a("bigint");
     });
 
     it("should accept string values in registerCommercialRemixPIL v1", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       const result = await client.license.registerCommercialRemixPIL({
         defaultMintingFee: "2000" as any,
         commercialRevShare: 30,
         currency: WIP_TOKEN_ADDRESS,
       });
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       expect(result.licenseTermsId).to.be.a("bigint");
     });
 
@@ -211,7 +214,7 @@ describe("License Functions", () => {
       });
 
       // Test string values in v1 method
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseResult.licenseTermsId!,
         licensorIpId: ipId,
@@ -219,6 +222,7 @@ describe("License Functions", () => {
         maxRevenueShare: 50,
         amount: "1" as any,
       });
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       
       expect(result.txHash).to.be.a("string");
     });
@@ -238,12 +242,13 @@ describe("License Functions", () => {
       const ipId = registerResult.ipId!;
 
       // Test string values in v1 method
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       const result = await client.license.predictMintingLicenseFee({
         licenseTermsId: licenseResult.licenseTermsId!,
         licensorIpId: ipId,
         amount: "2" as any,
       });
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       
       expect(result.currencyToken).to.be.a("string");
       expect(result.tokenAmount).to.be.a("bigint");
@@ -269,12 +274,13 @@ describe("License Functions", () => {
       });
 
       // Test string values in v1 method
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       const result = await client.license.setMaxLicenseTokens({
         ipId: ipId,
         licenseTermsId: licenseResult.licenseTermsId!,
         maxLicenseTokens: "1000" as any,
       });
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
       
       expect(result.txHash).to.be.a("string");
     });
