@@ -1243,9 +1243,7 @@ describe("Test IpAssetClient", () => {
       try {
         await ipAssetClient.registerIpAndAttachPilTerms({
           nftContract: spgNftContract,
-          // TODO: update this test to use bigint instead of string when the major version v1.4 is released
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-          tokenId: "3" as any,
+          tokenId: "3",
           ipMetadata: {
             ipMetadataURI: "https://",
             ipMetadataHash: toHex("metadata", { size: 32 }),
