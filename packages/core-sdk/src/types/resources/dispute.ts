@@ -1,6 +1,7 @@
 import { Address, Hash, Hex } from "viem";
 
 import { EncodedTxData } from "../../abi/generated";
+import { TokenAmountInput } from "../common";
 import { TxOptions, WipOptions, WithTxOptions } from "../options";
 
 export type RaiseDisputeRequest = WithTxOptions & {
@@ -19,14 +20,14 @@ export type RaiseDisputeRequest = WithTxOptions & {
    */
   targetTag: DisputeTargetTag;
   /** The liveness is the time window (in seconds) in which a counter dispute can be presented (30days). */
-  liveness: bigint | number | string;
+  liveness: bigint | number;
   /**
    * The amount of wrapper IP that the dispute initiator pays upfront into a pool.
    * To counter that dispute the opposite party of the dispute has to place a bond of the same amount.
    * The winner of the dispute gets the original bond back + 50% of the other party bond. The remaining 50% of the loser party bond goes to the reviewer.
    * The bond amount must be between the minimum and maximum bond values defined in the Optimistic Oracle V3 (OOV3) contract. If not specified, it defaults to the minimum bond value.
    */
-  bond?: bigint | number | string;
+  bond?: TokenAmountInput;
   /**
    * Omit {@link WipOptions.useMulticallWhenPossible} for this function due to disputeInitiator issue.
    * It will be executed sequentially with several transactions.

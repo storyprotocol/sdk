@@ -347,7 +347,7 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCommercialUsePIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         currency: mockAddress,
       });
 
@@ -366,7 +366,7 @@ describe("Test LicenseClient", () => {
 
       try {
         await licenseClient.registerCommercialUsePIL({
-          defaultMintingFee: "1",
+          defaultMintingFee: 1,
           currency: mockAddress,
         });
       } catch (error) {
@@ -387,7 +387,7 @@ describe("Test LicenseClient", () => {
       });
 
       const result = await licenseClient.registerCommercialUsePIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         currency: mockAddress,
         txOptions: {
           encodedTxDataOnly: true,
@@ -408,7 +408,7 @@ describe("Test LicenseClient", () => {
       });
 
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: mockAddress,
       });
@@ -430,7 +430,7 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: mockAddress,
       });
@@ -449,7 +449,7 @@ describe("Test LicenseClient", () => {
 
       try {
         await licenseClient.registerCommercialRemixPIL({
-          defaultMintingFee: "1",
+          defaultMintingFee: 1,
           commercialRevShare: 100,
           currency: mockAddress,
         });
@@ -471,7 +471,7 @@ describe("Test LicenseClient", () => {
       });
 
       const result = await licenseClient.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
+        defaultMintingFee: 1,
         commercialRevShare: 100,
         currency: mockAddress,
         txOptions: {
@@ -1072,7 +1072,7 @@ describe("Test LicenseClient", () => {
         await licenseClient.predictMintingLicenseFee({
           licenseTermsId: "1",
           licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          amount: "",
+          amount: 0n,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -1088,7 +1088,7 @@ describe("Test LicenseClient", () => {
         await licenseClient.predictMintingLicenseFee({
           licenseTermsId: "1",
           licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          amount: "",
+          amount: 0n,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -1106,7 +1106,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.predictMintingLicenseFee({
         licenseTermsId: "1",
         licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        amount: "",
+        amount: 0n,
         licenseTemplate: zeroAddress,
         receiver: zeroAddress,
       });
@@ -1125,7 +1125,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.predictMintingLicenseFee({
         licenseTermsId: "1",
         licensorIpId: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-        amount: "",
+        amount: 0n,
       });
 
       expect(result).to.deep.equal({
@@ -1145,7 +1145,7 @@ describe("Test LicenseClient", () => {
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
-            mintingFee: "",
+            mintingFee: 0n,
             licensingHook: zeroAddress,
             hookData: zeroAddress,
             commercialRevShare: 0,
@@ -1171,7 +1171,7 @@ describe("Test LicenseClient", () => {
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
-            mintingFee: "",
+            mintingFee: 0n,
             licensingHook: zeroAddress,
             hookData: zeroAddress,
             commercialRevShare: 0,
@@ -1224,7 +1224,7 @@ describe("Test LicenseClient", () => {
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
-            mintingFee: "",
+            mintingFee: 0n,
             licensingHook: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
             hookData: zeroAddress,
             commercialRevShare: 0,
@@ -1251,7 +1251,7 @@ describe("Test LicenseClient", () => {
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
-            mintingFee: "",
+            mintingFee: 0n,
             licensingHook: zeroAddress,
             hookData: zeroAddress,
             commercialRevShare: 0,
@@ -1277,7 +1277,7 @@ describe("Test LicenseClient", () => {
           licenseTemplate: zeroAddress,
           licensingConfig: {
             isSet: false,
-            mintingFee: "",
+            mintingFee: 0n,
             licensingHook: zeroAddress,
             hookData: zeroAddress,
             commercialRevShare: 1,
@@ -1308,7 +1308,7 @@ describe("Test LicenseClient", () => {
         licenseTemplate: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         licensingConfig: {
           isSet: false,
-          mintingFee: "",
+          mintingFee: 0n,
           licensingHook: zeroAddress,
           hookData: zeroAddress,
           commercialRevShare: 0,
@@ -1339,7 +1339,7 @@ describe("Test LicenseClient", () => {
         licenseTemplate: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
         licensingConfig: {
           isSet: false,
-          mintingFee: "",
+          mintingFee: 0n,
           licensingHook: zeroAddress,
           hookData: zeroAddress,
           commercialRevShare: 0,
@@ -1363,7 +1363,7 @@ describe("Test LicenseClient", () => {
         licenseTermsId: 1,
         licensingConfig: {
           isSet: false,
-          mintingFee: "",
+          mintingFee: 0n,
           licensingHook: zeroAddress,
           hookData: zeroAddress,
           commercialRevShare: 0,

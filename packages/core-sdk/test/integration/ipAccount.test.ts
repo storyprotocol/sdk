@@ -96,6 +96,24 @@ describe("IPAccount Functions", () => {
         }),
       ).to.be.rejected;
     });
+
+    it("should accept string values in executeWithSig v1", async () => {
+      // Validate the functionality of executeWithSig v1 with string values but without actually executing the transaction
+      const result = await client.ipAccount.executeWithSig({
+        ipId: ipId,
+        to: permissionAddress,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+        value: "2" as any,
+        data: data,
+        signer: walletClient.account!.address,
+        deadline: 60000n,
+        signature: "0x",
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+      expect(result.encodedTxData?.data).to.be.a("string");
+    });
   });
 
   describe("getIpAccountNonce", () => {

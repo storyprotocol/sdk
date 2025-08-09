@@ -9,6 +9,7 @@ import {
   WrappedIpClient,
 } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
+import { TokenAmountInput } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
 import {
@@ -23,7 +24,7 @@ import {
 } from "../types/resources/ipAccount";
 import { handleError } from "../utils/errors";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { validateAddress } from "../utils/utils";
+import { convertToBigInt, validateAddress } from "../utils/utils";
 
 export class IPAccountClient {
   public wrappedIpClient: WrappedIpClient;
@@ -73,10 +74,30 @@ export class IPAccountClient {
   }
 
   /**
-   * Executes a transaction from the IP Account with a signature.
+   * @deprecated Use executeWithSigV2 instead. String values for value are no longer supported.
    */
   public async executeWithSig(
-    request: IPAccountExecuteWithSigRequest,
+    request: IPAccountExecuteWithSigRequest & { value?: bigint | string | number },
+  ): Promise<IPAccountExecuteWithSigResponse> {
+    // Show deprecation warning for string values
+    if (request.value && typeof request.value === "string") {
+      console.warn(
+        "DEPRECATION WARNING: String values for value are deprecated. " +
+          "Use bigint or number instead. String values will be removed in the next major version.",
+      );
+    }
+
+    return this.executeWithSigV2({
+      ...request,
+      value: request.value ? convertToBigInt(request.value) : undefined,
+    });
+  }
+
+  /**
+   * Executes a transaction from the IP Account with a signature with proper type safety.
+   */
+  public async executeWithSigV2(
+    request: IPAccountExecuteWithSigRequest & { value?: TokenAmountInput },
   ): Promise<IPAccountExecuteWithSigResponse> {
     try {
       const ipAccountClient = new IpAccountImplClient(

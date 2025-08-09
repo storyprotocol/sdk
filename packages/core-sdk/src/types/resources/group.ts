@@ -33,7 +33,7 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
    */
   allowDuplicates?: boolean;
   /** The maximum reward share percentage that can be allocated to each member IP. */
-  maxAllowedRewardShare: number | string;
+  maxAllowedRewardShare: number;
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseDataInput[];
   /** The address of the recipient of the minted NFT. If not provided, the function will use the user's own wallet address. */
@@ -42,7 +42,7 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: string | number | bigint;
+  deadline?: bigint | number;
 } & IpMetadataAndTxOptions;
 
 export type MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse = {
@@ -75,7 +75,7 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseDataInput[];
   /** The maximum reward share percentage that can be allocated to each member IP. */
-  maxAllowedRewardShare: number | string;
+  maxAllowedRewardShare: number;
 } & IpMetadataAndTxOptions;
 
 export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
@@ -105,7 +105,7 @@ export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseDataInput;
   /** The maximum reward share percentage that can be allocated to each member IP. */
-  maxAllowedRewardShare: number | string;
+  maxAllowedRewardShare: number;
   txOptions?: TxOptions;
 };
 

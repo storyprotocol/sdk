@@ -20,7 +20,7 @@ import {
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { LicensingConfig, RevShareType } from "../types/common";
+import { LicensingConfig, RevShareType, TokenAmountInput } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse, TxOptions } from "../types/options";
 import {
@@ -50,7 +50,7 @@ import { contractCallWithFees } from "../utils/feeUtils";
 import { PILFlavor } from "../utils/pilFlavor";
 import { getRevenueShare } from "../utils/royalty";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { validateAddress } from "../utils/utils";
+import { convertToBigInt, validateAddress } from "../utils/utils";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 
 export class LicenseClient {
@@ -129,12 +129,35 @@ export class LicenseClient {
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
+  /**
+   * @deprecated Use registerCommercialUsePILV2 instead. String values for defaultMintingFee are no longer supported.
+   */
   public async registerCommercialUsePIL(
+    request: RegisterCommercialUsePILRequest & { defaultMintingFee: bigint | string | number },
+  ): Promise<RegisterPILResponse> {
+    // Show deprecation warning for string values
+    if (typeof request.defaultMintingFee === "string") {
+      console.warn(
+        "DEPRECATION WARNING: String values for defaultMintingFee are deprecated. " +
+          "Use bigint or number instead. String values will be removed in the next major version.",
+      );
+    }
+
+    return this.registerCommercialUsePILV2({
+      ...request,
+      defaultMintingFee: convertToBigInt(request.defaultMintingFee),
+    });
+  }
+
+  /**
+   * Registers new commercial use license terms with proper type safety.
+   */
+  public async registerCommercialUsePILV2(
     request: RegisterCommercialUsePILRequest,
   ): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = PILFlavor.commercialUse({
-        defaultMintingFee: Number(request.defaultMintingFee),
+        defaultMintingFee: convertToBigInt(request.defaultMintingFee),
         currency: request.currency,
         royaltyPolicy: request.royaltyPolicyAddress,
       });
@@ -154,16 +177,50 @@ export class LicenseClient {
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
+  /**
+   * @deprecated Use registerCommercialRemixPILV2 instead. String values for defaultMintingFee are no longer supported.
+   */
   public async registerCommercialRemixPIL({
     defaultMintingFee,
     currency,
     royaltyPolicyAddress,
     commercialRevShare,
     txOptions,
-  }: RegisterCommercialRemixPILRequest): Promise<RegisterPILResponse> {
+  }: RegisterCommercialRemixPILRequest & {
+    defaultMintingFee: bigint | string | number;
+  }): Promise<RegisterPILResponse> {
+    // Show deprecation warning for string values
+    if (typeof defaultMintingFee === "string") {
+      console.warn(
+        "DEPRECATION WARNING: String values for defaultMintingFee are deprecated. " +
+          "Use bigint or number instead. String values will be removed in the next major version.",
+      );
+    }
+
+    return this.registerCommercialRemixPILV2({
+      defaultMintingFee: convertToBigInt(defaultMintingFee),
+      currency,
+      royaltyPolicyAddress,
+      commercialRevShare,
+      txOptions,
+    });
+  }
+
+  /**
+   * Registers new commercial remix license terms with proper type safety.
+   */
+  public async registerCommercialRemixPILV2({
+    defaultMintingFee,
+    currency,
+    royaltyPolicyAddress,
+    commercialRevShare,
+    txOptions,
+  }: RegisterCommercialRemixPILRequest & {
+    defaultMintingFee: TokenAmountInput;
+  }): Promise<RegisterPILResponse> {
     try {
       const licenseTerms = PILFlavor.commercialRemix({
-        defaultMintingFee: Number(defaultMintingFee),
+        defaultMintingFee: convertToBigInt(defaultMintingFee),
         currency,
         royaltyPolicy: royaltyPolicyAddress,
         commercialRevShare,
@@ -269,8 +326,57 @@ export class LicenseClient {
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L34 | `LicenseTokensMinted`} event.
    */
+  /**
+   * @deprecated Use mintLicenseTokensV2 instead. String values for maxMintingFee and amount are no longer supported.
+   */
   public async mintLicenseTokens(
-    request: MintLicenseTokensRequest,
+    request: MintLicenseTokensRequest & {
+      maxMintingFee: bigint | string | number;
+      amount?: bigint | string | number;
+    },
+  ): Promise<MintLicenseTokensResponse> {
+    // Show deprecation warning for string values
+    if (typeof request.maxMintingFee === "string") {
+      console.warn(
+        "DEPRECATION WARNING: String values for maxMintingFee are deprecated. " +
+          "Use bigint or number instead. String values will be removed in the next major version.",
+      );
+    }
+
+    if (request.amount && typeof request.amount === "string") {
+      console.warn(
+        "DEPRECATION WARNING: String values for amount are deprecated. " +
+          "Use bigint or number instead. String values will be removed in the next major version.",
+      );
+    }
+
+    return this.mintLicenseTokensV2({
+      ...request,
+      maxMintingFee: convertToBigInt(request.maxMintingFee),
+      amount: request.amount ? convertToBigInt(request.amount) : undefined,
+    });
+  }
+
+  /**
+   * Mints license tokens for the license terms attached to an IP with proper type safety.
+   * It might require the caller pay the minting fee, depending on the license terms or configured by the iP owner.
+   * The minting fee is paid in the minting fee token specified in the license terms or configured by the IP owner.
+   * IP owners can configure the minting fee of their IPs or configure the minting fee module to determine the minting fee.
+   *
+   * @remarks
+   * Before minting license tokens, the license terms must be attached to the IP, with two exceptions:
+   * 1. Default license terms can be minted without explicit attachment since they are automatically
+   *    attached to all IPs by default
+   * 2. IP owners have special privileges and can mint license tokens for their own IPs using any
+   *    license terms, even if those terms are not explicitly attached
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L34 | `LicenseTokensMinted`} event.
+   */
+  public async mintLicenseTokensV2(
+    request: MintLicenseTokensRequest & {
+      maxMintingFee: TokenAmountInput;
+      amount?: TokenAmountInput;
+    },
   ): Promise<MintLicenseTokensResponse> {
     try {
       const receiver = validateAddress(request.receiver || this.walletAddress);
@@ -380,8 +486,31 @@ export class LicenseClient {
   /**
    * Pre-compute the minting license fee for the given IP and license terms. The function can be used to calculate the minting license fee before minting license tokens.
    */
+  /**
+   * @deprecated Use predictMintingLicenseFeeV2 instead. String values for amount are no longer supported.
+   */
   public async predictMintingLicenseFee(
-    request: PredictMintingLicenseFeeRequest,
+    request: PredictMintingLicenseFeeRequest & { amount: bigint | string | number },
+  ): Promise<LicensingModulePredictMintingLicenseFeeResponse> {
+    // Show deprecation warning for string values
+    if (typeof request.amount === "string") {
+      console.warn(
+        "DEPRECATION WARNING: String values for amount are deprecated. " +
+          "Use bigint or number instead. String values will be removed in the next major version.",
+      );
+    }
+
+    return this.predictMintingLicenseFeeV2({
+      ...request,
+      amount: convertToBigInt(request.amount),
+    });
+  }
+
+  /**
+   * Predicts the minting license fee with proper type safety.
+   */
+  public async predictMintingLicenseFeeV2(
+    request: PredictMintingLicenseFeeRequest & { amount: TokenAmountInput },
   ): Promise<LicensingModulePredictMintingLicenseFeeResponse> {
     try {
       const isLicenseIpIdRegistered = await this.ipAssetRegistryClient.isRegistered({
