@@ -42,7 +42,7 @@ export type RaiseDisputeResponse = {
 };
 
 export type CancelDisputeRequest = {
-  disputeId: bigint | number | string;
+  disputeId: number | string | bigint;
   /**
    * Additional data used in the cancellation process.
    *
@@ -58,7 +58,7 @@ export type CancelDisputeResponse = {
 };
 
 export type ResolveDisputeRequest = {
-  disputeId: bigint | number | string;
+  disputeId: number | string | bigint;
   /**
    * Additional data used in the resolution process.
    *
@@ -78,7 +78,7 @@ export type TagIfRelatedIpInfringedRequest = {
     /** The ipId to tag */
     ipId: Address;
     /** The dispute id that tagged the related infringing ipId */
-    disputeId: bigint | number | string;
+    disputeId: number | string | bigint;
   }[];
   options?: {
     /**

@@ -29,7 +29,7 @@ import { Erc20Spender } from "../utils/wip";
 export type DerivativeDataInput = {
   parentIpIds: Address[];
   /** The IDs of the license terms that the parent IP supports. */
-  licenseTermsIds: bigint[] | number[] | string[];
+  licenseTermsIds: bigint[] | string[] | number[];
   /**
    * The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
    * @default 0
@@ -68,7 +68,7 @@ export type RegisterRequest = {
   /** The address of the NFT. */
   nftContract: Address;
   /** The token identifier of the NFT. */
-  tokenId: bigint | number | string;
+  tokenId: string | number | bigint;
   /**
    * The deadline of the transaction signature in seconds.
    * @default 1000
@@ -80,7 +80,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
   /** The derivative IP ID. */
   childIpId: Address;
   /** The IDs of the license tokens. */
-  licenseTokenIds: bigint[] | number[] | string[];
+  licenseTokenIds: string[] | bigint[] | number[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
   maxRts: number;
   txOptions?: TxOptions;
@@ -148,7 +148,7 @@ export type MintAndRegisterIpAssetWithPilTermsResponse = {
 
 export type RegisterIpAndMakeDerivativeRequest = {
   nftContract: Address;
-  tokenId: bigint | number | string;
+  tokenId: string | number | bigint;
   /**
    * The deadline for the signature in seconds.
    * @default 1000
@@ -169,7 +169,7 @@ export type RegisterIpAndMakeDerivativeResponse = {
 
 export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
-  tokenId: bigint | number | string;
+  tokenId: bigint | string | number;
   /** The data of the license and its configuration to be attached to the IP. */
   licenseTermsData: LicenseTermsDataInput[];
   /**
@@ -246,7 +246,7 @@ export type RegisterPilTermsAndAttachResponse = {
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
   /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
-  licenseTokenIds: bigint[] | number[] | string[];
+  licenseTokenIds: string[] | bigint[] | number[];
   /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
@@ -261,9 +261,9 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
 
 export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
-  tokenId: bigint | number | string;
+  tokenId: string | number | bigint;
   /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
-  licenseTokenIds: bigint[] | number[] | string[];
+  licenseTokenIds: string[] | bigint[] | number[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
   maxRts: number;
   /**
@@ -323,7 +323,7 @@ export type BatchRegisterResponse = {
 };
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
-  tokenId: bigint | number | string;
+  tokenId: bigint | string | number;
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseTermsData: LicenseTermsDataInput[];
   /**
@@ -366,7 +366,7 @@ export type IpIdAndTokenId<T extends string | undefined> = T extends undefined
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
-  tokenId: bigint | number | string;
+  tokenId: bigint | string | number;
   /**
    * The deadline for the signature in seconds.
    * @default 1000
