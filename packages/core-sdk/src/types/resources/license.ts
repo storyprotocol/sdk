@@ -42,7 +42,7 @@ export type LicenseTerms = {
   commercializerChecker: Address;
   /** The data to be passed to the commercializer checker contract. */
   commercializerCheckerData: Address;
-  /** Percentage of revenue that must be shared with the licensor. Must be from 0-100. */
+  /** Percentage of revenue that must be shared with the licensor. */
   commercialRevShare: number;
   /** The maximum revenue that can be generated from the commercial use of the work. */
   commercialRevCeiling: bigint;
@@ -69,6 +69,7 @@ export type LicenseTermsInput = Omit<
   | "commercialRevCeiling"
   | "derivativeRevCeiling"
   | "royaltyPolicy"
+  | "commercialRevShare"
 > & {
   /** The default minting fee to be paid when minting a license. */
   defaultMintingFee: bigint | string | number;
@@ -83,6 +84,12 @@ export type LicenseTermsInput = Omit<
    * @default LAP
    */
   royaltyPolicy?: RoyaltyPolicyInput;
+
+  /**
+   * Percentage of revenue that must be shared with the licensor.
+   * Must be between 0 and 100 (where 100% represents 100_000_000).
+   */
+  commercialRevShare: number;
 };
 
 export type RegisterPILTermsRequest = LicenseTermsInput & {
