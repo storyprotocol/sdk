@@ -134,9 +134,11 @@ export const validateDerivativeData = async ({
     licenseTemplate: validateAddress(derivativeDataInput.licenseTemplate || licenseTemplateAddress),
     royaltyContext: zeroAddress,
     maxMintingFee: BigInt(derivativeDataInput.maxMintingFee || 0),
-    maxRts: Number(derivativeDataInput.maxRts || MAX_ROYALTY_TOKEN),
+    maxRts: Number(
+      derivativeDataInput.maxRts === undefined ? MAX_ROYALTY_TOKEN : derivativeDataInput.maxRts,
+    ),
     maxRevenueShare: getRevenueShare(
-      derivativeDataInput.maxRevenueShare || 100,
+      derivativeDataInput.maxRevenueShare === undefined ? 100 : derivativeDataInput.maxRevenueShare,
       RevShareType.MAX_REVENUE_SHARE,
     ),
   };
