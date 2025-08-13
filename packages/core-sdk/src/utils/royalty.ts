@@ -2,7 +2,6 @@ import { Address } from "viem";
 
 import { chain, validateAddress } from "./utils";
 import { royaltyPolicyLapAddress, royaltyPolicyLrpAddress } from "../abi/generated";
-import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { RevShareType } from "../types/common";
 import { SupportedChainIds } from "../types/config";
 import { NativeRoyaltyPolicy, RoyaltyPolicyInput } from "../types/resources/royalty";
@@ -39,5 +38,5 @@ export const getRevenueShare = (
   if (revShareNumber < 0 || revShareNumber > 100) {
     throw new Error(`${type} must be between 0 and 100.`);
   }
-  return (revShareNumber / 100) * MAX_ROYALTY_TOKEN;
+  return revShareNumber * 10 ** 6;
 };

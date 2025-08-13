@@ -2,6 +2,7 @@ import { expect } from "chai";
 
 import {
   NativeRoyaltyPolicy,
+  RevShareType,
   royaltyPolicyLapAddress,
   royaltyPolicyLrpAddress,
 } from "../../../src";
@@ -39,19 +40,39 @@ describe("royaltyPolicyInputToAddress", () => {
 describe("getRevenueShare", () => {
   it("should throw error when call getRevenueShare given revShare is not a number", () => {
     expect(() => getRevenueShare("not a number")).to.throw(
-      "CommercialRevShare must be a valid number.",
+      "commercialRevShare must be a valid number.",
     );
   });
 
   it("should throw error when call getRevenueShare given revShare is less than 0", () => {
-    expect(() => getRevenueShare(-1)).to.throw("CommercialRevShare must be between 0 and 100.");
+    expect(() => getRevenueShare(-1, RevShareType.EXPECT_MINIMUM_GROUP_REWARD_SHARE)).to.throw(
+      "expectMinimumGroupRewardShare must be between 0 and 100.",
+    );
   });
 
   it("should throw error when call getRevenueShare given revShare is greater than 100", () => {
-    expect(() => getRevenueShare(101)).to.throw("CommercialRevShare must be between 0 and 100.");
+    expect(() => getRevenueShare(101, RevShareType.MAX_REVENUE_SHARE)).to.throw(
+      "maxRevenueShare must be between 0 and 100.",
+    );
+  });
+
+  it("should throw error given revShare is greater than 100 and type is maxAllowedRewardSharePercentage", () => {
+    expect(() => getRevenueShare(101, RevShareType.MAX_ALLOWED_REWARD_SHARE_PERCENTAGE)).to.throw(
+      "maxAllowedRewardSharePercentage must be between 0 and 100.",
+    );
+  });
+
+  it("should throw error given revShare is greater than 100 and type is expectMinimumGroupRewardShare", () => {
+    expect(() => getRevenueShare(101, RevShareType.EXPECT_MINIMUM_GROUP_REWARD_SHARE)).to.throw(
+      "expectMinimumGroupRewardShare must be between 0 and 100.",
+    );
   });
 
   it("should return correct value when call getRevenueShare given revShare is 10", () => {
     expect(getRevenueShare(10)).to.equal(10000000);
+  });
+
+  it("should return correct value when call getRevenueShare given revShare is 0", () => {
+    expect(getRevenueShare(0, RevShareType.MAX_ALLOWED_REWARD_SHARE)).to.equal(0);
   });
 });

@@ -617,13 +617,33 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should return txHash when call succeeds", async () => {
-      stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
+      const addIpStub = stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
       const result = await groupClient.addIpsToGroup({
         groupIpId: mockAddress,
         ipIds: [mockAddress],
         maxAllowedRewardSharePercentage: 5,
       });
+      expect(addIpStub.args[0][0].maxAllowedRewardShare).to.equal(5000000n);
       expect(result.txHash).equal(txHash);
+    });
+
+    it("should call maxAllowedRewardSharePercentage of 0 when provided of 0", async () => {
+      const mockAddIp = stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
+      await groupClient.addIpsToGroup({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
+        maxAllowedRewardSharePercentage: 0,
+      });
+      expect(mockAddIp.args[0][0].maxAllowedRewardShare).to.equal(0n);
+    });
+
+    it("should call maxAllowedRewardSharePercentage of 100 when it is not provided", async () => {
+      const mockAddIp = stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
+      await groupClient.addIpsToGroup({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
+      });
+      expect(mockAddIp.args[0][0].maxAllowedRewardShare).to.equal(100000000n);
     });
   });
 

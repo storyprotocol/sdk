@@ -42,7 +42,7 @@ export type LicenseTerms = {
   commercializerChecker: Address;
   /** The data to be passed to the commercializer checker contract. */
   commercializerCheckerData: Address;
-  /** *Percentage of revenue that must be shared with the licensor. Must be from 0-100. */
+  /** Percentage of revenue that must be shared with the licensor. Must be from 0-100. */
   commercialRevShare: number;
   /** The maximum revenue that can be generated from the commercial use of the work. */
   commercialRevCeiling: bigint;

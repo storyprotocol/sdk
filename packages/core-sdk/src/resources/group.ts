@@ -491,8 +491,8 @@ export class GroupClient {
         ipIds: validateAddresses(ipIds),
         maxAllowedRewardShare: BigInt(
           getRevenueShare(
-            maxAllowedRewardSharePercentage || 100,
-            RevShareType.MAX_ALLOWED_REWARD_SHARE,
+            maxAllowedRewardSharePercentage === undefined ? 100 : maxAllowedRewardSharePercentage,
+            RevShareType.MAX_ALLOWED_REWARD_SHARE_PERCENTAGE,
           ),
         ),
       };

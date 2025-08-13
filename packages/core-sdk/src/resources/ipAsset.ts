@@ -424,7 +424,10 @@ export class IPAssetClient {
             zeroAddress,
             BigInt(arg.maxMintingFee || 0),
             Number(arg.maxRts || MAX_ROYALTY_TOKEN),
-            getRevenueShare(arg.maxRevenueShare || 100, RevShareType.MAX_REVENUE_SHARE),
+            getRevenueShare(
+              arg.maxRevenueShare === undefined ? 100 : arg.maxRevenueShare,
+              RevShareType.MAX_REVENUE_SHARE,
+            ),
           ],
         });
         const { result: state } = await ipAccount.state();

@@ -3565,7 +3565,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative and distribute royalty tokens: MaxRevenueShare must be between 0 and 100.",
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: maxRevenueShare must be between 0 and 100.",
         );
       }
     });
@@ -3593,7 +3593,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative and distribute royalty tokens: MaxRevenueShare must be between 0 and 100.",
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: maxRevenueShare must be between 0 and 100.",
         );
       }
     });
