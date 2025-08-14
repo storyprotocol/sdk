@@ -1510,7 +1510,7 @@ describe("Test LicenseClient", () => {
     it("should return txHash when call given args is correct", async () => {
       stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       stub(licenseClient.piLicenseTemplateReadOnlyClient, "exists").resolves(true);
-      stub(licenseClient.licensingModuleClient, "setLicensingConfig").resolves(txHash);
+      const setLicensingConfig = stub(licenseClient.licensingModuleClient, "setLicensingConfig");
       stub(licenseClient.licenseRegistryReadOnlyClient, "getLicensingConfig").resolves({
         isSet: false,
         mintingFee: 0n,
@@ -1518,7 +1518,7 @@ describe("Test LicenseClient", () => {
         hookData: zeroAddress,
         commercialRevShare: 0,
         disabled: false,
-        expectMinimumGroupRewardShare: 0,
+        expectMinimumGroupRewardShare: 1 * 10 ** 6,
         expectGroupRewardPool: zeroAddress,
       });
 
@@ -1531,6 +1531,17 @@ describe("Test LicenseClient", () => {
         maxLicenseTokens: 100,
       });
       expect(result.txHash).to.equal(txHash);
+      expect(setLicensingConfig.callCount).to.equal(1);
+      expect(setLicensingConfig.firstCall.args[0].licensingConfig).to.deep.equal({
+        isSet: false,
+        mintingFee: 0n,
+        licensingHook: "0xaBAD364Bfa41230272b08f171E0Ca939bD600478",
+        hookData: zeroAddress,
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 1 * 10 ** 6,
+        expectGroupRewardPool: zeroAddress,
+      });
     });
   });
 });
