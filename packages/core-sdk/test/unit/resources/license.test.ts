@@ -87,7 +87,7 @@ describe("Test LicenseClient", () => {
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
       ).to.be.rejectedWith(
-        "Failed to register license terms: CommercialRevShare should be between 0 and 100.",
+        "Failed to register license terms: commercialRevShare must be between 0 and 100.",
       );
     });
     it("should throw commercialRevShare error when call registerPILTerms given commercialRevShare is less than 0", async () => {
@@ -104,7 +104,7 @@ describe("Test LicenseClient", () => {
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
       ).to.be.rejectedWith(
-        "Failed to register license terms: CommercialRevShare should be between 0 and 100.",
+        "Failed to register license terms: commercialRevShare must be between 0 and 100.",
       );
     });
     it("should return encodedTxData when call registerPILTerms given txOptions.encodedTxDataOnly of true and args is correct", async () => {
