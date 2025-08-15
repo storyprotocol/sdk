@@ -478,7 +478,7 @@ describe("PILFlavor", () => {
             currency: mockAddress,
             commercialRevShare: -1,
           });
-        }).to.throw("CommercialRevShare should be between 0 and 100.");
+        }).to.throw("commercialRevShare must be between 0 and 100.");
       });
 
       it("should throw error when commercialRevShare is greater than 100", () => {
@@ -488,7 +488,7 @@ describe("PILFlavor", () => {
             currency: mockAddress,
             commercialRevShare: 101,
           });
-        }).to.throw("CommercialRevShare should be between 0 and 100.");
+        }).to.throw("commercialRevShare must be between 0 and 100.");
       });
 
       it("should throw error when commercialRevShare is NaN", () => {
@@ -498,7 +498,7 @@ describe("PILFlavor", () => {
             currency: mockAddress,
             commercialRevShare: NaN,
           });
-        }).to.throw("CommercialRevShare must be a valid number.");
+        }).to.throw("commercialRevShare must be a valid number.");
       });
 
       it("should convert 0% to 0 basis points", () => {

@@ -280,7 +280,7 @@ export class LicenseClient {
           request.licenseTemplate || this.licenseTemplateClient.address,
         ),
         licenseTermsId: BigInt(request.licenseTermsId),
-        amount: BigInt(request.amount || 1),
+        amount: BigInt(request.amount === undefined ? 1 : request.amount),
         receiver,
         royaltyContext: zeroAddress,
         maxMintingFee: BigInt(request.maxMintingFee),
@@ -516,6 +516,7 @@ export class LicenseClient {
           licensingConfig: {
             ...licensingConfig,
             licensingHook: this.totalLicenseTokenLimitHookClient.address,
+            expectMinimumGroupRewardShare: licensingConfig.expectMinimumGroupRewardShare / 1000000,
           },
         });
       }

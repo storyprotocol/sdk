@@ -1,8 +1,7 @@
 import { zeroAddress } from "viem";
 
 import { PILFlavorError } from "./errors";
-import { royaltyPolicyInputToAddress } from "./royalty";
-import { MAX_ROYALTY_TOKEN } from "../constants/common";
+import { getRevenueShare, royaltyPolicyInputToAddress } from "./royalty";
 import { SupportedChainIds } from "../types/config";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
@@ -221,23 +220,9 @@ export class PILFlavor {
     this.verifyDerivatives(normalized);
 
     // Validate and normalize commercialRevShare
-    normalized.commercialRevShare = this.validateAndNormalizeRevShare(
-      normalized.commercialRevShare,
-    );
+    normalized.commercialRevShare = getRevenueShare(normalized.commercialRevShare);
 
     return normalized;
-  };
-
-  private static validateAndNormalizeRevShare = (commercialRevShare: number): number => {
-    if (typeof commercialRevShare !== "number" || isNaN(commercialRevShare)) {
-      throw new PILFlavorError("CommercialRevShare must be a valid number.");
-    }
-
-    if (commercialRevShare < 0 || commercialRevShare > 100) {
-      throw new PILFlavorError(`CommercialRevShare should be between 0 and 100.`);
-    }
-
-    return Math.round((commercialRevShare / 100) * MAX_ROYALTY_TOKEN);
   };
 
   private static verifyCommercialUse = (terms: LicenseTerms): void => {

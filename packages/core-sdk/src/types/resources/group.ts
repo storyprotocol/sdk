@@ -32,7 +32,10 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
    * @default true
    */
   allowDuplicates?: boolean;
-  /** The maximum reward share percentage that can be allocated to each member IP. */
+  /**
+   * The maximum reward share percentage that can be allocated to each member IP.
+   * Must be between 0 and 100 (where 100% represents 100_000_000).
+   */
   maxAllowedRewardShare: number | string;
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseDataInput[];
@@ -104,7 +107,10 @@ export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
   ipIds: Address[];
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseDataInput;
-  /** The maximum reward share percentage that can be allocated to each member IP. */
+  /**
+   * The maximum reward share percentage that can be allocated to each member IP.
+   * Must be between 0 and 100 (where 100% represents 100_000_000).
+   */
   maxAllowedRewardShare: number | string;
   txOptions?: TxOptions;
 };
