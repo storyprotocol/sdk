@@ -3,6 +3,7 @@ import chaiAsPromised from "chai-as-promised";
 import { Address, Hex, maxUint256, toHex, zeroAddress, zeroHash } from "viem";
 
 import { IpRegistrationWorkflowRequest, StoryClient } from "../../src";
+import { getDerivedStoryClient } from "./utils/BIP32";
 import {
   aeneid,
   approveForLicenseToken,
@@ -3482,6 +3483,112 @@ describe("IP Asset Functions", () => {
       expect(
         result.registrationResults[4].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
+    });
+  });
+
+  describe("Batch Mint and Register IP Asset", () => {
+    let spgNftContractWithPublicMinting: Address;
+    let spgNftContractWithPrivateMinting: Address;
+    let anotherWalletAddress: Address;
+    before(async () => {
+      const publicMintingCollectionResult = await client.nftClient.createNFTCollection({
+        name: "test-collection",
+        symbol: "TEST",
+        maxSupply: 100,
+        isPublicMinting: true,
+        mintOpen: true,
+        contractURI: "test-uri",
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        mintFee: 10n,
+        mintFeeToken: WIP_TOKEN_ADDRESS,
+      });
+      spgNftContractWithPublicMinting = publicMintingCollectionResult.spgNftContract!;
+
+      const privateMintingCollectionResult = await client.nftClient.createNFTCollection({
+        name: "test-collection",
+        symbol: "TEST",
+        maxSupply: 100,
+        isPublicMinting: false,
+        mintOpen: true,
+        contractURI: "test-uri",
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        mintFee: 20n,
+        mintFeeToken: WIP_TOKEN_ADDRESS,
+      });
+      spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
+
+      const { address } = await getDerivedStoryClient();
+      anotherWalletAddress = address;
+    });
+    it("should successfully when public minting of spgNftContract", async () => {
+      const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      const { registrationResults } = await client.ipAsset.batchMintAndRegisterIp({
+        requests: [
+          { spgNftContract: spgNftContractWithPublicMinting },
+          { spgNftContract: spgNftContractWithPublicMinting, recipient: anotherWalletAddress },
+          { spgNftContract: spgNftContractWithPublicMinting, allowDuplicates: false },
+        ],
+      });
+      const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      expect(wipBalanceAfter).equal(wipBalanceBefore);
+      expect(registrationResults.length).equal(1);
+      expect(registrationResults[0].ipIdsAndTokenIds.length).equal(3);
+    });
+
+    it("should successfully when private minting of spgNftContract", async () => {
+      const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      const { registrationResults } = await client.ipAsset.batchMintAndRegisterIp({
+        requests: [
+          { spgNftContract: spgNftContractWithPrivateMinting },
+          { spgNftContract: spgNftContractWithPrivateMinting, recipient: anotherWalletAddress },
+          {
+            spgNftContract: spgNftContractWithPrivateMinting,
+            allowDuplicates: false,
+            recipient: anotherWalletAddress,
+          },
+        ],
+      });
+      const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      expect(wipBalanceAfter).equal(wipBalanceBefore);
+      expect(registrationResults.length).equal(1);
+      expect(registrationResults[0].ipIdsAndTokenIds.length).equal(3);
+    });
+
+    it("should successfully when hybrid private minting and public minting of spgNftContract", async () => {
+      const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      const { registrationResults } = await client.ipAsset.batchMintAndRegisterIp({
+        requests: [
+          { spgNftContract: spgNftContractWithPublicMinting },
+          { spgNftContract: spgNftContractWithPrivateMinting, recipient: anotherWalletAddress },
+          { spgNftContract: spgNftContractWithPrivateMinting, allowDuplicates: false },
+          { spgNftContract: spgNftContractWithPublicMinting, recipient: anotherWalletAddress },
+        ],
+      });
+      const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+      expect(wipBalanceAfter).equal(wipBalanceBefore);
+      expect(registrationResults.length).equal(2);
+      expect(registrationResults[0].ipIdsAndTokenIds.length).equal(2);
+      expect(registrationResults[1].ipIdsAndTokenIds.length).equal(2);
+    });
+
+    it("should fail when private minting of spgNftContract but caller does not have the minter role", async () => {
+      // Register a new SPG NFT contract with private minting with clientB
+      const { address, clientB } = await getDerivedStoryClient();
+      const { spgNftContract: privateMintingContractOfClientB } =
+        await clientB.nftClient.createNFTCollection({
+          name: "test-collection",
+          symbol: "TEST",
+          maxSupply: 100,
+          isPublicMinting: false,
+          mintOpen: true,
+          mintFeeRecipient: address,
+          contractURI: "test-uri",
+        });
+      await expect(
+        client.ipAsset.batchMintAndRegisterIp({
+          requests: [{ spgNftContract: privateMintingContractOfClientB! }],
+        }),
+      ).to.be.rejectedWith("does not have the minter role");
     });
   });
 });
