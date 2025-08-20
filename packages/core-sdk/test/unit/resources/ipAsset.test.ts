@@ -4873,7 +4873,6 @@ describe("Test IpAssetClient", () => {
           },
         ],
       });
-      console.log("spgMulticallStub.callCount", result);
       expect(spgMulticallStub.callCount).to.equal(1);
       expect(result.registrationResults.length).to.equal(2);
       expect(result.registrationResults[0].txHash).to.equal(txHash);
