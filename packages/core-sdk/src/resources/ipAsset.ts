@@ -118,6 +118,7 @@ import {
   getPublicMinting,
   getRoyaltyShares,
   hasMinterRole,
+  mergeSpenders,
   validateDerivativeData,
   validateLicenseTermsData,
   validateMaxRts,
@@ -889,9 +890,17 @@ export class IPAssetClient {
   }
 
   /**
-   * Batch mints NFTs from SPGNFT collections and registers them as IP, optimizing for both public and private minting contracts.
+   * Batch mints NFTs from SPGNFT collections and registers them as IP assets.
    *
-   * Uses multicall batching for public minting contracts, and for private minting contracts if the `caller` has the minter role; otherwise, processes sequentially.
+   * Optimizes transaction processing by grouping requests and automatically selecting the most efficient multicall strategy:
+   * - Uses `multicall3` for public minting contracts.
+   * - Uses `SPG's multicall` for private minting contracts.
+   *
+   * @remark
+   * For private minting, verifies the `caller` has the `minter role` and avoids `multicall3` batching to ensure correct `msg.sender`.
+   *
+   * Automatically manages minting fees, including wrapping IP tokens into WIP tokens if balances are insufficient, and checks or sets allowances for all spenders as needed.
+   * The `multicall` and token handling behavior can be configured via `wipOptions`.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
@@ -900,59 +909,67 @@ export class IPAssetClient {
   ): Promise<BatchMintAndRegisterIpResponse> {
     try {
       const publicMintEncodedTxs: EncodedTxData[] = [];
-      const privateMintContractCalls: (() => Promise<Hash>)[] = [];
-      const publicMintSpenders: Erc20Spender[] = [];
-      const privateMintSpenders: Erc20Spender[] = [];
+      let publicMintSpenders: Erc20Spender[] = [];
+      const privateMintEncodedTxs: EncodedTxData[] = [];
+      let privateMintSpenders: Erc20Spender[] = [];
       let publicMintFeesTotal = 0n;
       let privateMintFeesTotal = 0n;
-      for (const arg of request.args) {
-        const isMinterRole = await hasMinterRole(
-          request.args[0].spgNftContract,
-          this.rpcClient,
-          this.walletAddress,
-        );
-        const object: RegistrationWorkflowsMintAndRegisterIpRequest = {
-          spgNftContract: validateAddress(arg.spgNftContract),
-          recipient: validateAddress(arg.recipient || this.walletAddress),
-          ipMetadata: getIpMetadataForWorkflow(arg.ipMetadata),
-          allowDuplicates: arg.allowDuplicates || true,
+      for (const req of request.requests) {
+        const registrationRequest: RegistrationWorkflowsMintAndRegisterIpRequest = {
+          spgNftContract: validateAddress(req.spgNftContract),
+          recipient: validateAddress(req.recipient || this.walletAddress),
+          ipMetadata: getIpMetadataForWorkflow(req.ipMetadata),
+          allowDuplicates: req.allowDuplicates || true,
         };
-        const isPublicMinting = await getPublicMinting(arg.spgNftContract, this.rpcClient);
+        const isPublicMinting = await getPublicMinting(req.spgNftContract, this.rpcClient);
         const nftMintFee = await calculateSPGWipMintFee(
-          new SpgnftImplReadOnlyClient(this.rpcClient, object.spgNftContract),
+          new SpgnftImplReadOnlyClient(this.rpcClient, registrationRequest.spgNftContract),
         );
+        const encodeTx = {
+          to: this.registrationWorkflowsClient.address,
+          data: encodeFunctionData({
+            abi: registrationWorkflowsAbi,
+            functionName: "mintAndRegisterIp",
+            args: [
+              registrationRequest.spgNftContract,
+              registrationRequest.recipient,
+              registrationRequest.ipMetadata,
+              registrationRequest.allowDuplicates,
+            ],
+          }),
+        };
         if (isPublicMinting) {
           publicMintFeesTotal += nftMintFee;
-          publicMintSpenders.push({
-            address: object.spgNftContract,
-            amount: nftMintFee,
-          });
-          publicMintEncodedTxs.push({
-            to: this.registrationWorkflowsClient.address,
-            data: encodeFunctionData({
-              abi: registrationWorkflowsAbi,
-              functionName: "mintAndRegisterIp",
-              args: [
-                object.spgNftContract,
-                object.recipient,
-                object.ipMetadata,
-                object.allowDuplicates,
-              ],
-            }),
-          });
+          publicMintSpenders = mergeSpenders(publicMintSpenders, [
+            {
+              address: registrationRequest.spgNftContract,
+              amount: nftMintFee,
+            },
+          ]);
+          publicMintEncodedTxs.push(encodeTx);
         } else {
+          const isMinterRole = await hasMinterRole(
+            registrationRequest.spgNftContract,
+            this.rpcClient,
+            this.walletAddress,
+          );
+          if (!isMinterRole) {
+            throw new Error(
+              `Caller ${this.walletAddress} does not have the minter role for ${registrationRequest.spgNftContract}`,
+            );
+          }
           privateMintFeesTotal += nftMintFee;
-          privateMintSpenders.push({
-            address: object.spgNftContract,
-            amount: nftMintFee,
-          });
-          privateMintContractCalls.push((): Promise<Hash> => {
-            return this.registrationWorkflowsClient.mintAndRegisterIp(object);
-          });
+          privateMintSpenders = mergeSpenders(privateMintSpenders, [
+            {
+              address: registrationRequest.spgNftContract,
+              amount: nftMintFee,
+            },
+          ]);
+          privateMintEncodedTxs.push(encodeTx);
         }
       }
 
-      const handleMulticallTransactions = async (): Promise<TransactionResponse> => {
+      const handlePublicMintTransactions = async (): Promise<TransactionResponse> => {
         return await contractCallWithFees({
           totalFees: publicMintFeesTotal,
           options: { wipOptions: request.wipOptions },
@@ -970,37 +987,32 @@ export class IPAssetClient {
         });
       };
 
-      const handleSequenceCallTransactions = async (): Promise<TransactionResponse[]> => {
-        const contractCall = async (): Promise<Hash[]> => {
-          const txHashes: Hex[] = [];
-          for (const call of privateMintContractCalls) {
-            const txHash = await call();
-            txHashes.push(txHash);
-          }
-          return txHashes;
-        };
-        return await contractCallWithFees<Hash[]>({
+      const handlePrivateMintTransactions = async (): Promise<TransactionResponse> => {
+        return await contractCallWithFees({
           totalFees: privateMintFeesTotal,
           options: { wipOptions: { ...request.wipOptions, useMulticallWhenPossible: false } },
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
           tokenSpenders: privateMintSpenders,
-          contractCall,
+          contractCall: () =>
+            this.registrationWorkflowsClient.multicall({
+              data: privateMintEncodedTxs.map((tx) => tx.data),
+            }),
           sender: this.walletAddress,
           wallet: this.wallet,
           txOptions: request.txOptions,
-          encodedTxs: [],
+          encodedTxs: privateMintEncodedTxs,
         });
       };
       let transactionResponses: TransactionResponse[] = [];
-      if (privateMintContractCalls.length === 0) {
-        transactionResponses = [await handleMulticallTransactions()];
+      if (privateMintEncodedTxs.length === 0) {
+        transactionResponses = [await handlePublicMintTransactions()];
       } else if (publicMintEncodedTxs.length === 0) {
-        transactionResponses = await handleSequenceCallTransactions();
+        transactionResponses = [await handlePrivateMintTransactions()];
       } else {
-        const publicMintResponse = await handleMulticallTransactions();
-        const privateMintResponse = await handleSequenceCallTransactions();
-        transactionResponses = [publicMintResponse, ...privateMintResponse];
+        const publicMintResponse = await handlePublicMintTransactions();
+        const privateMintResponse = await handlePrivateMintTransactions();
+        transactionResponses = [publicMintResponse, privateMintResponse];
       }
       return {
         registrationResults: transactionResponses.map((r) => ({

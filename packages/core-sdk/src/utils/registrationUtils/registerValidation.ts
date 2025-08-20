@@ -1,4 +1,4 @@
-import { Address, PublicClient, zeroAddress } from "viem";
+import { Address, PublicClient, toHex, zeroAddress } from "viem";
 
 import {
   IpAssetRegistryClient,
@@ -249,4 +249,17 @@ export const mergeSpenders = (
     },
     [...previousSpenders],
   );
+};
+
+export const hasMinterRole = async (
+  spgNftContract: Address,
+  rpcClient: PublicClient,
+  walletAddress: Address,
+): Promise<boolean> => {
+  const spgNftContractImpl = new SpgnftImplReadOnlyClient(rpcClient, spgNftContract);
+  const minterRole = toHex(1, { size: 32 });
+  return await spgNftContractImpl.hasRole({
+    role: minterRole,
+    account: walletAddress,
+  });
 };
