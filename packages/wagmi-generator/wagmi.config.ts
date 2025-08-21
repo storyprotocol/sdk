@@ -389,6 +389,7 @@ export default defineConfig(async () => {
             "setTokenURI",
             "tokenURI",
             "Transfer",
+            "hasRole",
           ],
           TotalLicenseTokenLimitHook: ["setTotalLicenseTokenLimit"],
         },
