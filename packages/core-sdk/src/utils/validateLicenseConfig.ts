@@ -1,8 +1,8 @@
 import { zeroAddress, zeroHash } from "viem";
 
-import { getRevenueShare } from "./licenseTermsHelper";
+import { getRevenueShare } from "./royalty";
 import { validateAddress } from "./utils";
-import { LicensingConfig, LicensingConfigInput } from "../types/common";
+import { LicensingConfig, LicensingConfigInput, RevShareType } from "../types/common";
 
 export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): LicensingConfig => {
   if (!licensingConfig) {
@@ -26,7 +26,7 @@ export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): L
     hookData: licensingConfig.hookData,
     isSet: licensingConfig.isSet,
     disabled: licensingConfig.disabled,
-  } as const;
+  };
   if (isNaN(licenseConfig.expectMinimumGroupRewardShare)) {
     throw new Error(`The expectMinimumGroupRewardShare must be a valid number.`);
   }
@@ -36,6 +36,11 @@ export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): L
     licenseConfig.expectMinimumGroupRewardShare > 100
   ) {
     throw new Error(`The expectMinimumGroupRewardShare must be greater than 0 and less than 100.`);
+  } else {
+    licenseConfig.expectMinimumGroupRewardShare = getRevenueShare(
+      licenseConfig.expectMinimumGroupRewardShare,
+      RevShareType.EXPECT_MINIMUM_GROUP_REWARD_SHARE,
+    );
   }
 
   if (licenseConfig.mintingFee < 0) {

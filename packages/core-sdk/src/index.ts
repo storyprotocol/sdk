@@ -10,10 +10,12 @@ export { IPAccountClient } from "./resources/ipAccount";
 export { RoyaltyClient } from "./resources/royalty";
 export { GroupClient } from "./resources/group";
 export { WipClient } from "./resources/wip";
+export { PILFlavor } from "./utils/pilFlavor";
 
 export * from "./types/config";
 export * from "./types/common";
 export * from "./types/options";
+export * from "./types/utils/pilFlavor";
 
 export * from "./types/resources/ipAsset";
 export * from "./types/resources/ipMetadata";

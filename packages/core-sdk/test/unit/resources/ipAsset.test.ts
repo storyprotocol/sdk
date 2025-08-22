@@ -3565,7 +3565,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative and distribute royalty tokens: MaxRevenueShare must be between 0 and 100.",
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: maxRevenueShare must be between 0 and 100.",
         );
       }
     });
@@ -3593,7 +3593,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative and distribute royalty tokens: MaxRevenueShare must be between 0 and 100.",
+          "Failed to mint and register IP and make derivative and distribute royalty tokens: maxRevenueShare must be between 0 and 100.",
         );
       }
     });
@@ -4691,6 +4691,203 @@ describe("Test IpAssetClient", () => {
             transactionHash: txHash,
           },
           txHash: txHash,
+        },
+      ]);
+    });
+  });
+
+  describe("Batch Mint and Register IP Asset with License Terms", () => {
+    it("should throw caller error when spgNftContract has public minting disabled", async () => {
+      stub(SpgnftImplReadOnlyClient.prototype, "publicMinting").resolves(false);
+      stub(SpgnftImplReadOnlyClient.prototype, "mintFee").resolves(1n);
+      stub(SpgnftImplReadOnlyClient.prototype, "hasRole").resolves(false);
+      const publicMintingSpgContract = mockAddress;
+      await expect(
+        ipAssetClient.batchMintAndRegisterIp({
+          requests: [{ spgNftContract: publicMintingSpgContract }],
+        }),
+      ).to.be.rejectedWith("does not have the minter role");
+    });
+
+    it("should should not use spg multicall3 when spgNftContract has public minting enabled", async () => {
+      stub(SpgnftImplReadOnlyClient.prototype, "publicMinting").resolves(true);
+      stub(SpgnftImplReadOnlyClient.prototype, "mintFee").resolves(1n);
+      stub(SpgnftImplReadOnlyClient.prototype, "hasRole").resolves(true);
+      const spgMulticallStub = stub(
+        ipAssetClient.registrationWorkflowsClient,
+        "multicall",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          chainId: 0n,
+          tokenContract: mockAddress,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      const publicMintingSpgContract = mockAddress;
+      const result = await ipAssetClient.batchMintAndRegisterIp({
+        requests: [
+          { spgNftContract: publicMintingSpgContract },
+          { spgNftContract: publicMintingSpgContract, recipient: mockAddress },
+          {
+            spgNftContract: publicMintingSpgContract,
+            recipient: mockAddress,
+            allowDuplicates: false,
+          },
+        ],
+      });
+      expect(spgMulticallStub.callCount).to.equal(0);
+      expect(result.registrationResults.length).to.equal(1);
+      expect(result.registrationResults[0].txHash).to.equal(txHash);
+      expect(result.registrationResults[0].ipIdsAndTokenIds).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          spgNftContract: mockAddress,
+        },
+      ]);
+    });
+    it("should should use spg multicall3 when spgNftContract has public minting enabled and mint fee is 0", async () => {
+      stub(SpgnftImplReadOnlyClient.prototype, "publicMinting").resolves(true);
+      stub(SpgnftImplReadOnlyClient.prototype, "mintFee").resolves(0n);
+      stub(SpgnftImplReadOnlyClient.prototype, "hasRole").resolves(true);
+      const spgMulticallStub = stub(
+        ipAssetClient.registrationWorkflowsClient,
+        "multicall",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          chainId: 0n,
+          tokenContract: mockAddress,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      const publicMintingSpgContract = mockAddress;
+      const result = await ipAssetClient.batchMintAndRegisterIp({
+        requests: [
+          { spgNftContract: publicMintingSpgContract },
+          { spgNftContract: publicMintingSpgContract, recipient: mockAddress },
+          {
+            spgNftContract: publicMintingSpgContract,
+            recipient: mockAddress,
+            allowDuplicates: false,
+          },
+        ],
+      });
+      expect(spgMulticallStub.callCount).to.equal(1);
+      expect(result.registrationResults.length).to.equal(1);
+      expect(result.registrationResults[0].txHash).to.equal(txHash);
+      expect(result.registrationResults[0].ipIdsAndTokenIds).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          spgNftContract: mockAddress,
+        },
+      ]);
+    });
+    it("should be called with spg multicall when spgNftContract has private minting enabled", async () => {
+      stub(SpgnftImplReadOnlyClient.prototype, "publicMinting").resolves(false);
+      stub(SpgnftImplReadOnlyClient.prototype, "mintFee").resolves(1n);
+      stub(SpgnftImplReadOnlyClient.prototype, "hasRole").resolves(true);
+      const spgMulticallStub = stub(
+        ipAssetClient.registrationWorkflowsClient,
+        "multicall",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          chainId: 0n,
+          tokenContract: mockAddress,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      const privateMintingSpgContract = mockAddress;
+      const result = await ipAssetClient.batchMintAndRegisterIp({
+        requests: [
+          { spgNftContract: privateMintingSpgContract },
+          { spgNftContract: privateMintingSpgContract, recipient: mockAddress },
+          {
+            spgNftContract: privateMintingSpgContract,
+            recipient: mockAddress,
+            allowDuplicates: false,
+          },
+        ],
+      });
+      expect(spgMulticallStub.callCount).to.equal(1);
+      expect(result.registrationResults.length).to.equal(1);
+      expect(result.registrationResults[0].txHash).to.equal(txHash);
+      expect(result.registrationResults[0].ipIdsAndTokenIds).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          spgNftContract: mockAddress,
+        },
+      ]);
+    });
+    it("should both called with spg multicall when spgNftContract has private and public minting enabled", async () => {
+      stub(SpgnftImplReadOnlyClient.prototype, "publicMinting")
+        .onFirstCall()
+        .resolves(false)
+        .onSecondCall()
+        .resolves(true)
+        .onThirdCall()
+        .resolves(false);
+      stub(SpgnftImplReadOnlyClient.prototype, "mintFee").resolves(1n);
+      stub(SpgnftImplReadOnlyClient.prototype, "hasRole").resolves(true);
+      const spgMulticallStub = stub(
+        ipAssetClient.registrationWorkflowsClient,
+        "multicall",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          chainId: 0n,
+          tokenContract: mockAddress,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      const privateMintingSpgContract = mockAddress;
+      const publicMintingSpgContract = mockAddress;
+      const result = await ipAssetClient.batchMintAndRegisterIp({
+        requests: [
+          { spgNftContract: privateMintingSpgContract },
+          { spgNftContract: publicMintingSpgContract, recipient: mockAddress },
+          {
+            spgNftContract: privateMintingSpgContract,
+            recipient: mockAddress,
+            allowDuplicates: false,
+          },
+        ],
+      });
+      expect(spgMulticallStub.callCount).to.equal(1);
+      expect(result.registrationResults.length).to.equal(2);
+      expect(result.registrationResults[0].txHash).to.equal(txHash);
+      expect(result.registrationResults[0].ipIdsAndTokenIds).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          spgNftContract: mockAddress,
+        },
+      ]);
+      expect(result.registrationResults[0].ipIdsAndTokenIds).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          spgNftContract: mockAddress,
         },
       ]);
     });

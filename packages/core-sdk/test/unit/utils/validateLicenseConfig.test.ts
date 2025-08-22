@@ -12,11 +12,14 @@ describe("validateLicenseConfig", () => {
       hookData: zeroAddress,
       commercialRevShare: 0,
       disabled: false,
-      expectMinimumGroupRewardShare: 0,
+      expectMinimumGroupRewardShare: 10,
       expectGroupRewardPool: zeroAddress,
     };
     const result = validateLicenseConfig(licensingConfig);
-    expect(result).to.be.a("object");
+    expect(result).to.deep.equal({
+      ...licensingConfig,
+      expectMinimumGroupRewardShare: 10000000,
+    });
   });
   it("should throw error when expectMinimumGroupRewardShare is not a number", () => {
     const licensingConfig = {
@@ -79,7 +82,7 @@ describe("validateLicenseConfig", () => {
     );
   });
 
-  it("should throw default value when licensingConfig is not provided", () => {
+  it("should return default value when licensingConfig is not provided", () => {
     const result = validateLicenseConfig();
     expect(result).to.deep.equal({
       isSet: false,

@@ -1,9 +1,10 @@
-import { Address, PublicClient, zeroAddress } from "viem";
+import { Address, PublicClient, toHex, zeroAddress } from "viem";
 
 import {
   IpAssetRegistryClient,
   LicenseRegistryReadOnlyClient,
   piLicenseTemplateAddress,
+  RoyaltyModuleReadOnlyClient,
   SpgnftImplReadOnlyClient,
   totalLicenseTokenLimitHookAddress,
 } from "../../abi/generated";
@@ -22,7 +23,8 @@ import {
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
 import { Erc20Spender } from "../../types/utils/wip";
-import { getRevenueShare, validateLicenseTerms } from "../licenseTermsHelper";
+import { PILFlavor } from "../pilFlavor";
+import { getRevenueShare } from "../royalty";
 import { getDeadline } from "../sign";
 import { chain, validateAddress } from "../utils";
 import { validateLicenseConfig } from "../validateLicenseConfig";
@@ -48,7 +50,29 @@ export const validateLicenseTermsData = async (
   const processedLicenseTermsData: LicenseTermsData[] = [];
   const maxLicenseTokens: bigint[] = [];
   for (let i = 0; i < licenseTermsData.length; i++) {
-    const licenseTerm = await validateLicenseTerms(licenseTermsData[i].terms, rpcClient);
+    const licenseTerm = PILFlavor.validateLicenseTerms(licenseTermsData[i].terms, chainId);
+    const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
+    if (validateAddress(licenseTerm.royaltyPolicy) !== zeroAddress) {
+      const isWhitelistedArbitrationPolicy =
+        await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyPolicy({
+          royaltyPolicy: licenseTerm.royaltyPolicy,
+        });
+      if (!isWhitelistedArbitrationPolicy) {
+        throw new Error(`The royalty policy ${licenseTerm.royaltyPolicy} is not whitelisted.`);
+      }
+    }
+
+    if (validateAddress(licenseTerm.currency) !== zeroAddress) {
+      const isWhitelistedRoyaltyToken = await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken(
+        {
+          token: licenseTerm.currency,
+        },
+      );
+      if (!isWhitelistedRoyaltyToken) {
+        throw new Error(`The currency token ${licenseTerm.currency} is not whitelisted.`);
+      }
+    }
+
     const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);
     if (licensingConfig.mintingFee > 0 && licenseTerm.royaltyPolicy === zeroAddress) {
       throw new Error("A royalty policy must be provided when the minting fee is greater than 0.");
@@ -110,9 +134,11 @@ export const validateDerivativeData = async ({
     licenseTemplate: validateAddress(derivativeDataInput.licenseTemplate || licenseTemplateAddress),
     royaltyContext: zeroAddress,
     maxMintingFee: BigInt(derivativeDataInput.maxMintingFee || 0),
-    maxRts: Number(derivativeDataInput.maxRts || MAX_ROYALTY_TOKEN),
+    maxRts: Number(
+      derivativeDataInput.maxRts === undefined ? MAX_ROYALTY_TOKEN : derivativeDataInput.maxRts,
+    ),
     maxRevenueShare: getRevenueShare(
-      derivativeDataInput.maxRevenueShare || 100,
+      derivativeDataInput.maxRevenueShare === undefined ? 100 : derivativeDataInput.maxRevenueShare,
       RevShareType.MAX_REVENUE_SHARE,
     ),
   };
@@ -223,4 +249,17 @@ export const mergeSpenders = (
     },
     [...previousSpenders],
   );
+};
+
+export const hasMinterRole = async (
+  spgNftContract: Address,
+  rpcClient: PublicClient,
+  walletAddress: Address,
+): Promise<boolean> => {
+  const spgNftContractImpl = new SpgnftImplReadOnlyClient(rpcClient, spgNftContract);
+  const minterRole = toHex(1, { size: 32 });
+  return await spgNftContractImpl.hasRole({
+    role: minterRole,
+    account: walletAddress,
+  });
 };

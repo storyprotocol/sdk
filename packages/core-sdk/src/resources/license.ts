@@ -16,7 +16,6 @@ import {
   PiLicenseTemplateGetLicenseTermsResponse,
   PiLicenseTemplateReadOnlyClient,
   royaltyModuleAddress,
-  royaltyPolicyLapAddress,
   SimpleWalletClient,
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
@@ -33,7 +32,6 @@ import {
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
-  PIL_TYPE,
   PredictMintingLicenseFeeRequest,
   RegisterCommercialRemixPILRequest,
   RegisterCommercialUsePILRequest,
@@ -49,11 +47,8 @@ import { Erc20Spender } from "../types/utils/wip";
 import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
-import {
-  getLicenseTermByType,
-  getRevenueShare,
-  validateLicenseTerms,
-} from "../utils/licenseTermsHelper";
+import { PILFlavor } from "../utils/pilFlavor";
+import { getRevenueShare } from "../utils/royalty";
 import { waitForTxReceipt } from "../utils/txOptions";
 import { validateAddress } from "../utils/utils";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -96,11 +91,7 @@ export class LicenseClient {
    */
   public async registerPILTerms(request: RegisterPILTermsRequest): Promise<RegisterPILResponse> {
     try {
-      const object = await validateLicenseTerms(request, this.rpcClient);
-      const licenseTermsId = await this.getLicenseTermsId(object);
-      if (licenseTermsId !== 0n) {
-        return { licenseTermsId: licenseTermsId };
-      }
+      const object = PILFlavor.validateLicenseTerms(request, this.chainId);
       return await this.registerPILTermsHelper(object, request.txOptions);
     } catch (error) {
       return handleError(error, "Failed to register license terms");
@@ -108,6 +99,9 @@ export class LicenseClient {
   }
 
   /**
+   * @deprecated Use {@link PILFlavor.nonCommercialSocialRemixing} with {@link LicenseClient.registerPILTerms} instead.
+   *  The method will be removed in the `v1.4.0`.
+   *
    * Convenient function to register a PIL non commercial social remix license to the registry
    *
    * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%231%3A-non-commercial-social-remixing | Non Commercial Social Remixing}.
@@ -118,7 +112,7 @@ export class LicenseClient {
     request?: RegisterNonComSocialRemixingPILRequest,
   ): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms = getLicenseTermByType(PIL_TYPE.NON_COMMERCIAL_REMIX);
+      const licenseTerms = PILFlavor.nonCommercialSocialRemixing();
       return await this.registerPILTermsHelper(licenseTerms, request?.txOptions);
     } catch (error) {
       return handleError(error, "Failed to register non commercial social remixing PIL");
@@ -126,6 +120,9 @@ export class LicenseClient {
   }
 
   /**
+   * @deprecated Use {@link PILFlavor.commercialUse} with {@link LicenseClient.registerPILTerms} instead.
+   *  The method will be removed in the `v1.4.0`.
+   *
    * Convenient function to register a PIL commercial use license to the registry.
    *
    * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%232%3A-commercial-use | Commercial Use}.
@@ -136,12 +133,10 @@ export class LicenseClient {
     request: RegisterCommercialUsePILRequest,
   ): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_USE, {
-        defaultMintingFee: request.defaultMintingFee,
+      const licenseTerms = PILFlavor.commercialUse({
+        defaultMintingFee: Number(request.defaultMintingFee),
         currency: request.currency,
-        royaltyPolicyAddress: validateAddress(
-          request.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
-        ),
+        royaltyPolicy: request.royaltyPolicyAddress,
       });
       return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
     } catch (error) {
@@ -150,31 +145,39 @@ export class LicenseClient {
   }
 
   /**
+   * @deprecated Use {@link PILFlavor.commercialRemix} with {@link LicenseClient.registerPILTerms} instead.
+   *  The method will be removed in the v1.4.0.
+   *
    * Convenient function to register a PIL commercial Remix license to the registry.
    *
    * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%233%3A-commercial-remix | Commercial Remix }.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
    */
-  public async registerCommercialRemixPIL(
-    request: RegisterCommercialRemixPILRequest,
-  ): Promise<RegisterPILResponse> {
+  public async registerCommercialRemixPIL({
+    defaultMintingFee,
+    currency,
+    royaltyPolicyAddress,
+    commercialRevShare,
+    txOptions,
+  }: RegisterCommercialRemixPILRequest): Promise<RegisterPILResponse> {
     try {
-      const licenseTerms = getLicenseTermByType(PIL_TYPE.COMMERCIAL_REMIX, {
-        defaultMintingFee: request.defaultMintingFee,
-        currency: request.currency,
-        royaltyPolicyAddress: validateAddress(
-          request.royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
-        ),
-        commercialRevShare: request.commercialRevShare,
+      const licenseTerms = PILFlavor.commercialRemix({
+        defaultMintingFee: Number(defaultMintingFee),
+        currency,
+        royaltyPolicy: royaltyPolicyAddress,
+        commercialRevShare,
       });
-      return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
+      return await this.registerPILTermsHelper(licenseTerms, txOptions);
     } catch (error) {
       return handleError(error, "Failed to register commercial remix PIL");
     }
   }
 
   /**
+   * @deprecated Use {@link PILFlavor.creativeCommonsAttribution} with {@link LicenseClient.registerPILTerms} instead.
+   *  The method will be removed in the `v1.4.0`.
+   *
    * Convenient function to register a PIL creative commons attribution license to the registry.
    * Creates a Creative Commons Attribution (CC-BY) license terms flavor.
    *
@@ -189,9 +192,9 @@ export class LicenseClient {
   }: RegisterCreativeCommonsAttributionPILRequest): Promise<RegisterPILResponse> {
     try {
       return await this.registerPILTermsHelper(
-        getLicenseTermByType(PIL_TYPE.CREATIVE_COMMONS_ATTRIBUTION, {
+        PILFlavor.creativeCommonsAttribution({
           currency,
-          royaltyPolicyAddress: royaltyPolicyAddress || royaltyPolicyLapAddress[this.chainId],
+          royaltyPolicy: royaltyPolicyAddress,
         }),
         txOptions,
       );
@@ -277,7 +280,7 @@ export class LicenseClient {
           request.licenseTemplate || this.licenseTemplateClient.address,
         ),
         licenseTermsId: BigInt(request.licenseTermsId),
-        amount: BigInt(request.amount || 1),
+        amount: BigInt(request.amount === undefined ? 1 : request.amount),
         receiver,
         royaltyContext: zeroAddress,
         maxMintingFee: BigInt(request.maxMintingFee),
@@ -513,6 +516,7 @@ export class LicenseClient {
           licensingConfig: {
             ...licensingConfig,
             licensingHook: this.totalLicenseTokenLimitHookClient.address,
+            expectMinimumGroupRewardShare: licensingConfig.expectMinimumGroupRewardShare / 1000000,
           },
         });
       }

@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import {
   Address,
   encodeFunctionData,
@@ -17,6 +18,7 @@ import {
   DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  EncodedTxData,
   ipAccountImplAbi,
   IpAccountImplClient,
   IpAssetRegistryClient,
@@ -30,6 +32,7 @@ import {
   LicensingModuleClient,
   Multicall3Client,
   PiLicenseTemplateClient,
+  registrationWorkflowsAbi,
   RegistrationWorkflowsClient,
   RegistrationWorkflowsMintAndRegisterIpRequest,
   RegistrationWorkflowsRegisterIpRequest,
@@ -54,6 +57,8 @@ import {
   BatchMintAndRegisterIpAssetWithPilTermsRequest,
   BatchMintAndRegisterIpAssetWithPilTermsResponse,
   BatchMintAndRegisterIpAssetWithPilTermsResult,
+  BatchMintAndRegisterIpRequest,
+  BatchMintAndRegisterIpResponse,
   BatchRegisterDerivativeRequest,
   BatchRegisterDerivativeResponse,
   BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
@@ -105,13 +110,15 @@ import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import { getRevenueShare, validateLicenseTerms } from "../utils/licenseTermsHelper";
+import { PILFlavor } from "../utils/pilFlavor";
 import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
   getCalculatedDeadline,
   getIpIdAddress,
   getPublicMinting,
   getRoyaltyShares,
+  hasMinterRole,
+  mergeSpenders,
   validateDerivativeData,
   validateLicenseTermsData,
   validateMaxRts,
@@ -121,7 +128,9 @@ import {
   transferDistributeRoyaltyTokensRequest,
   transformRegistrationRequest,
 } from "../utils/registrationUtils/transformRegistrationRequest";
+import { getRevenueShare } from "../utils/royalty";
 import { validateAddress } from "../utils/utils";
+import { TransactionResponse } from "../types/options";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -422,8 +431,11 @@ export class IPAssetClient {
             arg.licenseTemplate || this.licenseTemplateClient.address,
             zeroAddress,
             BigInt(arg.maxMintingFee || 0),
-            Number(arg.maxRts || MAX_ROYALTY_TOKEN),
-            getRevenueShare(arg.maxRevenueShare || 100, RevShareType.MAX_REVENUE_SHARE),
+            Number(arg.maxRts === undefined ? MAX_ROYALTY_TOKEN : arg.maxRts),
+            getRevenueShare(
+              arg.maxRevenueShare === undefined ? 100 : arg.maxRevenueShare,
+              RevShareType.MAX_REVENUE_SHARE,
+            ),
           ],
         });
         const { result: state } = await ipAccount.state();
@@ -608,9 +620,9 @@ export class IPAssetClient {
         const licenseTerms: LicenseTerms[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
         for (let i = 0; i < licenseTermsData.length; i++) {
-          const licenseTerm = await validateLicenseTerms(
+          const licenseTerm = PILFlavor.validateLicenseTerms(
             licenseTermsData[i].terms,
-            this.rpcClient,
+            this.chainId,
           );
           licenseTerms.push(licenseTerm);
         }
@@ -874,6 +886,143 @@ export class IPAssetClient {
       });
     } catch (error) {
       return handleError(error, "Failed to mint and register IP");
+    }
+  }
+
+  /**
+   * Batch mints NFTs from SPGNFT collections and registers them as IP assets.
+   *
+   * Optimizes transaction processing by grouping requests and automatically selecting the most efficient multicall strategy:
+   * - Uses `multicall3` for public minting contracts.
+   * - Uses `SPG's multicall` for private minting contracts.
+   *
+   * @remark
+   * For private minting, verifies the `caller` has the `minter role` and avoids `multicall3` batching to ensure correct `msg.sender`.
+   *
+   * Automatically manages minting fees, including wrapping IP tokens into WIP tokens if balances are insufficient, and checks or sets allowances for all spenders as needed.
+   * The `multicall` and token handling behavior can be configured via `wipOptions`.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
+   */
+  public async batchMintAndRegisterIp(
+    request: BatchMintAndRegisterIpRequest,
+  ): Promise<BatchMintAndRegisterIpResponse> {
+    try {
+      const publicMintEncodedTxs: EncodedTxData[] = [];
+      let publicMintSpenders: Erc20Spender[] = [];
+      const privateMintEncodedTxs: EncodedTxData[] = [];
+      let privateMintSpenders: Erc20Spender[] = [];
+      let publicMintFeesTotal = 0n;
+      let privateMintFeesTotal = 0n;
+      for (const req of request.requests) {
+        const registrationRequest: RegistrationWorkflowsMintAndRegisterIpRequest = {
+          spgNftContract: validateAddress(req.spgNftContract),
+          recipient: validateAddress(req.recipient || this.walletAddress),
+          ipMetadata: getIpMetadataForWorkflow(req.ipMetadata),
+          allowDuplicates: req.allowDuplicates || true,
+        };
+        const isPublicMinting = await getPublicMinting(req.spgNftContract, this.rpcClient);
+        const nftMintFee = await calculateSPGWipMintFee(
+          new SpgnftImplReadOnlyClient(this.rpcClient, registrationRequest.spgNftContract),
+        );
+        const encodeTx = {
+          to: this.registrationWorkflowsClient.address,
+          data: encodeFunctionData({
+            abi: registrationWorkflowsAbi,
+            functionName: "mintAndRegisterIp",
+            args: [
+              registrationRequest.spgNftContract,
+              registrationRequest.recipient,
+              registrationRequest.ipMetadata,
+              registrationRequest.allowDuplicates,
+            ],
+          }),
+        };
+        if (isPublicMinting) {
+          publicMintFeesTotal += nftMintFee;
+          publicMintSpenders = mergeSpenders(publicMintSpenders, [
+            {
+              address: registrationRequest.spgNftContract,
+              amount: nftMintFee,
+            },
+          ]);
+          publicMintEncodedTxs.push(encodeTx);
+        } else {
+          const isMinterRole = await hasMinterRole(
+            registrationRequest.spgNftContract,
+            this.rpcClient,
+            this.walletAddress,
+          );
+          if (!isMinterRole) {
+            throw new Error(
+              `Caller ${this.walletAddress} does not have the minter role for ${registrationRequest.spgNftContract}`,
+            );
+          }
+          privateMintFeesTotal += nftMintFee;
+          privateMintSpenders = mergeSpenders(privateMintSpenders, [
+            {
+              address: registrationRequest.spgNftContract,
+              amount: nftMintFee,
+            },
+          ]);
+          privateMintEncodedTxs.push(encodeTx);
+        }
+      }
+
+      const handlePublicMintTransactions = async (): Promise<TransactionResponse> => {
+        return await contractCallWithFees({
+          totalFees: publicMintFeesTotal,
+          options: { wipOptions: request.wipOptions },
+          multicall3Address: this.multicall3Client.address,
+          rpcClient: this.rpcClient,
+          tokenSpenders: publicMintSpenders,
+          contractCall: () =>
+            this.registrationWorkflowsClient.multicall({
+              data: publicMintEncodedTxs.map((tx) => tx.data),
+            }),
+          sender: this.walletAddress,
+          wallet: this.wallet,
+          txOptions: request.txOptions,
+          encodedTxs: publicMintEncodedTxs,
+        });
+      };
+
+      const handlePrivateMintTransactions = async (): Promise<TransactionResponse> => {
+        return await contractCallWithFees({
+          totalFees: privateMintFeesTotal,
+          options: { wipOptions: { ...request.wipOptions, useMulticallWhenPossible: false } },
+          multicall3Address: this.multicall3Client.address,
+          rpcClient: this.rpcClient,
+          tokenSpenders: privateMintSpenders,
+          contractCall: () =>
+            this.registrationWorkflowsClient.multicall({
+              data: privateMintEncodedTxs.map((tx) => tx.data),
+            }),
+          sender: this.walletAddress,
+          wallet: this.wallet,
+          txOptions: request.txOptions,
+          encodedTxs: privateMintEncodedTxs,
+        });
+      };
+      let transactionResponses: TransactionResponse[] = [];
+      if (privateMintEncodedTxs.length === 0) {
+        transactionResponses = [await handlePublicMintTransactions()];
+      } else if (publicMintEncodedTxs.length === 0) {
+        transactionResponses = [await handlePrivateMintTransactions()];
+      } else {
+        const publicMintResponse = await handlePublicMintTransactions();
+        const privateMintResponse = await handlePrivateMintTransactions();
+        transactionResponses = [publicMintResponse, privateMintResponse];
+      }
+      return {
+        registrationResults: transactionResponses.map((r) => ({
+          txHash: r.txHash,
+          receipt: r.receipt,
+          ipIdsAndTokenIds: this.getIpIdAndTokenIdsFromEvent(r.receipt, "spgNftContract"),
+        })),
+      };
+    } catch (error) {
+      return handleError(error, "Failed to batch mint and register IP");
     }
   }
 

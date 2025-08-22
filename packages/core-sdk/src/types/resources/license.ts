@@ -3,6 +3,7 @@ import { Address, Hash, TransactionReceipt } from "viem";
 import { EncodedTxData } from "../../abi/generated";
 import { LicensingConfigInput } from "../common";
 import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
+import { RoyaltyPolicyInput } from "./royalty";
 
 export type LicenseApiResponse = {
   data: License;
@@ -41,7 +42,7 @@ export type LicenseTerms = {
   commercializerChecker: Address;
   /** The data to be passed to the commercializer checker contract. */
   commercializerCheckerData: Address;
-  /** *Percentage of revenue that must be shared with the licensor. Must be from 0-100. */
+  /** Percentage of revenue that must be shared with the licensor. */
   commercialRevShare: number;
   /** The maximum revenue that can be generated from the commercial use of the work. */
   commercialRevCeiling: bigint;
@@ -63,7 +64,12 @@ export type LicenseTerms = {
 
 export type LicenseTermsInput = Omit<
   LicenseTerms,
-  "defaultMintingFee" | "expiration" | "commercialRevCeiling" | "derivativeRevCeiling"
+  | "defaultMintingFee"
+  | "expiration"
+  | "commercialRevCeiling"
+  | "derivativeRevCeiling"
+  | "royaltyPolicy"
+  | "commercialRevShare"
 > & {
   /** The default minting fee to be paid when minting a license. */
   defaultMintingFee: bigint | string | number;
@@ -73,6 +79,17 @@ export type LicenseTermsInput = Omit<
   commercialRevCeiling: bigint | string | number;
   /** The maximum revenue that can be generated from the derivative use of the work. */
   derivativeRevCeiling: bigint | string | number;
+  /**
+   * The address of the royalty policy contract.
+   * @default LAP
+   */
+  royaltyPolicy?: RoyaltyPolicyInput;
+
+  /**
+   * Percentage of revenue that must be shared with the licensor.
+   * Must be between 0 and 100 (where 100% represents 100_000_000).
+   */
+  commercialRevShare: number;
 };
 
 export type RegisterPILTermsRequest = LicenseTermsInput & {
@@ -175,6 +192,11 @@ export type MintLicenseTokensResponse = {
   encodedTxData?: EncodedTxData;
 };
 
+/**
+ * @deprecated Use `PILFlavor.nonCommercialSocialRemixing`, `PILFlavor.commercialUse`, `PILFlavor.commercialRemix`, or `PILFlavor.creativeCommonsAttribution` instead.
+ *
+ * The type of PIL.
+ */
 export enum PIL_TYPE {
   NON_COMMERCIAL_REMIX,
   COMMERCIAL_USE,

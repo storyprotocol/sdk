@@ -559,3 +559,17 @@ export type ExtraData = {
   maxLicenseTokens?: (bigint | undefined)[];
   licenseTermsData?: LicenseTermsData[];
 };
+
+export type BatchMintAndRegisterIpRequest = {
+  requests: Omit<MintAndRegisterIpRequest, "txOptions" | "wipOptions">[];
+  wipOptions?: WipOptions;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+};
+
+export type BatchMintAndRegisterIpResponse = {
+  registrationResults: {
+    txHash: Hash;
+    ipIdsAndTokenIds: IpIdAndTokenId<"spgNftContract">[];
+    receipt: TransactionReceipt;
+  }[];
+};

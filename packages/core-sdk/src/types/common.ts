@@ -36,11 +36,17 @@ export type LicensingConfigInput = {
    * Set to a zero hash if no data is provided.
    */
   hookData: Hex;
-  /** The commercial revenue share percentage (from 0 to 100%, represented as 100_000_000). */
+  /**
+   * Percentage of revenue that must be shared with the licensor.
+   * Must be between 0 and 100 (where 100% represents 100_000_000).
+   */
   commercialRevShare: number | string;
   /** Whether the licensing is disabled or not. If this is true, then no licenses can be minted and no more derivatives can be attached at all. */
   disabled: boolean;
-  /** The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100_000_000) that can be allocated to the IP when it is added to the group. */
+  /**
+   * The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100_000_000) that can be allocated to the IP when it is added to the group.
+   * Must be between 0 and 100 (where 100% represents 100_000_000).
+   */
   expectMinimumGroupRewardShare: number | string;
   /** The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or zero address if the IP does not want to be added to any group. */
   expectGroupRewardPool: Address;
@@ -63,7 +69,9 @@ export type TokenAmountInput = bigint | number;
  * It is used to determine the type of revenue share to be used in the revenue share calculation and throw error when the revenue share is not valid.
  */
 export enum RevShareType {
-  COMMERCIAL_REVENUE_SHARE = "CommercialRevShare",
-  MAX_REVENUE_SHARE = "MaxRevenueShare",
-  MAX_ALLOWED_REWARD_SHARE = "MaxAllowedRewardShare",
+  COMMERCIAL_REVENUE_SHARE = "commercialRevShare",
+  MAX_REVENUE_SHARE = "maxRevenueShare",
+  MAX_ALLOWED_REWARD_SHARE = "maxAllowedRewardShare",
+  EXPECT_MINIMUM_GROUP_REWARD_SHARE = "expectMinimumGroupRewardShare",
+  MAX_ALLOWED_REWARD_SHARE_PERCENTAGE = "maxAllowedRewardSharePercentage",
 }

@@ -56,7 +56,7 @@ import { AccessPermission } from "../types/resources/permission";
 import { handleError } from "../utils/errors";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import { getRevenueShare } from "../utils/licenseTermsHelper";
+import { getRevenueShare } from "../utils/royalty";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
 import { waitForTxReceipt } from "../utils/txOptions";
 import { validateAddress, validateAddresses } from "../utils/utils";
@@ -491,8 +491,8 @@ export class GroupClient {
         ipIds: validateAddresses(ipIds),
         maxAllowedRewardShare: BigInt(
           getRevenueShare(
-            maxAllowedRewardSharePercentage || 100,
-            RevShareType.MAX_ALLOWED_REWARD_SHARE,
+            maxAllowedRewardSharePercentage === undefined ? 100 : maxAllowedRewardSharePercentage,
+            RevShareType.MAX_ALLOWED_REWARD_SHARE_PERCENTAGE,
           ),
         ),
       };

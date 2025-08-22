@@ -238,7 +238,10 @@ describe("License Functions", () => {
           ipId: ipId,
           licenseTermsId: licenseId,
         });
-        expect(result).to.deep.equal(licensingConfig);
+        expect(result).to.deep.equal({
+          ...licensingConfig,
+          expectMinimumGroupRewardShare: 1 * 10 ** 6,
+        });
       });
 
       it("should set max license tokens", async () => {

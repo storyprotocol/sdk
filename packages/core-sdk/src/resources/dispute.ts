@@ -69,7 +69,7 @@ export class DisputeClient {
           token: WIP_TOKEN_ADDRESS,
         }),
       ]);
-      const bonds = BigInt(request.bond || minimumBond);
+      const bonds = BigInt(request.bond === undefined ? minimumBond : request.bond);
       if (bonds > maximumBond || bonds < minimumBond) {
         throw new Error(`Bonds must be between ${minimumBond} and ${maximumBond}.`);
       }
