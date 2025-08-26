@@ -547,11 +547,14 @@ describe("IP Asset Functions", () => {
               expectGroupRewardPool: zeroAddress,
             },
           },
+          {
+            terms: PILFlavor.nonCommercialSocialRemixing(),
+          },
         ],
         deadline: 1000n,
       });
       expect(result.txHash).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.licenseTermsIds?.length).to.be.equal(2);
       expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
     it("should register PIL terms and attach with license terms max limit", async () => {

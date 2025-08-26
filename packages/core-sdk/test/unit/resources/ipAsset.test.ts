@@ -1930,6 +1930,26 @@ describe("Test IpAssetClient", () => {
         expectGroupRewardPool: zeroAddress,
       });
     });
+
+    it.only("should be called with expected values given PILFlavor.nonCommercialSocialRemixing", async () => {
+      const registerPilTermsAndAttachStub = stub(
+        ipAssetClient.licenseAttachmentWorkflowsClient,
+        "registerPilTermsAndAttach",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      await ipAssetClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: PILFlavor.nonCommercialSocialRemixing(),
+          },
+        ],
+      });
+      expect(registerPilTermsAndAttachStub.args[0][0].licenseTermsData[0].terms).to.deep.equal(
+        PILFlavor.nonCommercialSocialRemixing(),
+      );
+    });
   });
 
   describe("Test ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens", () => {
