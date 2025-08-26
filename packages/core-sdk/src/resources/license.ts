@@ -560,6 +560,7 @@ export class LicenseClient {
     licenseTerms: LicenseTerms,
     txOptions?: TxOptions,
   ): Promise<RegisterPILResponse> {
+    licenseTerms.commercialRevShare = getRevenueShare(licenseTerms.commercialRevShare);
     if (txOptions?.encodedTxDataOnly) {
       return {
         encodedTxData: this.licenseTemplateClient.registerLicenseTermsEncode({
