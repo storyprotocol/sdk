@@ -1,7 +1,7 @@
 import { zeroAddress } from "viem";
 
 import { PILFlavorError } from "./errors";
-import { getRevenueShare, royaltyPolicyInputToAddress } from "./royalty";
+import { royaltyPolicyInputToAddress } from "./royalty";
 import { SupportedChainIds } from "../types/config";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
@@ -218,10 +218,6 @@ export class PILFlavor {
     // Validate commercial use and derivatives
     this.verifyCommercialUse(normalized);
     this.verifyDerivatives(normalized);
-
-    // Validate and normalize commercialRevShare
-    normalized.commercialRevShare = getRevenueShare(normalized.commercialRevShare);
-
     return normalized;
   };
 
