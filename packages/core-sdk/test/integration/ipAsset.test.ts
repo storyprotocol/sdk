@@ -381,25 +381,10 @@ describe("IP Asset Functions", () => {
             },
           },
           {
-            terms: {
-              transferable: true,
-              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+            terms: PILFlavor.commercialUse({
               defaultMintingFee: 10000n,
-              expiration: 1000n,
-              commercialUse: true,
-              commercialAttribution: false,
-              commercializerChecker: zeroAddress,
-              commercializerCheckerData: zeroAddress,
-              commercialRevShare: 0,
-              commercialRevCeiling: 0n,
-              derivativesAllowed: true,
-              derivativesAttribution: true,
-              derivativesApproval: false,
-              derivativesReciprocal: true,
-              derivativeRevCeiling: 0n,
               currency: WIP_TOKEN_ADDRESS,
-              uri: "test case",
-            },
+            }),
             licensingConfig: {
               isSet: true,
               mintingFee: 10000n,

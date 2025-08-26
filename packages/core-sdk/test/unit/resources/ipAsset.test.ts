@@ -23,6 +23,7 @@ import {
   RoyaltyModuleEventClient,
   RoyaltyModuleReadOnlyClient,
   royaltyPolicyLapAddress,
+  royaltyPolicyLrpAddress,
   RoyaltyTokenDistributionWorkflowsClient,
   SpgnftImplReadOnlyClient,
 } from "../../../src/abi/generated";
@@ -1440,6 +1441,65 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(result.encodedTxData!.data).to.be.a("string");
+    });
+
+    it("should be called with expected values given PILFlavor.commercialUse", async () => {
+      stub(IpAssetRegistryClient.prototype, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 5n,
+      });
+      const mintAndRegisterIpAndAttachPilTermsStub = stub(
+        ipAssetClient.licenseAttachmentWorkflowsClient,
+        "registerIpAndAttachPilTerms",
+      ).resolves(txHash);
+      await ipAssetClient.registerIpAndAttachPilTerms({
+        nftContract: mockAddress,
+        tokenId: "3",
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialUse({
+              defaultMintingFee: 100n,
+              currency: mockAddress,
+              royaltyPolicy: NativeRoyaltyPolicy.LRP,
+            }),
+          },
+        ],
+      });
+      expect(
+        mintAndRegisterIpAndAttachPilTermsStub.args[0][0].licenseTermsData[0].terms,
+      ).to.deep.equal({
+        commercialAttribution: true,
+        commercialRevCeiling: 0n,
+        commercialRevShare: 0,
+        commercialUse: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        currency: mockAddress,
+        defaultMintingFee: 100n,
+        derivativeRevCeiling: 0n,
+        derivativesAllowed: false,
+        expiration: 0n,
+        derivativesApproval: false,
+        derivativesAttribution: false,
+        derivativesReciprocal: false,
+        royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
+        transferable: true,
+        uri: "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json",
+      });
     });
   });
 
