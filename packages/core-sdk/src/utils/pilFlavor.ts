@@ -218,6 +218,10 @@ export class PILFlavor {
     // Validate commercial use and derivatives
     this.verifyCommercialUse(normalized);
     this.verifyDerivatives(normalized);
+
+    if (normalized.commercialRevShare > 100 || normalized.commercialRevShare < 0) {
+      throw new PILFlavorError("commercialRevShare must be between 0 and 100.");
+    }
     return normalized;
   };
 

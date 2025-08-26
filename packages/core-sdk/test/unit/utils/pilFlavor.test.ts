@@ -470,6 +470,32 @@ describe("PILFlavor", () => {
       });
     });
 
+    describe("commercialRevShare validation", () => {
+      it("should throw error when commercialRevShare is greater than 100", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              commercialRevShare: 101,
+            },
+          });
+        }).to.throw("commercialRevShare must be between 0 and 100.");
+      });
+
+      it("should throw error when commercialRevShare is less than 0", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 0n,
+            currency: mockAddress,
+            override: {
+              commercialRevShare: -1,
+            },
+          });
+        }).to.throw("commercialRevShare must be between 0 and 100.");
+      });
+    });
+
     describe("numeric field normalization", () => {
       it("should normalize defaultMintingFee to BigInt", () => {
         const pil = PILFlavor.commercialUse({
