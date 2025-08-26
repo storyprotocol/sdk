@@ -763,6 +763,13 @@ describe("IP Asset Functions", () => {
                 expectGroupRewardPool: zeroAddress,
               },
             },
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 10,
+            },
           ],
           ipMetadata: {
             ipMetadataURI: "test-uri",
@@ -777,12 +784,11 @@ describe("IP Asset Functions", () => {
           ],
         },
       );
-
       expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string");
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
+      expect(result.licenseTermsIds?.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
     });
 
     it("should register IP and attach license terms and distribute royalty tokens with license terms max limit", async () => {
