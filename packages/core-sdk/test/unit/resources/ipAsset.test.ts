@@ -3,7 +3,13 @@ import chaiAsPromised from "chai-as-promised";
 import { SinonStub, stub } from "sinon";
 import { Address, PublicClient, toHex, WalletClient, zeroAddress, zeroHash } from "viem";
 
-import { IPAssetClient, LicenseTerms, StoryRelationship } from "../../../src";
+import {
+  IPAssetClient,
+  LicenseTerms,
+  NativeRoyaltyPolicy,
+  PILFlavor,
+  StoryRelationship,
+} from "../../../src";
 import {
   DerivativeWorkflowsClient,
   erc20Address,
@@ -1087,6 +1093,61 @@ describe("Test IpAssetClient", () => {
       });
       expect(result.maxLicenseTokensTxHashes).to.be.an("array");
       expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
+    });
+    it("should be called with expected values given PILFlavor.commercialRemix", async () => {
+      const mintAndRegisterIpAndAttachPilTermsStub = stub(
+        ipAssetClient.licenseAttachmentWorkflowsClient,
+        "mintAndRegisterIpAndAttachPilTerms",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: mockAddress,
+        allowDuplicates: false,
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 0n,
+              currency: mockAddress,
+              commercialRevShare: 90,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              override: {
+                commercialRevShare: 10,
+              },
+            }),
+          },
+        ],
+      });
+      expect(
+        mintAndRegisterIpAndAttachPilTermsStub.args[0][0].licenseTermsData[0].terms,
+      ).to.deep.equal({
+        commercialAttribution: true,
+        commercialRevCeiling: 0n,
+        commercialRevShare: 10 * 10 ** 6,
+        commercialUse: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        currency: mockAddress,
+        defaultMintingFee: 0n,
+        derivativeRevCeiling: 0n,
+        derivativesAllowed: true,
+        derivativesApproval: false,
+        derivativesAttribution: true,
+        derivativesReciprocal: true,
+        expiration: 0n,
+        royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+        transferable: true,
+        uri: "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json",
+      });
     });
   });
 

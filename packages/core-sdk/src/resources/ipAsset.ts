@@ -527,12 +527,6 @@ export class IPAssetClient {
     request: MintAndRegisterIpAssetWithPilTermsRequest,
   ): Promise<MintAndRegisterIpAssetWithPilTermsResponse> {
     try {
-      const { licenseTerms } = await validateLicenseTermsData(
-        request.licenseTermsData,
-        this.rpcClient,
-        this.chainId,
-      );
-
       const { transformRequest } =
         await transformRegistrationRequest<LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest>(
           {
@@ -564,7 +558,9 @@ export class IPAssetClient {
         contractCall,
         txOptions: request.txOptions,
       });
-      const computedLicenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+      const computedLicenseTermsIds = await this.getLicenseTermsId(
+        transformRequest.licenseTermsData.map((data) => data.terms),
+      );
       const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
         maxLicenseTokensData: request.licenseTermsData,
         licensorIpId: rsp.ipId!,

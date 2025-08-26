@@ -2,7 +2,7 @@ import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, Hex, maxUint256, toHex, zeroAddress, zeroHash } from "viem";
 
-import { IpRegistrationWorkflowRequest, StoryClient } from "../../src";
+import { IpRegistrationWorkflowRequest, PILFlavor, StoryClient } from "../../src";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import {
   aeneid,
@@ -1432,12 +1432,21 @@ describe("IP Asset Functions", () => {
               expectGroupRewardPool: pool,
             },
           },
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 6n,
+              currency: WIP_TOKEN_ADDRESS,
+              commercialRevShare: 90,
+            }),
+            maxLicenseTokens: 100,
+          },
         ],
       });
       expect(result.ipId).to.be.a("string");
       expect(result.tokenId).to.be.a("bigint");
       expect(result.txHash).to.be.a("string");
-      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.licenseTermsIds?.length).to.be.equal(2);
       parentIpId = result.ipId!;
       licenseTermsId = result.licenseTermsIds![0];
     });
@@ -1815,25 +1824,11 @@ describe("IP Asset Functions", () => {
                 maxLicenseTokens: 100,
               },
               {
-                terms: {
-                  transferable: true,
-                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                  defaultMintingFee: 80n,
-                  expiration: 0n,
-                  commercialUse: true,
-                  commercialAttribution: false,
-                  commercializerChecker: zeroAddress,
-                  commercializerCheckerData: zeroAddress,
-                  commercialRevShare: 0,
-                  commercialRevCeiling: 0n,
-                  derivativesAllowed: true,
-                  derivativesAttribution: true,
-                  derivativesApproval: false,
-                  derivativesReciprocal: true,
-                  derivativeRevCeiling: 0n,
+                terms: PILFlavor.commercialRemix({
+                  defaultMintingFee: 100n,
+                  commercialRevShare: 10,
                   currency: WIP_TOKEN_ADDRESS,
-                  uri: "",
-                },
+                }),
                 licensingConfig: {
                   isSet: true,
                   mintingFee: 100n,
