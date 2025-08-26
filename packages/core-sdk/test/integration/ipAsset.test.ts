@@ -1094,25 +1094,10 @@ describe("IP Asset Functions", () => {
               },
             },
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 10000n,
-                expiration: 1000n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
+              terms: PILFlavor.creativeCommonsAttribution({
                 currency: WIP_TOKEN_ADDRESS,
-                uri: "test case",
-              },
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
             },
             {
               terms: {
@@ -1156,7 +1141,7 @@ describe("IP Asset Functions", () => {
 
       expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.licenseTermsIds?.length).to.be.equal(3);
       expect(result.maxLicenseTokensTxHashes).to.be.an("array");
       expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
     });
