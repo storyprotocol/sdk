@@ -94,6 +94,14 @@ export type SignatureRequest = {
   to: Address;
   encodeData: Hex;
   wallet: SimpleWalletClient;
+  /**
+   * The IP ID (address) of the IP Account that will verify the signature.
+   * 
+   * Note: IP ID is the address of a specific IP Account's proxy contract.
+   * Each IP Account has its own unique IP ID address.
+   * 
+   * @see https://docs.story.foundation/docs/ip-account for more details
+   */
   verifyingContract: Address;
   /** The deadline for the signature in seconds. */
   deadline: bigint | number | string;
