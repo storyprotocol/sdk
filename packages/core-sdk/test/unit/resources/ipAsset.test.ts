@@ -3,7 +3,13 @@ import chaiAsPromised from "chai-as-promised";
 import { SinonStub, stub } from "sinon";
 import { Address, PublicClient, toHex, WalletClient, zeroAddress, zeroHash } from "viem";
 
-import { IPAssetClient, LicenseTerms, StoryRelationship } from "../../../src";
+import {
+  IPAssetClient,
+  LicenseTerms,
+  NativeRoyaltyPolicy,
+  PILFlavor,
+  StoryRelationship,
+} from "../../../src";
 import {
   DerivativeWorkflowsClient,
   erc20Address,
@@ -17,6 +23,7 @@ import {
   RoyaltyModuleEventClient,
   RoyaltyModuleReadOnlyClient,
   royaltyPolicyLapAddress,
+  royaltyPolicyLrpAddress,
   RoyaltyTokenDistributionWorkflowsClient,
   SpgnftImplReadOnlyClient,
 } from "../../../src/abi/generated";
@@ -1088,6 +1095,61 @@ describe("Test IpAssetClient", () => {
       expect(result.maxLicenseTokensTxHashes).to.be.an("array");
       expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
     });
+    it("should be called with expected values given PILFlavor.commercialRemix", async () => {
+      const mintAndRegisterIpAndAttachPilTermsStub = stub(
+        ipAssetClient.licenseAttachmentWorkflowsClient,
+        "mintAndRegisterIpAndAttachPilTerms",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      await ipAssetClient.mintAndRegisterIpAssetWithPilTerms({
+        spgNftContract: mockAddress,
+        allowDuplicates: false,
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 0n,
+              currency: mockAddress,
+              commercialRevShare: 90,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              override: {
+                commercialRevShare: 10,
+              },
+            }),
+          },
+        ],
+      });
+      expect(
+        mintAndRegisterIpAndAttachPilTermsStub.args[0][0].licenseTermsData[0].terms,
+      ).to.deep.equal({
+        commercialAttribution: true,
+        commercialRevCeiling: 0n,
+        commercialRevShare: 10 * 10 ** 6,
+        commercialUse: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        currency: mockAddress,
+        defaultMintingFee: 0n,
+        derivativeRevCeiling: 0n,
+        derivativesAllowed: true,
+        derivativesApproval: false,
+        derivativesAttribution: true,
+        derivativesReciprocal: true,
+        expiration: 0n,
+        royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+        transferable: true,
+        uri: "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json",
+      });
+    });
   });
 
   describe("Test ipAssetClient.registerDerivativeIp", () => {
@@ -1379,6 +1441,65 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(result.encodedTxData!.data).to.be.a("string");
+    });
+
+    it("should be called with expected values given PILFlavor.commercialUse", async () => {
+      stub(IpAssetRegistryClient.prototype, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 5n,
+      });
+      const mintAndRegisterIpAndAttachPilTermsStub = stub(
+        ipAssetClient.licenseAttachmentWorkflowsClient,
+        "registerIpAndAttachPilTerms",
+      ).resolves(txHash);
+      await ipAssetClient.registerIpAndAttachPilTerms({
+        nftContract: mockAddress,
+        tokenId: "3",
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialUse({
+              defaultMintingFee: 100n,
+              currency: mockAddress,
+              royaltyPolicy: NativeRoyaltyPolicy.LRP,
+            }),
+          },
+        ],
+      });
+      expect(
+        mintAndRegisterIpAndAttachPilTermsStub.args[0][0].licenseTermsData[0].terms,
+      ).to.deep.equal({
+        commercialAttribution: true,
+        commercialRevCeiling: 0n,
+        commercialRevShare: 0,
+        commercialUse: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        currency: mockAddress,
+        defaultMintingFee: 100n,
+        derivativeRevCeiling: 0n,
+        derivativesAllowed: false,
+        expiration: 0n,
+        derivativesApproval: false,
+        derivativesAttribution: false,
+        derivativesReciprocal: false,
+        royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
+        transferable: true,
+        uri: "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json",
+      });
     });
   });
 
@@ -1808,6 +1929,26 @@ describe("Test IpAssetClient", () => {
         expectMinimumGroupRewardShare: 0,
         expectGroupRewardPool: zeroAddress,
       });
+    });
+
+    it("should be called with expected values given PILFlavor.nonCommercialSocialRemixing", async () => {
+      const registerPilTermsAndAttachStub = stub(
+        ipAssetClient.licenseAttachmentWorkflowsClient,
+        "registerPilTermsAndAttach",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      await ipAssetClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: PILFlavor.nonCommercialSocialRemixing(),
+          },
+        ],
+      });
+      expect(registerPilTermsAndAttachStub.args[0][0].licenseTermsData[0].terms).to.deep.equal(
+        PILFlavor.nonCommercialSocialRemixing(),
+      );
     });
   });
 
@@ -2868,6 +3009,89 @@ describe("Test IpAssetClient", () => {
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
     });
+
+    it("should be called with expected values given PILFlavor.creativeCommonsAttribution", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      stub(IpAssetRegistryClient.prototype, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+
+      const registerIpAndAttachPilTermsAndDeployRoyaltyVaultStub = stub(
+        ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+        "registerIpAndAttachPilTermsAndDeployRoyaltyVault",
+      ).resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 8n,
+      });
+
+      stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent").returns([
+        {
+          ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
+      ]);
+
+      stub(
+        ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+        "distributeRoyaltyTokens",
+      ).resolves(txHash);
+
+      await ipAssetClient.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        nftContract: spgNftContract,
+        tokenId: "1",
+        licenseTermsData: [
+          {
+            terms: PILFlavor.creativeCommonsAttribution({
+              currency: mockAddress,
+              royaltyPolicy: mockAddress,
+            }),
+          },
+        ],
+        royaltyShares: [
+          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+        ],
+        ipMetadata: {
+          ipMetadataURI: "",
+          ipMetadataHash: toHex(0, { size: 32 }),
+          nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+          nftMetadataURI: "",
+        },
+      });
+      expect(
+        registerIpAndAttachPilTermsAndDeployRoyaltyVaultStub.args[0][0].licenseTermsData[0].terms,
+      ).to.deep.equal({
+        commercialUse: true,
+        commercialAttribution: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        commercialRevShare: 0,
+        commercialRevCeiling: 0n,
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        derivativeRevCeiling: 0n,
+        currency: mockAddress,
+        uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
+        defaultMintingFee: 0n,
+        expiration: 0n,
+        royaltyPolicy: mockAddress,
+        transferable: true,
+      });
+    });
   });
 
   describe("Test ipAssetClient.registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens", () => {
@@ -3479,6 +3703,67 @@ describe("Test IpAssetClient", () => {
       expect(
         mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub.args[0][0].recipient,
       ).to.equal(walletAddress);
+    });
+    it("should call with expected license terms with PILFlavor.creativeCommonsAttribution", async () => {
+      const mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub = stub(
+        ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+        "mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens",
+      ).resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+
+      stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent").returns([
+        {
+          ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
+      ]);
+      await ipAssetClient.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
+        spgNftContract,
+        licenseTermsData: [
+          {
+            terms: PILFlavor.creativeCommonsAttribution({
+              currency: mockAddress,
+              royaltyPolicy: mockAddress,
+            }),
+          },
+        ],
+        royaltyShares: [
+          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+        ],
+      });
+
+      expect(
+        mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub.args[0][0]
+          .licenseTermsData[0].terms,
+      ).to.deep.equal({
+        commercialUse: true,
+        commercialAttribution: true,
+        commercializerChecker: zeroAddress,
+        commercializerCheckerData: zeroAddress,
+        commercialRevShare: 0,
+        commercialRevCeiling: 0n,
+        derivativesAllowed: true,
+        derivativesAttribution: true,
+        derivativesApproval: false,
+        derivativesReciprocal: true,
+        derivativeRevCeiling: 0n,
+        currency: mockAddress,
+        uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
+        defaultMintingFee: 0n,
+        expiration: 0n,
+        royaltyPolicy: mockAddress,
+        transferable: true,
+      });
     });
   });
 

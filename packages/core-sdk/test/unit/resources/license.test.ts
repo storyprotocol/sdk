@@ -248,6 +248,59 @@ describe("Test LicenseClient", () => {
         (registerLicenseTermsStub.firstCall.args[0] as { terms: LicenseTerms }).terms,
       ).to.have.property("royaltyPolicy", "0x9156e603C949481883B1d3355c6f1132D191fC41");
     });
+    it("should throw error when commercialRevShare is more than 100", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      await expect(
+        licenseClient.registerPILTerms({
+          ...licenseTerms,
+          commercialRevShare: 101,
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register license terms: commercialRevShare must be between 0 and 100.",
+      );
+    });
+    it("should throw error when commercialRevShare is less than 0", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      await expect(
+        licenseClient.registerPILTerms({
+          ...licenseTerms,
+          commercialRevShare: -1,
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register license terms: commercialRevShare must be between 0 and 100.",
+      );
+    });
+
+    it("should transfer commercialRevShare when commercialRevShare is not normalized", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      const registerLicenseTermsStub = stub(
+        licenseClient.licenseTemplateClient,
+        "registerLicenseTerms",
+      ).resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
+
+      await licenseClient.registerPILTerms({
+        ...licenseTerms,
+        commercialRevShare: 100,
+      });
+
+      expect(registerLicenseTermsStub.firstCall.args[0].terms.commercialRevShare).to.equal(
+        100 * 10 ** 6,
+      );
+    });
   });
   describe("Test licenseClient.registerNonComSocialRemixingPIL", () => {
     it("should return licenseTermsId when call registerNonComSocialRemixingPIL given licenseTermsId is registered", async () => {
@@ -316,6 +369,27 @@ describe("Test LicenseClient", () => {
         to: zeroAddress,
         data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
+    });
+    it("should transfer commercialRevShare when commercialRevShare is not normalized", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      const registerLicenseTermsStub = stub(
+        licenseClient.licenseTemplateClient,
+        "registerLicenseTerms",
+      ).resolves(txHash);
+
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
+
+      await licenseClient.registerNonComSocialRemixingPIL();
+
+      expect(registerLicenseTermsStub.firstCall.args[0].terms.commercialRevShare).to.equal(0);
     });
   });
 
@@ -398,6 +472,29 @@ describe("Test LicenseClient", () => {
         to: zeroAddress,
         data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
+    });
+    it("should transfer commercialRevShare when commercialRevShare is not normalized", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
+      const registerLicenseTermsStub = stub(
+        licenseClient.licenseTemplateClient,
+        "registerLicenseTerms",
+      ).resolves(txHash);
+
+      await licenseClient.registerCommercialUsePIL({
+        defaultMintingFee: "1",
+        currency: mockAddress,
+      });
+
+      expect(registerLicenseTermsStub.firstCall.args[0].terms.commercialRevShare).to.equal(0);
     });
   });
 
@@ -483,6 +580,59 @@ describe("Test LicenseClient", () => {
         to: zeroAddress,
         data: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
+    });
+
+    it("should throw error when commercialRevShare is more than 100", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      await expect(
+        licenseClient.registerCommercialRemixPIL({
+          defaultMintingFee: "1",
+          currency: mockAddress,
+          commercialRevShare: 101,
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register commercial remix PIL: commercialRevShare must be between 0 and 100.",
+      );
+    });
+    it("should throw error when commercialRevShare is less than 0", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      await expect(
+        licenseClient.registerCommercialRemixPIL({
+          defaultMintingFee: "1",
+          currency: mockAddress,
+          commercialRevShare: -1,
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register commercial remix PIL: commercialRevShare must be between 0 and 100.",
+      );
+    });
+    it("should transfer commercialRevShare when commercialRevShare is not normalized", async () => {
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: BigInt(0),
+      });
+      stub(licenseClient.licenseTemplateClient, "parseTxLicenseTermsRegisteredEvent").returns([
+        {
+          licenseTermsId: BigInt(1),
+          licenseTemplate: zeroAddress,
+          licenseTerms: zeroAddress,
+        },
+      ]);
+      const registerLicenseTermsStub = stub(
+        licenseClient.licenseTemplateClient,
+        "registerLicenseTerms",
+      ).resolves(txHash);
+
+      await licenseClient.registerCommercialRemixPIL({
+        defaultMintingFee: "1",
+        commercialRevShare: 10,
+        currency: mockAddress,
+      });
+
+      expect(registerLicenseTermsStub.firstCall.args[0].terms.commercialRevShare).to.equal(10 * 10 ** 6);
     });
   });
 

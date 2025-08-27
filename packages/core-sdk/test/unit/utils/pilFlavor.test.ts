@@ -101,7 +101,7 @@ describe("PILFlavor", () => {
       expect(pil).deep.equal({
         commercialAttribution: true,
         commercialRevCeiling: 0n,
-        commercialRevShare: 10000000,
+        commercialRevShare: 10,
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
@@ -130,7 +130,7 @@ describe("PILFlavor", () => {
       expect(pil).deep.equal({
         commercialAttribution: true,
         commercialRevCeiling: 0n,
-        commercialRevShare: 10_000_000,
+        commercialRevShare: 10,
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
@@ -165,7 +165,7 @@ describe("PILFlavor", () => {
       expect(pil).deep.equal({
         commercialAttribution: true,
         commercialRevCeiling: 0n,
-        commercialRevShare: 1_000_000,
+        commercialRevShare: 1,
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
@@ -231,7 +231,7 @@ describe("PILFlavor", () => {
         commercialAttribution: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        commercialRevShare: 100_000_000,
+        commercialRevShare: 100,
         commercialRevCeiling: 0n,
         derivativesAllowed: true,
         derivativesAttribution: true,
@@ -471,70 +471,28 @@ describe("PILFlavor", () => {
     });
 
     describe("commercialRevShare validation", () => {
-      it("should throw error when commercialRevShare is negative", () => {
-        expect(() => {
-          PILFlavor.commercialRemix({
-            defaultMintingFee: 0n,
-            currency: mockAddress,
-            commercialRevShare: -1,
-          });
-        }).to.throw("commercialRevShare must be between 0 and 100.");
-      });
-
       it("should throw error when commercialRevShare is greater than 100", () => {
         expect(() => {
-          PILFlavor.commercialRemix({
+          PILFlavor.commercialUse({
             defaultMintingFee: 0n,
             currency: mockAddress,
-            commercialRevShare: 101,
+            override: {
+              commercialRevShare: 101,
+            },
           });
         }).to.throw("commercialRevShare must be between 0 and 100.");
       });
 
-      it("should throw error when commercialRevShare is NaN", () => {
+      it("should throw error when commercialRevShare is less than 0", () => {
         expect(() => {
-          PILFlavor.commercialRemix({
+          PILFlavor.commercialUse({
             defaultMintingFee: 0n,
             currency: mockAddress,
-            commercialRevShare: NaN,
+            override: {
+              commercialRevShare: -1,
+            },
           });
-        }).to.throw("commercialRevShare must be a valid number.");
-      });
-
-      it("should convert 0% to 0 basis points", () => {
-        const pil = PILFlavor.commercialRemix({
-          defaultMintingFee: 0n,
-          currency: mockAddress,
-          commercialRevShare: 0,
-        });
-        expect(pil.commercialRevShare).to.equal(0);
-      });
-
-      it("should convert 1% to 10000 basis points", () => {
-        const pil = PILFlavor.commercialRemix({
-          defaultMintingFee: 0n,
-          currency: mockAddress,
-          commercialRevShare: 1,
-        });
-        expect(pil.commercialRevShare).to.equal(1_000_000);
-      });
-
-      it("should convert 100% to 1000000 basis points", () => {
-        const pil = PILFlavor.commercialRemix({
-          defaultMintingFee: 0n,
-          currency: mockAddress,
-          commercialRevShare: 100,
-        });
-        expect(pil.commercialRevShare).to.equal(100_000_000);
-      });
-
-      it("should round fractional percentages correctly", () => {
-        const pil = PILFlavor.commercialRemix({
-          defaultMintingFee: 0n,
-          currency: mockAddress,
-          commercialRevShare: 33.33,
-        });
-        expect(pil.commercialRevShare).to.equal(33_330_000);
+        }).to.throw("commercialRevShare must be between 0 and 100.");
       });
     });
 
@@ -546,7 +504,6 @@ describe("PILFlavor", () => {
         });
         expect(pil.defaultMintingFee).to.equal(100n);
       });
-
       it("should normalize expiration to BigInt", () => {
         const pil = PILFlavor.commercialUse({
           defaultMintingFee: 0n,

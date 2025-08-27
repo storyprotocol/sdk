@@ -1,7 +1,7 @@
 import { zeroAddress } from "viem";
 
 import { PILFlavorError } from "./errors";
-import { getRevenueShare, royaltyPolicyInputToAddress } from "./royalty";
+import { royaltyPolicyInputToAddress } from "./royalty";
 import { SupportedChainIds } from "../types/config";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
@@ -219,9 +219,9 @@ export class PILFlavor {
     this.verifyCommercialUse(normalized);
     this.verifyDerivatives(normalized);
 
-    // Validate and normalize commercialRevShare
-    normalized.commercialRevShare = getRevenueShare(normalized.commercialRevShare);
-
+    if (normalized.commercialRevShare > 100 || normalized.commercialRevShare < 0) {
+      throw new PILFlavorError("commercialRevShare must be between 0 and 100.");
+    }
     return normalized;
   };
 

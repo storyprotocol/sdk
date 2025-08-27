@@ -2,7 +2,12 @@ import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Address, Hex, maxUint256, toHex, zeroAddress, zeroHash } from "viem";
 
-import { IpRegistrationWorkflowRequest, StoryClient } from "../../src";
+import {
+  IpRegistrationWorkflowRequest,
+  NativeRoyaltyPolicy,
+  PILFlavor,
+  StoryClient,
+} from "../../src";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import {
   aeneid,
@@ -381,25 +386,10 @@ describe("IP Asset Functions", () => {
             },
           },
           {
-            terms: {
-              transferable: true,
-              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+            terms: PILFlavor.commercialUse({
               defaultMintingFee: 10000n,
-              expiration: 1000n,
-              commercialUse: true,
-              commercialAttribution: false,
-              commercializerChecker: zeroAddress,
-              commercializerCheckerData: zeroAddress,
-              commercialRevShare: 0,
-              commercialRevCeiling: 0n,
-              derivativesAllowed: true,
-              derivativesAttribution: true,
-              derivativesApproval: false,
-              derivativesReciprocal: true,
-              derivativeRevCeiling: 0n,
               currency: WIP_TOKEN_ADDRESS,
-              uri: "test case",
-            },
+            }),
             licensingConfig: {
               isSet: true,
               mintingFee: 10000n,
@@ -562,11 +552,14 @@ describe("IP Asset Functions", () => {
               expectGroupRewardPool: zeroAddress,
             },
           },
+          {
+            terms: PILFlavor.nonCommercialSocialRemixing(),
+          },
         ],
         deadline: 1000n,
       });
       expect(result.txHash).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.licenseTermsIds?.length).to.be.equal(2);
       expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
     });
     it("should register PIL terms and attach with license terms max limit", async () => {
@@ -775,6 +768,13 @@ describe("IP Asset Functions", () => {
                 expectGroupRewardPool: zeroAddress,
               },
             },
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 10,
+            },
           ],
           ipMetadata: {
             ipMetadataURI: "test-uri",
@@ -789,12 +789,11 @@ describe("IP Asset Functions", () => {
           ],
         },
       );
-
       expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string");
       expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
+      expect(result.licenseTermsIds?.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
     });
 
     it("should register IP and attach license terms and distribute royalty tokens with license terms max limit", async () => {
@@ -1100,25 +1099,10 @@ describe("IP Asset Functions", () => {
               },
             },
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 10000n,
-                expiration: 1000n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
+              terms: PILFlavor.creativeCommonsAttribution({
                 currency: WIP_TOKEN_ADDRESS,
-                uri: "test case",
-              },
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
             },
             {
               terms: {
@@ -1162,7 +1146,7 @@ describe("IP Asset Functions", () => {
 
       expect(result.txHash).to.be.a("string");
       expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.licenseTermsIds?.length).to.be.equal(3);
       expect(result.maxLicenseTokensTxHashes).to.be.an("array");
       expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
     });
@@ -1432,12 +1416,21 @@ describe("IP Asset Functions", () => {
               expectGroupRewardPool: pool,
             },
           },
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 6n,
+              currency: WIP_TOKEN_ADDRESS,
+              commercialRevShare: 90,
+            }),
+            maxLicenseTokens: 100,
+          },
         ],
       });
       expect(result.ipId).to.be.a("string");
       expect(result.tokenId).to.be.a("bigint");
       expect(result.txHash).to.be.a("string");
-      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.licenseTermsIds?.length).to.be.equal(2);
       parentIpId = result.ipId!;
       licenseTermsId = result.licenseTermsIds![0];
     });
@@ -1815,25 +1808,11 @@ describe("IP Asset Functions", () => {
                 maxLicenseTokens: 100,
               },
               {
-                terms: {
-                  transferable: true,
-                  royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                  defaultMintingFee: 80n,
-                  expiration: 0n,
-                  commercialUse: true,
-                  commercialAttribution: false,
-                  commercializerChecker: zeroAddress,
-                  commercializerCheckerData: zeroAddress,
-                  commercialRevShare: 0,
-                  commercialRevCeiling: 0n,
-                  derivativesAllowed: true,
-                  derivativesAttribution: true,
-                  derivativesApproval: false,
-                  derivativesReciprocal: true,
-                  derivativeRevCeiling: 0n,
+                terms: PILFlavor.commercialRemix({
+                  defaultMintingFee: 100n,
+                  commercialRevShare: 10,
                   currency: WIP_TOKEN_ADDRESS,
-                  uri: "",
-                },
+                }),
                 licensingConfig: {
                   isSet: true,
                   mintingFee: 100n,
@@ -2255,25 +2234,18 @@ describe("IP Asset Functions", () => {
               maxLicenseTokens: 1000n,
             },
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 3n,
-                expiration: 0n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 90,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
+              terms: PILFlavor.commercialUse({
                 currency: WIP_TOKEN_ADDRESS,
-                uri: "",
-              },
+                royaltyPolicy: NativeRoyaltyPolicy.LAP,
+                defaultMintingFee: 3n,
+                override: {
+                  commercialRevShare: 90,
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesReciprocal: true,
+                  commercialAttribution: false,
+                },
+              }),
               licensingConfig: {
                 isSet: true,
                 mintingFee: 3n,
@@ -2298,25 +2270,18 @@ describe("IP Asset Functions", () => {
           allowDuplicates: true,
           licenseTermsData: [
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 0n,
-                expiration: 0n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 90,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
+              terms: PILFlavor.commercialRemix({
                 currency: WIP_TOKEN_ADDRESS,
-                uri: "",
-              },
+                royaltyPolicy: NativeRoyaltyPolicy.LAP,
+                defaultMintingFee: 0n,
+                commercialRevShare: 90,
+                override: {
+                  derivativesAllowed: true,
+                  derivativesAttribution: true,
+                  derivativesReciprocal: true,
+                  commercialAttribution: false,
+                },
+              }),
               licensingConfig: {
                 isSet: true,
                 mintingFee: 0n,
@@ -2405,25 +2370,17 @@ describe("IP Asset Functions", () => {
               maxLicenseTokens: 80n,
             },
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 100n,
-                expiration: 1000n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
+              terms: PILFlavor.commercialRemix({
                 currency: WIP_TOKEN_ADDRESS,
-                uri: "test case",
-              },
+                royaltyPolicy: NativeRoyaltyPolicy.LAP,
+                defaultMintingFee: 100n,
+                commercialRevShare: 0,
+                override: {
+                  derivativesReciprocal: true,
+                  commercialAttribution: false,
+                  expiration: 1000n,
+                },
+              }),
               maxLicenseTokens: 10n,
             },
           ],
@@ -2443,25 +2400,13 @@ describe("IP Asset Functions", () => {
           spgNftContract: spgNftContractWithPrivateMinting,
           licenseTermsData: [
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 10000n,
-                expiration: 1000n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
+              terms: PILFlavor.creativeCommonsAttribution({
                 currency: WIP_TOKEN_ADDRESS,
-                uri: "test case",
-              },
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+                override: {
+                  defaultMintingFee: 10000n,
+                },
+              }),
             },
           ],
           royaltyShares: [
@@ -2607,25 +2552,12 @@ describe("IP Asset Functions", () => {
           deadline: 1000n,
           licenseTermsData: [
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: zeroAddress,
-                defaultMintingFee: 0n,
-                expiration: 0n,
-                commercialUse: false,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
+              terms: PILFlavor.commercialRemix({
                 currency: WIP_TOKEN_ADDRESS,
-                uri: "",
-              },
+                royaltyPolicy: NativeRoyaltyPolicy.LAP,
+                defaultMintingFee: 0n,
+                commercialRevShare: 100,
+              }),
               licensingConfig: {
                 isSet: true,
                 mintingFee: 0n,
@@ -2715,25 +2647,10 @@ describe("IP Asset Functions", () => {
               maxLicenseTokens: 10n,
             },
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-                defaultMintingFee: 0n,
-                expiration: 1000n,
-                commercialUse: true,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
+              terms: PILFlavor.creativeCommonsAttribution({
                 currency: erc20Address[aeneid],
-                uri: "test case",
-              },
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
               licensingConfig: {
                 isSet: true,
                 mintingFee: 6n,
@@ -3068,25 +2985,12 @@ describe("IP Asset Functions", () => {
           deadline: 1000n,
           licenseTermsData: [
             {
-              terms: {
-                transferable: true,
-                royaltyPolicy: zeroAddress,
-                defaultMintingFee: 0n,
-                expiration: 0n,
-                commercialUse: false,
-                commercialAttribution: false,
-                commercializerChecker: zeroAddress,
-                commercializerCheckerData: zeroAddress,
-                commercialRevShare: 0,
-                commercialRevCeiling: 0n,
-                derivativesAllowed: true,
-                derivativesAttribution: true,
-                derivativesApproval: false,
-                derivativesReciprocal: true,
-                derivativeRevCeiling: 0n,
+              terms: PILFlavor.commercialRemix({
                 currency: WIP_TOKEN_ADDRESS,
-                uri: "",
-              },
+                royaltyPolicy: NativeRoyaltyPolicy.LAP,
+                defaultMintingFee: 0n,
+                commercialRevShare: 100,
+              }),
               licensingConfig: {
                 isSet: true,
                 mintingFee: 0n,

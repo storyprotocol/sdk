@@ -51,6 +51,7 @@ export const validateLicenseTermsData = async (
   const maxLicenseTokens: bigint[] = [];
   for (let i = 0; i < licenseTermsData.length; i++) {
     const licenseTerm = PILFlavor.validateLicenseTerms(licenseTermsData[i].terms, chainId);
+    licenseTerm.commercialRevShare = getRevenueShare(licenseTerm.commercialRevShare);
     const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
     if (validateAddress(licenseTerm.royaltyPolicy) !== zeroAddress) {
       const isWhitelistedArbitrationPolicy =
