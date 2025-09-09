@@ -97,6 +97,7 @@ import {
   RegisterIpAndMakeDerivativeResponse,
   RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   RegisterIpAssetRequest,
+  RegisterIpAssetResponse,
   RegisterIpResponse,
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
@@ -1684,9 +1685,9 @@ export class IPAssetClient {
    * @throws {Error} If royalty shares are required when registering IP with license terms data.
    *
    */
-  public async registerIpAsset(
-    request: RegisterIpAssetRequest<MintedNFT | MintNFT>,
-  ): Promise<RegisterIpResponse> {
+  public async registerIpAsset<T extends RegisterIpAssetRequest<MintedNFT | MintNFT>>(
+    request: T,
+  ): Promise<RegisterIpAssetResponse<T>> {
     try {
       const { nft, licenseTermsData, royaltyShares } = request;
 
@@ -1696,9 +1697,13 @@ export class IPAssetClient {
       }
 
       if (nft.type === "minted") {
-        return await this.handleMintedNftRegistration(request as RegisterIpAssetRequest<MintedNFT>);
+        return (await this.handleMintedNftRegistration(
+          request as RegisterIpAssetRequest<MintedNFT>,
+        )) as RegisterIpAssetResponse<T>;
       } else if (nft.type === "mint") {
-        return await this.handleMintNftRegistration(request as RegisterIpAssetRequest<MintNFT>);
+        return (await this.handleMintNftRegistration(
+          request as RegisterIpAssetRequest<MintNFT>,
+        )) as RegisterIpAssetResponse<T>;
       } else {
         throw new Error("Invalid NFT type");
       }
@@ -1715,9 +1720,9 @@ export class IPAssetClient {
    * - {@link registerIpAndAttachPilTerms}
    * - {@link register}
    */
-  private async handleMintedNftRegistration(
+  private async handleMintedNftRegistration<T extends RegisterIpAssetRequest<MintedNFT>>(
     request: RegisterIpAssetRequest<MintedNFT>,
-  ): Promise<RegisterIpResponse> {
+  ): Promise<RegisterIpAssetResponse<RegisterIpAssetRequest<MintedNFT>>> {
     const { nft, ipMetadata, txOptions, licenseTermsData, royaltyShares, deadline } = request;
     const baseParams = {
       nftContract: nft.nftContract,
@@ -1759,7 +1764,7 @@ export class IPAssetClient {
    */
   private async handleMintNftRegistration(
     request: RegisterIpAssetRequest<MintNFT>,
-  ): Promise<RegisterIpResponse> {
+  ): Promise<RegisterIpAssetResponse<RegisterIpAssetRequest<MintNFT>>> {
     const { nft, ipMetadata, txOptions, options, licenseTermsData, royaltyShares } = request;
     const baseParams = {
       spgNftContract: nft.spgNftContract,
@@ -1767,6 +1772,7 @@ export class IPAssetClient {
       allowDuplicates: nft.allowDuplicates || true,
       ipMetadata: ipMetadata,
       txOptions: txOptions,
+      options: options,
     };
 
     if (licenseTermsData && royaltyShares) {
@@ -1774,7 +1780,6 @@ export class IPAssetClient {
         ...baseParams,
         licenseTermsData: licenseTermsData,
         royaltyShares: royaltyShares,
-        options: options,
       });
     }
 
@@ -1782,7 +1787,6 @@ export class IPAssetClient {
       return this.mintAndRegisterIpAssetWithPilTerms({
         ...baseParams,
         licenseTermsData: licenseTermsData,
-        options: options,
       });
     }
 

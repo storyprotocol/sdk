@@ -623,3 +623,14 @@ export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptio
     deadline?: number | bigint;
     txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
   };
+
+export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT | MintNFT>> =
+  T extends { licenseTermsData: LicenseTermsDataInput[]; royaltyShares: RoyaltyShare[] }
+    ? T extends { nft: { type: "minted" } }
+      ? RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse
+      : MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
+    : T extends { licenseTermsData: LicenseTermsDataInput[] }
+    ? T extends { nft: { type: "minted" } }
+      ? RegisterIpAndAttachPilTermsResponse
+      : MintAndRegisterIpAssetWithPilTermsResponse
+    : RegisterIpResponse;
