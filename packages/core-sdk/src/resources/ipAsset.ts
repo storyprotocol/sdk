@@ -81,6 +81,8 @@ import {
   MintAndRegisterIpAssetWithPilTermsRequest,
   MintAndRegisterIpAssetWithPilTermsResponse,
   MintAndRegisterIpRequest,
+  MintedNFT,
+  MintNFT,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
   RegisterDerivativeRequest,
@@ -94,6 +96,7 @@ import {
   RegisterIpAndMakeDerivativeRequest,
   RegisterIpAndMakeDerivativeResponse,
   RegisterIpAndMakeDerivativeWithLicenseTokensRequest,
+  RegisterIpAssetRequest,
   RegisterIpResponse,
   RegisterPilTermsAndAttachRequest,
   RegisterPilTermsAndAttachResponse,
@@ -1661,6 +1664,131 @@ export class IPAssetClient {
     } catch (error) {
       return handleError(error, "Failed to batch register IP assets with optimized workflows");
     }
+  }
+  /**
+   * Register an IP asset, supporting both minted and mint-on-demand NFTs, with optional license terms and royalty shares.
+   * Supports the following workflows:
+   * - {@link registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens}
+   * - {@link registerIpAndAttachPilTerms}
+   * - {@link register}
+   * - {@link mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens}
+   * - {@link mintAndRegisterIpAssetWithPilTerms}
+   * - {@link mintAndRegisterIp}
+   *
+   * The method supports automatic token handling for minting fees:
+   * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
+   * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
+   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   *
+   * @throws {Error} If the NFT type is invalid.
+   * @throws {Error} If royalty shares are required when registering IP with license terms data.
+   *
+   */
+  public async registerIpAsset(
+    request: RegisterIpAssetRequest<MintedNFT | MintNFT>,
+  ): Promise<RegisterIpResponse> {
+    try {
+      const { nft, licenseTermsData, royaltyShares } = request;
+
+      // Validate royalty shares without license terms
+      if (royaltyShares && !licenseTermsData) {
+        throw new Error("Royalty shares are required when registering IP with license terms data.");
+      }
+
+      if (nft.type === "minted") {
+        return await this.handleMintedNftRegistration(request as RegisterIpAssetRequest<MintedNFT>);
+      } else if (nft.type === "mint") {
+        return await this.handleMintNftRegistration(request as RegisterIpAssetRequest<MintNFT>);
+      } else {
+        throw new Error("Invalid NFT type");
+      }
+    } catch (error) {
+      return handleError(error, "Failed to new register IP");
+    }
+  }
+
+  /**
+   * Handles registration for already minted NFTs with optional license terms and royalty shares.
+   *
+   * Supports the following workflows:
+   * - {@link registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens}
+   * - {@link registerIpAndAttachPilTerms}
+   * - {@link register}
+   */
+  private async handleMintedNftRegistration(
+    request: RegisterIpAssetRequest<MintedNFT>,
+  ): Promise<RegisterIpResponse> {
+    const { nft, ipMetadata, txOptions, licenseTermsData, royaltyShares, deadline } = request;
+    const baseParams = {
+      nftContract: nft.nftContract,
+      tokenId: nft.tokenId,
+      ipMetadata: ipMetadata,
+      txOptions: txOptions,
+    };
+
+    if (licenseTermsData && royaltyShares) {
+      return this.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        ...baseParams,
+        licenseTermsData: licenseTermsData,
+        royaltyShares: royaltyShares,
+        deadline: deadline,
+      });
+    }
+
+    if (licenseTermsData) {
+      return this.registerIpAndAttachPilTerms({
+        ...baseParams,
+        licenseTermsData: licenseTermsData,
+        deadline: deadline,
+      });
+    }
+
+    return this.register({
+      ...baseParams,
+      deadline: deadline,
+    });
+  }
+
+  /**
+   * Handles minting and registration of new NFTs with optional license terms and royalty shares.
+   *
+   * Supports the following workflows:
+   * - {@link mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens}
+   * - {@link mintAndRegisterIpAssetWithPilTerms}
+   * - {@link mintAndRegisterIp}
+   */
+  private async handleMintNftRegistration(
+    request: RegisterIpAssetRequest<MintNFT>,
+  ): Promise<RegisterIpResponse> {
+    const { nft, ipMetadata, txOptions, options, licenseTermsData, royaltyShares } = request;
+    const baseParams = {
+      spgNftContract: nft.spgNftContract,
+      recipient: nft.recipient || this.walletAddress,
+      allowDuplicates: nft.allowDuplicates || true,
+      ipMetadata: ipMetadata,
+      txOptions: txOptions,
+    };
+
+    if (licenseTermsData && royaltyShares) {
+      return this.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
+        ...baseParams,
+        licenseTermsData: licenseTermsData,
+        royaltyShares: royaltyShares,
+        options: options,
+      });
+    }
+
+    if (licenseTermsData) {
+      return this.mintAndRegisterIpAssetWithPilTerms({
+        ...baseParams,
+        licenseTermsData: licenseTermsData,
+        options: options,
+      });
+    }
+
+    return this.mintAndRegisterIp({
+      ...baseParams,
+    });
   }
 
   private async getLicenseTermsId(licenseTerms: LicenseTerms[]): Promise<bigint[]> {
