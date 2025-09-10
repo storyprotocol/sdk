@@ -1708,7 +1708,7 @@ export class IPAssetClient {
         throw new Error("Invalid NFT type");
       }
     } catch (error) {
-      return handleError(error, "Failed to new register IP");
+      return handleError(error, "Failed to register IP Asset");
     }
   }
 
