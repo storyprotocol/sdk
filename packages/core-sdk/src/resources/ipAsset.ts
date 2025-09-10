@@ -1720,7 +1720,7 @@ export class IPAssetClient {
    * - {@link registerIpAndAttachPilTerms}
    * - {@link register}
    */
-  private async handleMintedNftRegistration<T extends RegisterIpAssetRequest<MintedNFT>>(
+  private async handleMintedNftRegistration(
     request: RegisterIpAssetRequest<MintedNFT>,
   ): Promise<RegisterIpAssetResponse<RegisterIpAssetRequest<MintedNFT>>> {
     const { nft, ipMetadata, txOptions, licenseTermsData, royaltyShares, deadline } = request;
