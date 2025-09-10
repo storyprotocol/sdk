@@ -3560,7 +3560,7 @@ describe("IP Asset Functions", () => {
       expect(result.tokenId).to.be.a("bigint");
     });
 
-    it("should successfully when without license terms data and royalty shares", async () => {
+    it("should successfully when without license terms data, royalty shares, ip metadata", async () => {
       const tokenId = await getTokenId();
       const result = await client.ipAsset.registerIpAsset({
         nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
@@ -3570,7 +3570,7 @@ describe("IP Asset Functions", () => {
       expect(result.tokenId).to.be.a("bigint");
     });
 
-    it("should successfully when without license terms data and royalty shares and with ip metadata", async () => {
+    it("should successfully when without license terms data and royalty shares, with ip metadata", async () => {
       const tokenId = await getTokenId();
       const result = await client.ipAsset.registerIpAsset({
         nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },

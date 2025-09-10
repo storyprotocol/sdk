@@ -1728,6 +1728,7 @@ export class IPAssetClient {
       nftContract: nft.nftContract,
       tokenId: nft.tokenId,
       ipMetadata: ipMetadata,
+      deadline: deadline,
       txOptions: txOptions,
     };
 
@@ -1736,7 +1737,6 @@ export class IPAssetClient {
         ...baseParams,
         licenseTermsData: licenseTermsData,
         royaltyShares: royaltyShares,
-        deadline: deadline,
       });
     }
 
@@ -1744,13 +1744,11 @@ export class IPAssetClient {
       return this.registerIpAndAttachPilTerms({
         ...baseParams,
         licenseTermsData: licenseTermsData,
-        deadline: deadline,
       });
     }
 
     return this.register({
       ...baseParams,
-      deadline: deadline,
     });
   }
 
@@ -1768,8 +1766,8 @@ export class IPAssetClient {
     const { nft, ipMetadata, txOptions, options, licenseTermsData, royaltyShares } = request;
     const baseParams = {
       spgNftContract: nft.spgNftContract,
-      recipient: nft.recipient || this.walletAddress,
-      allowDuplicates: nft.allowDuplicates || true,
+      recipient: nft.recipient,
+      allowDuplicates: nft.allowDuplicates,
       ipMetadata: ipMetadata,
       txOptions: txOptions,
       options: options,
