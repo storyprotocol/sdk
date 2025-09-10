@@ -5177,4 +5177,257 @@ describe("Test IpAssetClient", () => {
       ]);
     });
   });
+
+  describe("Register IP Asset", () => {
+    beforeEach(() => {
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          chainId: 0n,
+          tokenContract: mockAddress,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 1n,
+      });
+    });
+
+    it("should throw error when invalid NFT type", async () => {
+      await expect(
+        ipAssetClient.registerIpAsset({
+          nft: { type: "invalid" as "mint", spgNftContract: mockERC721, tokenId: 1n },
+        }),
+      ).to.be.rejectedWith("Failed to register IP Asset: Invalid NFT type");
+    });
+    describe("Register IP Asset with Minted NFT", () => {
+      beforeEach(() => {
+        stub(IpAssetRegistryClient.prototype, "ipId").resolves(ipId);
+        stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      });
+      it("should throw error when royalty shares are required when registering IP with license terms data", async () => {
+        await expect(
+          ipAssetClient.registerIpAsset({
+            nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+            royaltyShares: [
+              {
+                recipient: mockAddress,
+                percentage: 100,
+              },
+            ],
+          }),
+        ).to.be.rejectedWith(
+          "Failed to register IP Asset: Royalty shares are required when registering IP with license terms data.",
+        );
+      });
+
+      it("should call registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens when royalty shares and license terms data are provided", async () => {
+        const registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash = "0x1";
+        const distributeRoyaltyTokensTxHash = "0x2";
+        const registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokensStub = stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "registerIpAndAttachPilTermsAndDeployRoyaltyVault",
+        ).resolves(registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash);
+        stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent").returns([
+          {
+            ipId: ipId,
+            ipRoyaltyVault: mockAddress,
+          },
+        ]);
+        const distributeRoyaltyTokensStub = stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "distributeRoyaltyTokens",
+        ).resolves(distributeRoyaltyTokensTxHash);
+
+        const result = await ipAssetClient.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          royaltyShares: [
+            {
+              recipient: mockAddress,
+              percentage: 100,
+            },
+          ],
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+        });
+
+        expect(registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokensStub.callCount).to.equal(1);
+        expect(distributeRoyaltyTokensStub.callCount).to.equal(1);
+        expect(result.distributeRoyaltyTokensTxHash).to.equal(distributeRoyaltyTokensTxHash);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.licenseTermsIds).to.deep.equal([1n]);
+        expect(result.ipRoyaltyVault).to.equal(mockAddress);
+        expect(result.maxLicenseTokensTxHashes).to.deep.equal([txHash]);
+        expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.equal(
+          registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
+        );
+      });
+
+      it("should call registerIpAndAttachPilTerms when only license terms data is provided", async () => {
+        const registerIpAndAttachPilTermsTxHash = "0x1";
+        const registerIpAndAttachPilTermsStub = stub(
+          ipAssetClient.licenseAttachmentWorkflowsClient,
+          "registerIpAndAttachPilTerms",
+        ).resolves(registerIpAndAttachPilTermsTxHash);
+
+        const result = await ipAssetClient.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+        });
+
+        expect(registerIpAndAttachPilTermsStub.callCount).to.equal(1);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.licenseTermsIds).to.deep.equal([1n]);
+        expect(result.maxLicenseTokensTxHashes).to.deep.equal([txHash]);
+        expect(result.txHash).to.equal(registerIpAndAttachPilTermsTxHash);
+      });
+
+      it("should call register without license terms data, royalty shares and ip metadata", async () => {
+        const registerStub = stub(ipAssetClient.ipAssetRegistryClient, "register").resolves(txHash);
+
+        const result = await ipAssetClient.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+        });
+
+        expect(registerStub.callCount).to.equal(1);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.txHash).to.equal(txHash);
+      });
+
+      it("should call register with only ip metadata", async () => {
+        const registerStub = stub(ipAssetClient.registrationWorkflowsClient, "registerIp").resolves(
+          txHash,
+        );
+
+        const result = await ipAssetClient.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+        });
+
+        expect(registerStub.callCount).to.equal(1);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.txHash).to.equal(txHash);
+      });
+    });
+
+    describe("Register IP Asset with Mint NFT", () => {
+      it("should throw royalty shares are required when registering IP with license terms data", async () => {
+        await expect(
+          ipAssetClient.registerIpAsset({
+            nft: { type: "mint", spgNftContract: mockERC721, tokenId: 1n },
+            royaltyShares: [
+              {
+                recipient: mockAddress,
+                percentage: 100,
+              },
+            ],
+          }),
+        ).to.be.rejectedWith(
+          "Failed to register IP Asset: Royalty shares are required when registering IP with license terms data.",
+        );
+      });
+      it("should call mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens when royalty shares and license terms data are provided", async () => {
+        const mintAndRegisterIpTxHash = "0x1";
+        const mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub = stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens",
+        ).resolves(mintAndRegisterIpTxHash);
+        stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent").returns([
+          {
+            ipId: ipId,
+            ipRoyaltyVault: mockAddress,
+          },
+        ]);
+        const result = await ipAssetClient.registerIpAsset({
+          nft: { type: "mint", spgNftContract: mockERC721, tokenId: 1n },
+          royaltyShares: [
+            {
+              recipient: mockAddress,
+              percentage: 100,
+            },
+          ],
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+        });
+
+        expect(mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub.callCount).to.equal(
+          1,
+        );
+        expect(result.ipId).to.equal(ipId);
+        expect(result.txHash).to.equal(mintAndRegisterIpTxHash);
+        expect(result.licenseTermsIds).to.deep.equal([1n]);
+        expect(result.ipRoyaltyVault).to.equal(mockAddress);
+        expect(result.maxLicenseTokensTxHashes).to.deep.equal([txHash]);
+      });
+
+      it("should call mintAndRegisterIpAndAttachPilTerms when only license terms data is provided", async () => {
+        const mintAndRegisterIpAndAttachPilTermsTxHash = "0x1";
+        const mintAndRegisterIpAndAttachPilTermsStub = stub(
+          ipAssetClient.licenseAttachmentWorkflowsClient,
+          "mintAndRegisterIpAndAttachPilTerms",
+        ).resolves(mintAndRegisterIpAndAttachPilTermsTxHash);
+        const result = await ipAssetClient.registerIpAsset({
+          nft: { type: "mint", spgNftContract: mockERC721, tokenId: 1n },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+            },
+          ],
+        });
+
+        expect(mintAndRegisterIpAndAttachPilTermsStub.callCount).to.equal(1);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.txHash).to.equal(mintAndRegisterIpAndAttachPilTermsTxHash);
+        expect(result.tokenId).to.equal(1n);
+        expect(result.licenseTermsIds).to.deep.equal([1n]);
+        expect(result.maxLicenseTokensTxHashes).to.deep.equal(undefined);
+      });
+
+      it("should call mintAndRegisterIp without license terms data and royalty shares", async () => {
+        const mintAndRegisterIpTxHash = "0x1";
+        const mintAndRegisterIpStub = stub(
+          ipAssetClient.registrationWorkflowsClient,
+          "mintAndRegisterIp",
+        ).resolves(mintAndRegisterIpTxHash);
+        const result = await ipAssetClient.registerIpAsset({
+          nft: { type: "mint", spgNftContract: mockERC721, tokenId: 1n },
+        });
+
+        expect(mintAndRegisterIpStub.callCount).to.equal(1);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.txHash).to.equal(mintAndRegisterIpTxHash);
+        expect(result.tokenId).to.equal(1n);
+      });
+    });
+  });
 });
