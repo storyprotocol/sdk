@@ -615,6 +615,10 @@ export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptio
   WithIpMetadata & {
     nft: T;
     licenseTermsData?: LicenseTermsDataInput[];
+    /**
+     * Royalty shares can only be specified if license terms data is also provided.
+     * This ensures that royalty distribution is always associated with defined license terms.
+     */
     royaltyShares?: RoyaltyShare[];
     /**
      * The deadline for the signature in seconds.
