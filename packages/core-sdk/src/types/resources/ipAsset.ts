@@ -620,8 +620,8 @@ export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptio
      * Authors of the IP and their shares of the royalty tokens.
      *
      * @remarks
-     * Royalty shares can only be specified if license terms data is also provided.
-     * This ensures that royalty distribution is always associated with defined license terms.
+     * Royalty shares can only be specified if `licenseTermsData` is also provided.
+     * This ensures that royalty distribution is always associated with defined `licenseTermsData`.
      */
     royaltyShares?: RoyaltyShare[];
     /**
@@ -642,3 +642,40 @@ export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT |
       ? RegisterIpAndAttachPilTermsResponse
       : MintAndRegisterIpAssetWithPilTermsResponse
     : RegisterIpResponse;
+
+export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = WithWipOptions &
+  WithIpMetadata & {
+    nft: T;
+    /**
+     * Authors of the IP and their shares of the royalty tokens.
+     *
+     * @remarks
+     * Royalty shares can only be specified if `derivData` is also provided.
+     * This ensures that royalty distribution is always associated with defined `derivData`.
+     */
+    royaltyShares?: RoyaltyShare[];
+    /** The derivative data to be used for register derivative. */
+    derivData?: DerivativeDataInput;
+    /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
+    maxRts?: number;
+    /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
+    licenseTokenIds?: number[] | bigint[];
+    /**
+     * The deadline for the signature in seconds.
+     * @default 1000
+     */
+    deadline?: number | bigint;
+    txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  };
+
+export type RegisterDerivativeIpAssetResponse<
+  T extends RegisterDerivativeIpAssetRequest<MintedNFT | MintNFT>,
+> = T extends { derivData: LicenseTermsDataInput[]; royaltyShares: RoyaltyShare[] }
+  ? T extends { nft: { type: "minted" } }
+    ? RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse
+    : MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse
+  : T extends { derivData: LicenseTermsDataInput[] }
+  ? T extends { nft: { type: "minted" } }
+    ? RegisterIpAndMakeDerivativeResponse
+    : MintAndRegisterIpAndMakeDerivativeResponse
+  : RegisterIpResponse;

@@ -85,6 +85,8 @@ import {
   MintNFT,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  RegisterDerivativeIpAssetRequest,
+  RegisterDerivativeIpAssetResponse,
   RegisterDerivativeRequest,
   RegisterDerivativeResponse,
   RegisterDerivativeWithLicenseTokensRequest,
@@ -1682,7 +1684,7 @@ export class IPAssetClient {
    * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
    *
    * @throws {Error} If the NFT type is invalid.
-   * @throws {Error} If royalty shares are required when registering IP with license terms data.
+   * @throws {Error} If `royaltyShares` are required when registering IP with `licenseTermsData`.
    *
    */
   public async registerIpAsset<T extends RegisterIpAssetRequest<MintedNFT | MintNFT>>(
@@ -1710,6 +1712,170 @@ export class IPAssetClient {
     } catch (error) {
       return handleError(error, "Failed to register IP Asset");
     }
+  }
+  /**
+   * Register a derivative IP asset, supporting both minted and mint-on-demand NFTs, with optional license terms and royalty shares.
+   *
+   * Supports the following workflows:
+   * - {@link registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens}
+   * - {@link registerDerivativeIp}
+   * - {@link registerIpAndMakeDerivativeWithLicenseTokens}
+   * - {@link mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens}
+   * - {@link mintAndRegisterIpAndMakeDerivative}
+   * - {@link mintAndRegisterIpAndMakeDerivativeWithLicenseTokens}
+   *
+   * The method supports automatic token handling for minting fees:
+   * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
+   * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
+   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   *
+   * @throws {Error} If `licenseTokenIds` and `maxRts` are not provided together.
+   * @throws {Error} If `licenseTokenIds` are not provided when `royaltyShares` are provided.
+   * @throws {Error} If `licenseTokenIds` and `maxRts`, `royaltyShares` and `derivData` are all not provided.
+   * @throws {Error} If the NFT type is invalid.
+   */
+  public async registerDerivativeIpAsset<
+    T extends RegisterDerivativeIpAssetRequest<MintedNFT | MintNFT>,
+  >(request: T): Promise<RegisterDerivativeIpAssetResponse<T>> {
+    try {
+      const { nft, licenseTokenIds, maxRts, royaltyShares } = request;
+      if (
+        (licenseTokenIds && licenseTokenIds.length > 0 && maxRts === undefined) ||
+        (maxRts && !licenseTokenIds)
+      ) {
+        throw new Error("licenseTokenIds and maxRts must be provided together");
+      }
+
+      if (royaltyShares && !licenseTokenIds) {
+        throw new Error("licenseTokenIds must be provided when royaltyShares are provided");
+      }
+
+      if (nft.type === "minted") {
+        return (await this.handleMintedNftDerivativeRegistration(
+          request as RegisterDerivativeIpAssetRequest<MintedNFT>,
+        )) as RegisterDerivativeIpAssetResponse<T>;
+      } else if (nft.type === "mint") {
+        return (await this.handleMintNftDerivativeRegistration(
+          request as RegisterDerivativeIpAssetRequest<MintNFT>,
+        )) as RegisterDerivativeIpAssetResponse<T>;
+      } else {
+        throw new Error("Invalid NFT type");
+      }
+    } catch (error) {
+      return handleError(error, "Failed to register derivative IP Asset");
+    }
+  }
+
+  /**
+   * Handles derivative registration for already minted NFTs with optional license terms and royalty shares.
+   *
+   * Supports the following workflows:
+   * - {@link registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens}
+   * - {@link registerDerivativeIp}
+   * - {@link registerIpAndMakeDerivativeWithLicenseTokens}
+   */
+  private async handleMintedNftDerivativeRegistration(
+    request: RegisterDerivativeIpAssetRequest<MintedNFT>,
+  ): Promise<RegisterDerivativeIpAssetResponse<RegisterDerivativeIpAssetRequest<MintedNFT>>> {
+    const {
+      nft,
+      royaltyShares,
+      derivData,
+      maxRts,
+      licenseTokenIds,
+      deadline,
+      txOptions,
+      options,
+      ipMetadata,
+    } = request;
+    const baseParams = {
+      nftContract: nft.nftContract,
+      tokenId: nft.tokenId,
+      ipMetadata: ipMetadata,
+      deadline: deadline,
+      txOptions: txOptions,
+      options: options,
+    };
+    if (royaltyShares && derivData) {
+      return this.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        ...baseParams,
+        royaltyShares: royaltyShares,
+        derivData: derivData,
+      });
+    }
+
+    if (derivData) {
+      return this.registerDerivativeIp({
+        ...baseParams,
+        derivData: derivData,
+      });
+    }
+
+    if (licenseTokenIds && maxRts !== undefined) {
+      return this.registerIpAndMakeDerivativeWithLicenseTokens({
+        ...baseParams,
+        licenseTokenIds: licenseTokenIds,
+        maxRts: maxRts,
+      });
+    }
+
+    throw new Error("Invalid request type");
+  }
+
+  /**
+   * Handles derivative registration for minted NFTs with optional license terms and royalty shares.
+   *
+   * Supports the following workflows:
+   * - {@link mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens}
+   * - {@link mintAndRegisterIpAndMakeDerivative}
+   * - {@link mintAndRegisterIpAndMakeDerivativeWithLicenseTokens}
+   */
+  private async handleMintNftDerivativeRegistration(
+    request: RegisterDerivativeIpAssetRequest<MintNFT>,
+  ): Promise<RegisterDerivativeIpAssetResponse<RegisterDerivativeIpAssetRequest<MintNFT>>> {
+    const {
+      nft,
+      royaltyShares,
+      derivData,
+      maxRts,
+      licenseTokenIds,
+      txOptions,
+      options,
+      ipMetadata,
+    } = request;
+    const baseParams = {
+      spgNftContract: nft.spgNftContract,
+      recipient: nft.recipient,
+      allowDuplicates: nft.allowDuplicates,
+      ipMetadata: ipMetadata,
+      txOptions: txOptions,
+      options: options,
+    };
+
+    if (royaltyShares && derivData) {
+      return this.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+        ...baseParams,
+        royaltyShares: royaltyShares,
+        derivData: derivData,
+      });
+    }
+
+    if (derivData) {
+      return this.mintAndRegisterIpAndMakeDerivative({
+        ...baseParams,
+        derivData: derivData,
+      });
+    }
+
+    if (licenseTokenIds && maxRts !== undefined) {
+      return this.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
+        ...baseParams,
+        licenseTokenIds: licenseTokenIds,
+        maxRts: maxRts,
+      });
+    }
+
+    throw new Error("Invalid request type");
   }
 
   /**
