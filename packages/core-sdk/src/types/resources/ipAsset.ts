@@ -614,8 +614,12 @@ export type MintedNFT = {
 export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptions &
   WithIpMetadata & {
     nft: T;
+    /** The data of the license and its configuration to be attached to the new group IP. */
     licenseTermsData?: LicenseTermsDataInput[];
     /**
+     * Authors of the IP and their shares of the royalty tokens.
+     *
+     * @remarks
      * Royalty shares can only be specified if license terms data is also provided.
      * This ensures that royalty distribution is always associated with defined license terms.
      */
