@@ -65,6 +65,11 @@ export type LicensingConfig = LicensingConfigInput & {
 export type TokenAmountInput = bigint | number;
 
 /**
+ * Input for token id, can be bigint or number.
+ * Will be converted to bigint for contract calls.
+ */
+export type TokenIdInput = bigint | number;
+/**
  * The type of revenue share.
  * It is used to determine the type of revenue share to be used in the revenue share calculation and throw error when the revenue share is not valid.
  */

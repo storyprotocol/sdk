@@ -16,7 +16,12 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
 } from "../../abi/generated";
-import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
+import {
+  IpMetadataAndTxOptions,
+  LicensingConfig,
+  LicensingConfigInput,
+  TokenIdInput,
+} from "../common";
 import { TxOptions, WipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
 import { Erc20Spender } from "../utils/wip";
@@ -200,7 +205,7 @@ export type MintAndRegisterIpAndMakeDerivativeResponse = RegistrationResponse & 
   encodedTxData?: EncodedTxData;
 };
 
-type WithIpMetadata = {
+export type WithIpMetadata = {
   ipMetadata?: {
     ipMetadataURI?: string;
     ipMetadataHash?: Hex;
@@ -573,3 +578,59 @@ export type BatchMintAndRegisterIpResponse = {
     receipt: TransactionReceipt;
   }[];
 };
+
+/**
+ * Mint an NFT from an SPG NFT contract.
+ */
+export type MintNFT = {
+  type: "mint";
+
+  /**
+   * The address of the SPG NFT contract.
+   * You can create one via `client.nftClient.createNFTCollection`.
+   */
+  spgNftContract: Address;
+  /**
+   * The address to receive the NFT.
+   * Defaults to client's wallet address if not provided.
+   */
+  recipient?: Address;
+  /**
+   * Set to true to allow minting an NFT with a duplicate metadata hash.
+   * @default true
+   */
+  allowDuplicates?: boolean;
+};
+/**
+ * Minted NFT for registration IP asset.
+ */
+export type MintedNFT = {
+  type: "minted";
+
+  /** The address of the NFT contract. */
+  nftContract: Address;
+  tokenId: TokenIdInput;
+};
+export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptions &
+  WithIpMetadata & {
+    nft: T;
+    licenseTermsData?: LicenseTermsDataInput[];
+    royaltyShares?: RoyaltyShare[];
+    /**
+     * The deadline for the signature in seconds.
+     * @default 1000
+     */
+    deadline?: number | bigint;
+    txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+  };
+
+export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT | MintNFT>> =
+  T extends { licenseTermsData: LicenseTermsDataInput[]; royaltyShares: RoyaltyShare[] }
+    ? T extends { nft: { type: "minted" } }
+      ? RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse
+      : MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse
+    : T extends { licenseTermsData: LicenseTermsDataInput[] }
+    ? T extends { nft: { type: "minted" } }
+      ? RegisterIpAndAttachPilTermsResponse
+      : MintAndRegisterIpAssetWithPilTermsResponse
+    : RegisterIpResponse;
