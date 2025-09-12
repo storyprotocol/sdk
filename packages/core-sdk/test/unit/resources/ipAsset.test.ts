@@ -5430,4 +5430,242 @@ describe("Test IpAssetClient", () => {
       });
     });
   });
+
+  describe("Register Derivative IP Asset", () => {
+    beforeEach(() => {
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          chainId: 0n,
+          tokenContract: mockAddress,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 1n,
+      });
+    });
+
+    it("should throw error when invalid NFT type", async () => {
+      await expect(
+        ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "invalid" as "mint", spgNftContract: mockERC721, tokenId: 1n },
+          derivData,
+        }),
+      ).to.be.rejectedWith("Failed to register derivative IP Asset: Invalid NFT type");
+    });
+
+    it("should throw error when licenseTokenIds provided without maxRts", async () => {
+      await expect(
+        ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          licenseTokenIds: [1, 2, 3],
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register derivative IP Asset: licenseTokenIds and maxRts must be provided together",
+      );
+    });
+
+    it("should throw error when maxRts provided without licenseTokenIds", async () => {
+      await expect(
+        ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          maxRts: 100,
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register derivative IP Asset: licenseTokenIds and maxRts must be provided together",
+      );
+    });
+
+    it("should throw error when royaltyShares provided without derivData", async () => {
+      await expect(
+        ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          royaltyShares: [
+            {
+              recipient: mockAddress,
+              percentage: 100,
+            },
+          ],
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register derivative IP Asset: licenseTokenIds must be provided when royaltyShares are provided",
+      );
+    });
+
+    describe("Register Derivative IP Asset with Minted NFT", () => {
+      beforeEach(() => {
+        stub(IpAssetRegistryClient.prototype, "ipId").resolves(ipId);
+        stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      });
+      it("should call registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens when royalty shares and derivData are provided", async () => {
+        const registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash = "0x1";
+        const distributeRoyaltyTokensTxHash = "0x2";
+        const registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensStub = stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
+        ).resolves(registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash);
+        stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent").returns([
+          {
+            ipId: ipId,
+            ipRoyaltyVault: mockAddress,
+          },
+        ]);
+        const distributeRoyaltyTokensStub = stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "distributeRoyaltyTokens",
+        ).resolves(distributeRoyaltyTokensTxHash);
+
+        const result = await ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          royaltyShares: [
+            {
+              recipient: mockAddress,
+              percentage: 100,
+            },
+          ],
+          derivData,
+        });
+
+        expect(
+          registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensStub.callCount,
+        ).to.equal(1);
+        expect(distributeRoyaltyTokensStub.callCount).to.equal(1);
+        expect(
+          result.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash,
+        ).to.equal(registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash);
+        expect(result.distributeRoyaltyTokensTxHash).to.equal(distributeRoyaltyTokensTxHash);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.ipRoyaltyVault).to.equal(mockAddress);
+        expect(result.tokenId).to.equal(1n);
+      });
+
+      it("should call registerDerivativeIp when only derivData is provided", async () => {
+        const registerDerivativeIpTxHash = "0x1";
+        const registerDerivativeIpStub = stub(
+          ipAssetClient.derivativeWorkflowsClient,
+          "registerIpAndMakeDerivative",
+        ).resolves(registerDerivativeIpTxHash);
+
+        const result = await ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          derivData,
+        });
+
+        expect(registerDerivativeIpStub.callCount).to.equal(1);
+        expect(result.txHash).to.equal(registerDerivativeIpTxHash);
+        expect(result.ipId).to.equal(ipId);
+      });
+
+      it("should call registerIpAndMakeDerivativeWithLicenseTokens when licenseTokenIds and maxRts are provided", async () => {
+        const registerIpAndMakeDerivativeWithLicenseTokensTxHash = "0x1";
+        const registerIpAndMakeDerivativeWithLicenseTokensStub = stub(
+          ipAssetClient.derivativeWorkflowsClient,
+          "registerIpAndMakeDerivativeWithLicenseTokens",
+        ).resolves(registerIpAndMakeDerivativeWithLicenseTokensTxHash);
+
+        const result = await ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          licenseTokenIds: [1, 2, 3],
+          maxRts: 100,
+        });
+
+        expect(registerIpAndMakeDerivativeWithLicenseTokensStub.callCount).to.equal(1);
+        expect(result.txHash).to.equal(registerIpAndMakeDerivativeWithLicenseTokensTxHash);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.tokenId).to.equal(1n);
+      });
+
+      it("should throw error when invalid request type for minted NFT", async () => {
+        await expect(
+          ipAssetClient.registerDerivativeIpAsset({
+            nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          }),
+        ).to.be.rejectedWith("Failed to register derivative IP Asset: Invalid request type");
+      });
+    });
+
+    describe("Register Derivative IP Asset with Mint NFT", () => {
+      it("should call mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens when royalty shares and derivData are provided", async () => {
+        const mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensTxHash = "0x1";
+        const mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub = stub(
+          ipAssetClient.royaltyTokenDistributionWorkflowsClient,
+          "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
+        ).resolves(mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensTxHash);
+        stub(ipAssetClient.royaltyModuleEventClient, "parseTxIpRoyaltyVaultDeployedEvent").returns([
+          {
+            ipId: ipId,
+            ipRoyaltyVault: mockAddress,
+          },
+        ]);
+        const result = await ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "mint", spgNftContract: mockERC721, recipient: mockAddress },
+          royaltyShares: [
+            {
+              recipient: mockAddress,
+              percentage: 100,
+            },
+          ],
+          derivData,
+        });
+
+        expect(mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.callCount).to.equal(
+          1,
+        );
+        expect(result.txHash).to.equal(
+          mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensTxHash,
+        );
+        expect(result.ipId).to.equal(ipId);
+        expect(result.tokenId).to.equal(1n);
+      });
+
+      it("should call mintAndRegisterIpAndMakeDerivative when only derivData is provided", async () => {
+        const mintAndRegisterIpAndMakeDerivativeTxHash = "0x1";
+        const mintAndRegisterIpAndMakeDerivativeStub = stub(
+          ipAssetClient.derivativeWorkflowsClient,
+          "mintAndRegisterIpAndMakeDerivative",
+        ).resolves(mintAndRegisterIpAndMakeDerivativeTxHash);
+
+        const result = await ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "mint", spgNftContract: mockERC721, recipient: mockAddress },
+          derivData,
+        });
+
+        expect(mintAndRegisterIpAndMakeDerivativeStub.callCount).to.equal(1);
+        expect(result.txHash).to.equal(mintAndRegisterIpAndMakeDerivativeTxHash);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.tokenId).to.equal(1n);
+      });
+
+      it("should call mintAndRegisterIpAndMakeDerivativeWithLicenseTokens when licenseTokenIds and maxRts are provided", async () => {
+        const mintAndRegisterIpAndMakeDerivativeWithLicenseTokensTxHash = "0x1";
+        const mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub = stub(
+          ipAssetClient.derivativeWorkflowsClient,
+          "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+        ).resolves(mintAndRegisterIpAndMakeDerivativeWithLicenseTokensTxHash);
+
+        const result = await ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "mint", spgNftContract: mockERC721, recipient: mockAddress },
+          licenseTokenIds: [1, 2, 3],
+          maxRts: 100,
+        });
+
+        expect(mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub.callCount).to.equal(1);
+        expect(result.txHash).to.equal(mintAndRegisterIpAndMakeDerivativeWithLicenseTokensTxHash);
+        expect(result.ipId).to.equal(ipId);
+        expect(result.tokenId).to.equal(1n);
+      });
+
+      it("should throw error when invalid request type for mint NFT", async () => {
+        await expect(
+          ipAssetClient.registerDerivativeIpAsset({
+            nft: { type: "mint", spgNftContract: mockERC721, recipient: mockAddress },
+          }),
+        ).to.be.rejectedWith("Failed to register derivative IP Asset: Invalid request type");
+      });
+    });
+  });
 });
