@@ -1738,7 +1738,7 @@ export class IPAssetClient {
     T extends RegisterDerivativeIpAssetRequest<MintedNFT | MintNFT>,
   >(request: T): Promise<RegisterDerivativeIpAssetResponse<T>> {
     try {
-      const { nft, licenseTokenIds, maxRts, royaltyShares } = request;
+      const { nft, licenseTokenIds, maxRts, royaltyShares, derivData } = request;
       if (
         (licenseTokenIds && licenseTokenIds.length > 0 && maxRts === undefined) ||
         (maxRts && !licenseTokenIds)
@@ -1746,7 +1746,7 @@ export class IPAssetClient {
         throw new Error("licenseTokenIds and maxRts must be provided together");
       }
 
-      if (royaltyShares && !licenseTokenIds) {
+      if (royaltyShares && !derivData) {
         throw new Error("licenseTokenIds must be provided when royaltyShares are provided");
       }
 

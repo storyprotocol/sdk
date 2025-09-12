@@ -670,12 +670,10 @@ export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = Wi
 
 export type RegisterDerivativeIpAssetResponse<
   T extends RegisterDerivativeIpAssetRequest<MintedNFT | MintNFT>,
-> = T extends { derivData: LicenseTermsDataInput[]; royaltyShares: RoyaltyShare[] }
-  ? T extends { nft: { type: "minted" } }
-    ? RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse
-    : MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse
-  : T extends { derivData: LicenseTermsDataInput[] }
-  ? T extends { nft: { type: "minted" } }
-    ? RegisterIpAndMakeDerivativeResponse
-    : MintAndRegisterIpAndMakeDerivativeResponse
+> = T extends {
+  derivData: DerivativeDataInput;
+  royaltyShares: RoyaltyShare[];
+  nft: { type: "minted" };
+}
+  ? RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse
   : RegisterIpResponse;
