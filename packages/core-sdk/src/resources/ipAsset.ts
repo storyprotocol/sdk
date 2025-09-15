@@ -1715,9 +1715,10 @@ export class IPAssetClient {
   /**
    * Register a derivative IP asset, supporting both minted and mint-on-demand NFTs, with optional `derivData`, `royaltyShares` and `licenseTokenIds`, `maxRts`.
    *
-   * This method provides a unified interface for derivative IP registration with three main usage patterns:
+   * This method automatically selects and calls the appropriate workflow from 6 available methods based on your input parameters.
+   * Here are three common usage patterns:
    *
-   * **1. Derivative with License Terms and Royalty Distribution:**
+   * **1. Minted NFT with License Terms and Royalty Distribution:**
    * ```typescript
    * const result = await client.ipAsset.registerDerivativeIpAsset({
    *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
@@ -1734,10 +1735,10 @@ export class IPAssetClient {
    * });
    * ```
    *
-   * **2. Basic Derivative Registration:**
+   * **2. Minted NFT with Basic Derivative Registration:**
    * ```typescript
    * const result = await client.ipAsset.registerDerivativeIpAsset({
-   *   nft: { type: "mint", spgNftContract: "0x...", recipient: "0x...", allowDuplicates: false },
+   *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
    *   derivData: {
    *     parentIpIds: ["0x..."],
    *     licenseTermsIds: [1n],
@@ -1748,16 +1749,16 @@ export class IPAssetClient {
    * });
    * ```
    *
-   * **3. Derivative using Existing License Tokens:**
+   * **3. Mint NFT with License Token IDs and maxRts:**
    * ```typescript
    * const result = await client.ipAsset.registerDerivativeIpAsset({
-   *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
+   *   nft: { type: "mint", spgNftContract: "0x...", recipient: "0x...", allowDuplicates: false },
    *   licenseTokenIds: [1, 2, 3],
-   *   maxRts: 100000
+   *   maxRts: 100
    * });
    * ```
    *
-   * **Supported Workflows:**
+   * **Supported Workflows (6 methods automatically selected based on parameters):**
    * - {@link registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens} - Register derivative with license terms and royalty distribution
    * - {@link registerDerivativeIp} - Register derivative with basic derivative data
    * - {@link registerIpAndMakeDerivativeWithLicenseTokens} - Register derivative using existing license tokens
@@ -1829,7 +1830,7 @@ export class IPAssetClient {
    */
   private async handleMintedNftDerivativeRegistration(
     request: RegisterDerivativeIpAssetRequest<MintedNFT>,
-  ): Promise<RegisterDerivativeIpAssetResponse<RegisterDerivativeIpAssetRequest<MintedNFT>>> {
+  ): Promise<RegisterDerivativeIpAssetResponse<typeof request>> {
     const {
       nft,
       royaltyShares,
@@ -1881,7 +1882,7 @@ export class IPAssetClient {
    */
   private async handleMintNftDerivativeRegistration(
     request: RegisterDerivativeIpAssetRequest<MintNFT>,
-  ): Promise<RegisterDerivativeIpAssetResponse<RegisterDerivativeIpAssetRequest<MintNFT>>> {
+  ): Promise<RegisterDerivativeIpAssetResponse<typeof request>> {
     const {
       nft,
       royaltyShares,

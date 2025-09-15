@@ -3791,7 +3791,7 @@ describe("IP Asset Functions", () => {
       });
       it("should successfully when give derivData and royalty shares", async () => {
         const result = await client.ipAsset.registerDerivativeIpAsset({
-          nft: { type: "mint", spgNftContract: spgNftContract },
+          nft: { type: "mint", spgNftContract },
           derivData: {
             parentIpIds: [parentIpId!],
             licenseTermsIds: [commercialRemixLicenseTermsId],
@@ -3821,7 +3821,7 @@ describe("IP Asset Functions", () => {
         });
         await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
         const result = await client.ipAsset.registerDerivativeIpAsset({
-          nft: { type: "mint", spgNftContract: spgNftContract },
+          nft: { type: "mint", spgNftContract },
           licenseTokenIds: licenseTokenIds!,
           maxRts: 100,
         });
@@ -3833,7 +3833,7 @@ describe("IP Asset Functions", () => {
 
       it("should successfully when give derivData", async () => {
         const result = await client.ipAsset.registerDerivativeIpAsset({
-          nft: { type: "mint", spgNftContract: spgNftContract },
+          nft: { type: "mint", spgNftContract },
           derivData: {
             parentIpIds: [parentIpId!],
             licenseTermsIds: [commercialRemixLicenseTermsId],

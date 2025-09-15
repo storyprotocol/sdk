@@ -614,15 +614,7 @@ export type MintedNFT = {
 export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptions &
   WithIpMetadata & {
     nft: T;
-    /** The data of the license and its configuration to be attached to the new group IP. */
     licenseTermsData?: LicenseTermsDataInput[];
-    /**
-     * Authors of the IP and their shares of the royalty tokens.
-     *
-     * @remarks
-     * Royalty shares can only be specified if `licenseTermsData` is also provided.
-     * This ensures that royalty distribution is always associated with defined `licenseTermsData`.
-     */
     royaltyShares?: RoyaltyShare[];
     /**
      * The deadline for the signature in seconds.
@@ -649,7 +641,7 @@ export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT |
  * @template T - The NFT type (MintedNFT or MintNFT)
  *
  * @example
- * **Derivative with License Terms and Royalty Distribution:**
+ * **Minted NFT with License Terms and Royalty Distribution:**
  * ```typescript
  * const request: RegisterDerivativeIpAssetRequest<MintedNFT> = {
  *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
@@ -667,7 +659,7 @@ export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT |
  * ```
  *
  * @example
- * **Basic Derivative Registration:**
+ * **Minted NFT with Basic Derivative Registration:**
  * ```typescript
  * const request: RegisterDerivativeIpAssetRequest<MintedNFT> = {
  *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
@@ -682,10 +674,28 @@ export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT |
  * ```
  *
  * @example
- * **Derivative using Existing License Tokens:**
+ * **Mint NFT with License Terms and Royalty Distribution:**
+ * ```typescript
+ * const request: RegisterDerivativeIpAssetRequest<MintNFT> = {
+ *   nft: { type: "mint", spgNftContract: "0x...", recipient: "0x...", allowDuplicates: false },
+ *   derivData: {
+ *     parentIpIds: ["0x..."],
+ *     licenseTermsIds: [1n],
+ *     maxMintingFee: 10000n,
+ *     maxRts: 100,
+ *     maxRevenueShare: 100
+ *   },
+ *   royaltyShares: [
+ *     { recipient: "0x...", percentage: 100 }
+ *   ]
+ * };
+ * ```
+ *
+ * @example
+ * **Using Existing License Tokens (for both minted and mint NFTs):**
  * ```typescript
  * const request: RegisterDerivativeIpAssetRequest<MintedNFT> = {
- *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
+ *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n }, // or type: "mint"
  *   licenseTokenIds: [1, 2, 3],
  *   maxRts: 100000
  * };
