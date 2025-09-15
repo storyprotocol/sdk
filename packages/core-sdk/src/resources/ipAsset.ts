@@ -1667,16 +1667,58 @@ export class IPAssetClient {
     }
   }
   /**
-   * Register an IP asset, supporting both minted and mint-on-demand NFTs, with optional license terms and royalty shares.
-   * Supports the following workflows:
-   * - {@link registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens}
-   * - {@link registerIpAndAttachPilTerms}
-   * - {@link register}
-   * - {@link mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens}
-   * - {@link mintAndRegisterIpAssetWithPilTerms}
-   * - {@link mintAndRegisterIp}
+   * Register an IP asset, supporting both minted and mint-on-demand NFTs, with optional `licenseTermsData` and `royaltyShares`.
    *
-   * The method supports automatic token handling for minting fees:
+   * This method automatically selects and calls the appropriate workflow from 6 available methods based on your input parameters.
+   * Here are three common usage patterns:
+   *
+   * **1. Minted NFT with License Terms and Royalty Distribution:**
+   * ```typescript
+   * const result = await client.ipAsset.registerIpAsset({
+   *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
+   *   licenseTermsData: [
+   *     {
+   *       terms: PILFlavor.commercialRemix({
+   *         defaultMintingFee: 10000n,
+   *         commercialRevShare: 100,
+   *         currency: "0x..."
+   *       })
+   *     }
+   *   ],
+   *   royaltyShares: [
+   *     { recipient: "0x...", percentage: 100 }
+   *   ]
+   * });
+   * ```
+   *
+   * **2. Minted NFT with Basic License Terms:**
+   * ```typescript
+   * const result = await client.ipAsset.registerIpAsset({
+   *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
+   *   licenseTermsData: [
+   *     {
+   *       terms: PILFlavor.nonCommercialSocialRemixing()
+   *     }
+   *   ]
+   * });
+   * ```
+   *
+   * **3. Mint NFT with IP Asset:**
+   * ```typescript
+   * const result = await client.ipAsset.registerIpAsset({
+   *   nft: { type: "mint", spgNftContract: "0x...", recipient: "0x...", allowDuplicates: false },
+   * });
+   * ```
+   *
+   * **Supported Workflows (6 methods automatically selected based on parameters):**
+   * - {@link registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens} - Register IP with license terms and royalty distribution
+   * - {@link registerIpAndAttachPilTerms} - Register IP with license terms
+   * - {@link register} - Register basic IP asset
+   * - {@link mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens} - Mint NFT and register IP with license terms and royalty distribution
+   * - {@link mintAndRegisterIpAssetWithPilTerms} - Mint NFT and register IP with license terms
+   * - {@link mintAndRegisterIp} - Mint NFT and register basic IP asset
+   *
+   * **Automatic Token Handling:**
    * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
    * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
