@@ -5455,7 +5455,7 @@ describe("Test IpAssetClient", () => {
           nft: { type: "invalid" as "mint", spgNftContract: mockERC721, tokenId: 1n },
           derivData,
         }),
-      ).to.be.rejectedWith("Failed to register derivative IP Asset: Invalid NFT type");
+      ).to.be.rejectedWith("Failed to register derivative IP Asset: Invalid NFT type.");
     });
 
     it("should throw error when licenseTokenIds provided without maxRts", async () => {
@@ -5465,7 +5465,7 @@ describe("Test IpAssetClient", () => {
           licenseTokenIds: [1, 2, 3],
         }),
       ).to.be.rejectedWith(
-        "Failed to register derivative IP Asset: licenseTokenIds and maxRts must be provided together",
+        "Failed to register derivative IP Asset: licenseTokenIds and maxRts must be provided together.",
       );
     });
 
@@ -5476,7 +5476,7 @@ describe("Test IpAssetClient", () => {
           maxRts: 100,
         }),
       ).to.be.rejectedWith(
-        "Failed to register derivative IP Asset: licenseTokenIds and maxRts must be provided together",
+        "Failed to register derivative IP Asset: licenseTokenIds and maxRts must be provided together.",
       );
     });
 
@@ -5488,7 +5488,7 @@ describe("Test IpAssetClient", () => {
           maxRts: 100,
         }),
       ).to.be.rejectedWith(
-        "Failed to register derivative IP Asset: licenseTokenIds and maxRts must be provided together",
+        "Failed to register derivative IP Asset: licenseTokenIds and maxRts must be provided together.",
       );
     });
 
@@ -5504,7 +5504,7 @@ describe("Test IpAssetClient", () => {
           ],
         }),
       ).to.be.rejectedWith(
-        "Failed to register derivative IP Asset: derivData must be provided when royaltyShares are provided",
+        "Failed to register derivative IP Asset: derivData must be provided when royaltyShares are provided.",
       );
     });
 
@@ -5514,7 +5514,7 @@ describe("Test IpAssetClient", () => {
           nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
         }),
       ).to.be.rejectedWith(
-        "Failed to register derivative IP Asset: Either derivData or (licenseTokenIds and maxRts) must be provided",
+        "Failed to register derivative IP Asset: Either derivData or (licenseTokenIds and maxRts) must be provided.",
       );
     });
 
@@ -5580,6 +5580,7 @@ describe("Test IpAssetClient", () => {
         expect(registerDerivativeIpStub.callCount).to.equal(1);
         expect(result.txHash).to.equal(registerDerivativeIpTxHash);
         expect(result.ipId).to.equal(ipId);
+        expect(result.tokenId).to.equal(1n);
       });
 
       it("should call registerIpAndMakeDerivativeWithLicenseTokens when licenseTokenIds and maxRts are provided", async () => {
@@ -5607,7 +5608,7 @@ describe("Test IpAssetClient", () => {
             nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
           }),
         ).to.be.rejectedWith(
-          "Failed to register derivative IP Asset: Either derivData or (licenseTokenIds and maxRts) must be provided",
+          "Failed to register derivative IP Asset: Either derivData or (licenseTokenIds and maxRts) must be provided.",
         );
       });
     });
@@ -5689,7 +5690,7 @@ describe("Test IpAssetClient", () => {
             nft: { type: "mint", spgNftContract: mockERC721, recipient: mockAddress },
           }),
         ).to.be.rejectedWith(
-          "Failed to register derivative IP Asset: Either derivData or (licenseTokenIds and maxRts) must be provided",
+          "Failed to register derivative IP Asset: Either derivData or (licenseTokenIds and maxRts) must be provided.",
         );
       });
     });
@@ -5700,8 +5701,8 @@ describe("Test IpAssetClient", () => {
           ipAssetClient,
           "registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens",
         ).resolves({
-          registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: "0x1",
-          distributeRoyaltyTokensTxHash: "0x2",
+          registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: txHash,
+          distributeRoyaltyTokensTxHash: txHash,
           ipId: ipId,
           tokenId: 1n,
           ipRoyaltyVault: mockAddress,
@@ -5724,6 +5725,9 @@ describe("Test IpAssetClient", () => {
             },
           },
         });
+        expect(
+          registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensStub.callCount,
+        ).to.equal(1);
         expect(
           registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensStub.getCall(0)
             .args[0],
@@ -5750,7 +5754,7 @@ describe("Test IpAssetClient", () => {
 
       it("should call registerDerivativeIp with optional parameters", async () => {
         const registerDerivativeIpStub = stub(ipAssetClient, "registerDerivativeIp").resolves({
-          txHash: "0x1",
+          txHash: txHash,
           ipId: ipId,
           tokenId: 1n,
         });
@@ -5797,7 +5801,7 @@ describe("Test IpAssetClient", () => {
           ipAssetClient,
           "registerIpAndMakeDerivativeWithLicenseTokens",
         ).resolves({
-          txHash: "0x1",
+          txHash: txHash,
           ipId: ipId,
           tokenId: 1n,
         });
@@ -5845,7 +5849,7 @@ describe("Test IpAssetClient", () => {
           ipAssetClient,
           "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
         ).resolves({
-          txHash: "0x1",
+          txHash: txHash,
           ipId: ipId,
           tokenId: 1n,
         });
@@ -5903,7 +5907,7 @@ describe("Test IpAssetClient", () => {
           ipAssetClient,
           "mintAndRegisterIpAndMakeDerivative",
         ).resolves({
-          txHash: "0x1",
+          txHash: txHash,
           ipId: ipId,
           tokenId: 1n,
         });
@@ -5955,7 +5959,7 @@ describe("Test IpAssetClient", () => {
           ipAssetClient,
           "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
         ).resolves({
-          txHash: "0x1",
+          txHash: txHash,
           ipId: ipId,
           tokenId: 1n,
         });

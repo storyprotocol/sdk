@@ -643,6 +643,54 @@ export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT |
       : MintAndRegisterIpAssetWithPilTermsResponse
     : RegisterIpResponse;
 
+/**
+ * Request type for registering derivative IP assets with flexible workflow support.
+ *
+ * @template T - The NFT type (MintedNFT or MintNFT)
+ *
+ * @example
+ * **Derivative with License Terms and Royalty Distribution:**
+ * ```typescript
+ * const request: RegisterDerivativeIpAssetRequest<MintedNFT> = {
+ *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
+ *   derivData: {
+ *     parentIpIds: ["0x..."],
+ *     licenseTermsIds: [1n],
+ *     maxMintingFee: 10000n,
+ *     maxRts: 100,
+ *     maxRevenueShare: 100
+ *   },
+ *   royaltyShares: [
+ *     { recipient: "0x...", percentage: 100 }
+ *   ]
+ * };
+ * ```
+ *
+ * @example
+ * **Basic Derivative Registration:**
+ * ```typescript
+ * const request: RegisterDerivativeIpAssetRequest<MintedNFT> = {
+ *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
+ *   derivData: {
+ *     parentIpIds: ["0x..."],
+ *     licenseTermsIds: [1n],
+ *     maxMintingFee: 10000n,
+ *     maxRts: 100,
+ *     maxRevenueShare: 100
+ *   }
+ * };
+ * ```
+ *
+ * @example
+ * **Derivative using Existing License Tokens:**
+ * ```typescript
+ * const request: RegisterDerivativeIpAssetRequest<MintedNFT> = {
+ *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
+ *   licenseTokenIds: [1, 2, 3],
+ *   maxRts: 100000
+ * };
+ * ```
+ */
 export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = WithWipOptions &
   WithIpMetadata & {
     nft: T;
@@ -651,14 +699,23 @@ export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = Wi
      *
      * @remarks
      * Royalty shares can only be specified if `derivData` is also provided.
-     * This ensures that royalty distribution is always associated with defined `derivData`.
+     * This ensures that royalty distribution is always associated with derivative IP registration.
+     * The shares define how royalty tokens will be distributed among IP authors.
      */
     royaltyShares?: RoyaltyShare[];
-    /** The derivative data to be used for register derivative. */
+    /**
+     * The derivative data containing parent IP information and licensing terms.
+     * Can be used independently or together with `royaltyShares` for royalty distribution.
+     */
     derivData?: DerivativeDataInput;
-    /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
+    /**
+     * The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
+     * Must be provided together with `licenseTokenIds`.
+     */
     maxRts?: number;
-    /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
+    /** The IDs of the license tokens to be burned for linking the IP to parent IPs.
+     * Must be provided together with `maxRts`.
+     */
     licenseTokenIds?: number[] | bigint[];
     /**
      * The deadline for the signature in seconds.
@@ -668,6 +725,38 @@ export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = Wi
     txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
   };
 
+/**
+ * Response type for derivative IP asset registration with conditional return types.
+ *
+ * @template T - The request type extending RegisterDerivativeIpAssetRequest
+ *
+ * @remarks
+ * The response type varies based on the input parameters:
+ * - If `derivData` and `royaltyShares` are provided with a minted NFT, returns detailed royalty distribution response
+ * - Otherwise, returns basic registration response
+ *
+ * @example
+ * **With Royalty Distribution:**
+ * ```typescript
+ * const response: RegisterDerivativeIpAssetResponse<typeof request> = {
+ *   registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: "0x...",
+ *   distributeRoyaltyTokensTxHash: "0x...",
+ *   ipId: "0x...",
+ *   tokenId: 1n,
+ *   ipRoyaltyVault: "0x..."
+ * };
+ * ```
+ *
+ * @example
+ * **Basic Registration:**
+ * ```typescript
+ * const response: RegisterDerivativeIpAssetResponse<typeof request> = {
+ *   txHash: "0x...",
+ *   ipId: "0x...",
+ *   tokenId: 1n
+ * };
+ * ```
+ */
 export type RegisterDerivativeIpAssetResponse<
   T extends RegisterDerivativeIpAssetRequest<MintedNFT | MintNFT>,
 > = T extends {
