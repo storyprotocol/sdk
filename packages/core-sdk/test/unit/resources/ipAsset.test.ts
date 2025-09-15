@@ -5220,7 +5220,7 @@ describe("Test IpAssetClient", () => {
             ],
           }),
         ).to.be.rejectedWith(
-          "Failed to register IP Asset: Royalty shares are required when registering IP with license terms data.",
+          "Failed to register IP Asset: License terms data must be provided when royalty shares are specified.",
         );
       });
 
@@ -5343,7 +5343,7 @@ describe("Test IpAssetClient", () => {
             ],
           }),
         ).to.be.rejectedWith(
-          "Failed to register IP Asset: Royalty shares are required when registering IP with license terms data.",
+          "Failed to register IP Asset: License terms data must be provided when royalty shares are specified.",
         );
       });
       it("should call mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens when royalty shares and license terms data are provided", async () => {
@@ -5427,6 +5427,331 @@ describe("Test IpAssetClient", () => {
         expect(result.ipId).to.equal(ipId);
         expect(result.txHash).to.equal(mintAndRegisterIpTxHash);
         expect(result.tokenId).to.equal(1n);
+      });
+    });
+    describe("Register with optional parameters", () => {
+      it("should call registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens with optional parameters", async () => {
+        const registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokensStub = stub(
+          ipAssetClient,
+          "registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens",
+        ).resolves({
+          ipId: ipId,
+          licenseTermsIds: [1n],
+          ipRoyaltyVault: mockAddress,
+          maxLicenseTokensTxHashes: [txHash],
+          registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash: txHash,
+          distributeRoyaltyTokensTxHash: txHash,
+        });
+        await ipAssetClient.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+          royaltyShares: [{ recipient: mockAddress, percentage: 100 }],
+          deadline: 2000,
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+        });
+        expect(registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokensStub.callCount).to.equal(1);
+        expect(
+          registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokensStub.args[0][0],
+        ).to.deep.equal({
+          nftContract: mockERC721,
+          tokenId: 1n,
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+          royaltyShares: [{ recipient: mockAddress, percentage: 100 }],
+          deadline: 2000,
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+        });
+      });
+
+      it("should call registerIpAndAttachPilTerms with optional parameters", async () => {
+        const registerIpAndAttachPilTermsStub = stub(
+          ipAssetClient,
+          "registerIpAndAttachPilTerms",
+        ).resolves({
+          ipId: ipId,
+          licenseTermsIds: [1n],
+          maxLicenseTokensTxHashes: [txHash],
+          txHash: txHash,
+        });
+        await ipAssetClient.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          licenseTermsData: [
+            {
+              maxLicenseTokens: 100,
+
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+            },
+          ],
+          deadline: 2000,
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+        });
+        expect(registerIpAndAttachPilTermsStub.callCount).to.equal(1);
+        expect(registerIpAndAttachPilTermsStub.args[0][0]).to.deep.equal({
+          nftContract: mockERC721,
+          tokenId: 1n,
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+          deadline: 2000,
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+        });
+      });
+
+      it("should call register with optional parameters", async () => {
+        const registerStub = stub(ipAssetClient, "register").resolves({
+          ipId: ipId,
+          txHash: txHash,
+        });
+        await ipAssetClient.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          deadline: 2000,
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+        });
+        expect(registerStub.callCount).to.equal(1);
+        expect(registerStub.args[0][0]).to.deep.equal({
+          nftContract: mockERC721,
+          tokenId: 1n,
+          deadline: 2000,
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+        });
+      });
+
+      it("should call mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens with optional parameters", async () => {
+        const mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub = stub(
+          ipAssetClient,
+          "mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens",
+        ).resolves({
+          ipId: ipId,
+          licenseTermsIds: [1n],
+          ipRoyaltyVault: mockAddress,
+          maxLicenseTokensTxHashes: [txHash],
+          txHash: txHash,
+        });
+        await ipAssetClient.registerIpAsset({
+          nft: {
+            type: "mint",
+            spgNftContract: mockERC721,
+            allowDuplicates: false,
+            recipient: mockAddress,
+          },
+          royaltyShares: [{ recipient: mockAddress, percentage: 100 }],
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+          deadline: 2000,
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+          options: {
+            wipOptions: {
+              enableAutoApprove: true,
+            },
+          },
+        });
+        expect(mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub.callCount).to.equal(
+          1,
+        );
+        expect(
+          mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensStub.getCall(0).args[0],
+        ).to.deep.equal({
+          spgNftContract: mockERC721,
+          recipient: mockAddress,
+          allowDuplicates: false,
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+          royaltyShares: [{ recipient: mockAddress, percentage: 100 }],
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+          txOptions: {
+            timeout: 1000,
+          },
+          options: {
+            wipOptions: {
+              enableAutoApprove: true,
+            },
+          },
+        });
+      });
+
+      it("should call mintAndRegisterIpAndAttachPilTerms with optional parameters", async () => {
+        const mintAndRegisterIpAndAttachPilTermsStub = stub(
+          ipAssetClient,
+          "mintAndRegisterIpAssetWithPilTerms",
+        ).resolves({
+          ipId: ipId,
+          licenseTermsIds: [1n],
+          maxLicenseTokensTxHashes: [txHash],
+          txHash: txHash,
+        });
+        await ipAssetClient.registerIpAsset({
+          nft: {
+            type: "mint",
+            spgNftContract: mockERC721,
+            allowDuplicates: false,
+            recipient: mockAddress,
+          },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+          deadline: 2000,
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+          options: {
+            wipOptions: {
+              enableAutoApprove: true,
+            },
+          },
+        });
+        expect(mintAndRegisterIpAndAttachPilTermsStub.callCount).to.equal(1);
+        expect(mintAndRegisterIpAndAttachPilTermsStub.args[0][0]).to.deep.equal({
+          spgNftContract: mockERC721,
+          recipient: mockAddress,
+          allowDuplicates: false,
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+          options: {
+            wipOptions: {
+              enableAutoApprove: true,
+            },
+          },
+        });
+      });
+      it("should call mintAndRegisterIp with optional parameters", async () => {
+        const mintAndRegisterIpStub = stub(ipAssetClient, "mintAndRegisterIp").resolves({
+          ipId: ipId,
+          txHash: txHash,
+        });
+        await ipAssetClient.registerIpAsset({
+          nft: {
+            type: "mint",
+            spgNftContract: mockERC721,
+            allowDuplicates: false,
+            recipient: mockAddress,
+          },
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+          deadline: 2000,
+          options: {
+            wipOptions: {
+              enableAutoApprove: true,
+            },
+          },
+        });
+        expect(mintAndRegisterIpStub.callCount).to.equal(1);
+        expect(mintAndRegisterIpStub.args[0][0]).to.deep.equal({
+          spgNftContract: mockERC721,
+          recipient: mockAddress,
+          allowDuplicates: false,
+          txOptions: {
+            timeout: 1000,
+          },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+          },
+          options: {
+            wipOptions: {
+              enableAutoApprove: true,
+            },
+          },
+        });
       });
     });
   });
