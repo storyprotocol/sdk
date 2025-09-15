@@ -1682,7 +1682,7 @@ export class IPAssetClient {
    * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
    *
    * @throws {Error} If the NFT type is invalid.
-   * @throws {Error} If royalty shares are required when registering IP with license terms data.
+   * @throws {Error} If `licenseTermsData` is not provided when `royaltyShares` are specified.
    *
    */
   public async registerIpAsset<T extends RegisterIpAssetRequest<MintedNFT | MintNFT>>(
@@ -1693,7 +1693,7 @@ export class IPAssetClient {
 
       // Validate royalty shares without license terms
       if (royaltyShares && !licenseTermsData) {
-        throw new Error("Royalty shares are required when registering IP with license terms data.");
+        throw new Error("License terms data must be provided when royalty shares are specified.");
       }
 
       if (nft.type === "minted") {
