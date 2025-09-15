@@ -5480,6 +5480,18 @@ describe("Test IpAssetClient", () => {
       );
     });
 
+    it("should throw error when empty licenseTokenIds array provided with maxRts", async () => {
+      await expect(
+        ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          licenseTokenIds: [],
+          maxRts: 100,
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register derivative IP Asset: licenseTokenIds and maxRts must be provided together",
+      );
+    });
+
     it("should throw error when royaltyShares provided without derivData", async () => {
       await expect(
         ipAssetClient.registerDerivativeIpAsset({
@@ -5492,7 +5504,17 @@ describe("Test IpAssetClient", () => {
           ],
         }),
       ).to.be.rejectedWith(
-        "Failed to register derivative IP Asset: licenseTokenIds must be provided when royaltyShares are provided",
+        "Failed to register derivative IP Asset: derivData must be provided when royaltyShares are provided",
+      );
+    });
+
+    it("should throw error without derivData and licenseTokenIds, maxRts", async () => {
+      await expect(
+        ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register derivative IP Asset: Either derivData or (licenseTokenIds and maxRts) must be provided",
       );
     });
 
@@ -5579,12 +5601,14 @@ describe("Test IpAssetClient", () => {
         expect(result.tokenId).to.equal(1n);
       });
 
-      it("should throw error when invalid request type for minted NFT", async () => {
+      it("should throw error when no valid parameters provided for minted NFT", async () => {
         await expect(
           ipAssetClient.registerDerivativeIpAsset({
             nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
           }),
-        ).to.be.rejectedWith("Failed to register derivative IP Asset: Invalid request type");
+        ).to.be.rejectedWith(
+          "Failed to register derivative IP Asset: Either derivData or (licenseTokenIds and maxRts) must be provided",
+        );
       });
     });
 
@@ -5659,12 +5683,14 @@ describe("Test IpAssetClient", () => {
         expect(result.tokenId).to.equal(1n);
       });
 
-      it("should throw error when invalid request type for mint NFT", async () => {
+      it("should throw error when no valid parameters provided for mint NFT", async () => {
         await expect(
           ipAssetClient.registerDerivativeIpAsset({
             nft: { type: "mint", spgNftContract: mockERC721, recipient: mockAddress },
           }),
-        ).to.be.rejectedWith("Failed to register derivative IP Asset: Invalid request type");
+        ).to.be.rejectedWith(
+          "Failed to register derivative IP Asset: Either derivData or (licenseTokenIds and maxRts) must be provided",
+        );
       });
     });
 

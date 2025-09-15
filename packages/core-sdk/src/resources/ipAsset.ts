@@ -1729,8 +1729,8 @@ export class IPAssetClient {
    * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
    *
    * @throws {Error} If `licenseTokenIds` and `maxRts` are not provided together.
-   * @throws {Error} If `licenseTokenIds` are not provided when `royaltyShares` are provided.
-   * @throws {Error} If `licenseTokenIds` and `maxRts`, `royaltyShares` and `derivData` are all not provided.
+   * @throws {Error} If `derivData` is not provided when `royaltyShares` are provided.
+   * @throws {Error} If neither `derivData` nor (`licenseTokenIds` and `maxRts`) are provided.
    * @throws {Error} If the NFT type is invalid.
    */
   public async registerDerivativeIpAsset<
@@ -1740,13 +1740,25 @@ export class IPAssetClient {
       const { nft, licenseTokenIds, maxRts, royaltyShares, derivData } = request;
       if (
         (licenseTokenIds && licenseTokenIds.length > 0 && maxRts === undefined) ||
-        (maxRts && !licenseTokenIds)
+        (maxRts !== undefined && (!licenseTokenIds || licenseTokenIds.length === 0))
       ) {
         throw new Error("licenseTokenIds and maxRts must be provided together");
       }
 
       if (royaltyShares && !derivData) {
-        throw new Error("licenseTokenIds must be provided when royaltyShares are provided");
+        throw new Error("derivData must be provided when royaltyShares are provided");
+      }
+
+      // Validate that at least one valid combination is provided
+      const hasDerivData = !!derivData;
+      const hasLicenseTokens = !!(
+        licenseTokenIds &&
+        licenseTokenIds.length > 0 &&
+        maxRts !== undefined
+      );
+
+      if (!hasDerivData && !hasLicenseTokens) {
+        throw new Error("Either derivData or (licenseTokenIds and maxRts) must be provided");
       }
 
       if (nft.type === "minted") {
