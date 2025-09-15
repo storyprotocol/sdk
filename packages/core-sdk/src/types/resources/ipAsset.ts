@@ -687,7 +687,7 @@ export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptio
      *
      * @remarks
      * Can only be specified when `licenseTermsData` is also provided, ensuring
-     * that revenue distribution is always associated with defined licensing terms.
+     * that distribute royalty.
      */
     royaltyShares?: RoyaltyShare[];
 
