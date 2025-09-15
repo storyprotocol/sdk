@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 import {
   Address,
   encodeFunctionData,
@@ -51,6 +50,7 @@ import {
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
+import { TransactionResponse } from "../types/options";
 import {
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
   BatchMintAndRegisterIpAndMakeDerivativeResponse,
@@ -136,7 +136,6 @@ import {
 } from "../utils/registrationUtils/transformRegistrationRequest";
 import { getRevenueShare } from "../utils/royalty";
 import { validateAddress } from "../utils/utils";
-import { TransactionResponse } from "../types/options";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;

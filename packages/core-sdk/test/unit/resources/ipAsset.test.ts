@@ -5667,5 +5667,318 @@ describe("Test IpAssetClient", () => {
         ).to.be.rejectedWith("Failed to register derivative IP Asset: Invalid request type");
       });
     });
+
+    describe("Test with Optional Parameters", () => {
+      it("should call registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens with optional parameters", async () => {
+        const registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensStub = stub(
+          ipAssetClient,
+          "registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens",
+        ).resolves({
+          registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash: "0x1",
+          distributeRoyaltyTokensTxHash: "0x2",
+          ipId: ipId,
+          tokenId: 1n,
+          ipRoyaltyVault: mockAddress,
+        });
+        await ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          royaltyShares: [{ recipient: mockAddress, percentage: 100 }],
+          derivData,
+          deadline: 2000,
+          txOptions: { timeout: 10000 },
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: true,
+            },
+          },
+        });
+        expect(
+          registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensStub.getCall(0)
+            .args[0],
+        ).to.deep.equal({
+          nftContract: mockERC721,
+          tokenId: 1n,
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          deadline: 2000,
+          txOptions: { timeout: 10000 },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: true,
+            },
+          },
+          royaltyShares: [{ recipient: mockAddress, percentage: 100 }],
+          derivData,
+        });
+      });
+
+      it("should call registerDerivativeIp with optional parameters", async () => {
+        const registerDerivativeIpStub = stub(ipAssetClient, "registerDerivativeIp").resolves({
+          txHash: "0x1",
+          ipId: ipId,
+          tokenId: 1n,
+        });
+        await ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          derivData,
+          deadline: 2000,
+          txOptions: { timeout: 10000 },
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: true,
+            },
+          },
+        });
+        expect(registerDerivativeIpStub.callCount).to.equal(1);
+        expect(registerDerivativeIpStub.getCall(0).args[0]).to.deep.equal({
+          nftContract: mockERC721,
+          tokenId: 1n,
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          deadline: 2000,
+          txOptions: { timeout: 10000 },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: true,
+            },
+          },
+          derivData,
+        });
+      });
+
+      it("should call registerIpAndMakeDerivativeWithLicenseTokens with optional parameters", async () => {
+        const registerIpAndMakeDerivativeWithLicenseTokensStub = stub(
+          ipAssetClient,
+          "registerIpAndMakeDerivativeWithLicenseTokens",
+        ).resolves({
+          txHash: "0x1",
+          ipId: ipId,
+          tokenId: 1n,
+        });
+        await ipAssetClient.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: 1n },
+          licenseTokenIds: [1, 2, 3],
+          maxRts: 100,
+          deadline: 2000,
+          txOptions: { timeout: 10000 },
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: true,
+            },
+          },
+        });
+        expect(registerIpAndMakeDerivativeWithLicenseTokensStub.callCount).to.equal(1);
+        expect(registerIpAndMakeDerivativeWithLicenseTokensStub.getCall(0).args[0]).to.deep.equal({
+          nftContract: mockERC721,
+          tokenId: 1n,
+          licenseTokenIds: [1, 2, 3],
+          maxRts: 100,
+          deadline: 2000,
+          txOptions: { timeout: 10000 },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: true,
+            },
+          },
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+        });
+      });
+      it("should call mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens with optional parameters", async () => {
+        const mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub = stub(
+          ipAssetClient,
+          "mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens",
+        ).resolves({
+          txHash: "0x1",
+          ipId: ipId,
+          tokenId: 1n,
+        });
+        await ipAssetClient.registerDerivativeIpAsset({
+          nft: {
+            type: "mint",
+            spgNftContract: mockERC721,
+            recipient: mockAddress,
+            allowDuplicates: false,
+          },
+          royaltyShares: [{ recipient: mockAddress, percentage: 100 }],
+          derivData,
+          deadline: 2000,
+          txOptions: { timeout: 10000 },
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: false,
+            },
+          },
+        });
+        expect(mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.callCount).to.equal(
+          1,
+        );
+        expect(
+          mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensStub.getCall(0).args[0],
+        ).to.deep.equal({
+          spgNftContract: mockERC721,
+          royaltyShares: [{ recipient: mockAddress, percentage: 100 }],
+          derivData,
+          txOptions: { timeout: 10000 },
+          allowDuplicates: false,
+          recipient: mockAddress,
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: false,
+            },
+          },
+        });
+      });
+
+      it("should call mintAndRegisterIpAndMakeDerivative with optional parameters", async () => {
+        const mintAndRegisterIpAndMakeDerivativeStub = stub(
+          ipAssetClient,
+          "mintAndRegisterIpAndMakeDerivative",
+        ).resolves({
+          txHash: "0x1",
+          ipId: ipId,
+          tokenId: 1n,
+        });
+        await ipAssetClient.registerDerivativeIpAsset({
+          nft: {
+            type: "mint",
+            spgNftContract: mockERC721,
+            recipient: mockAddress,
+            allowDuplicates: false,
+          },
+          derivData,
+          deadline: 2000,
+          txOptions: { timeout: 10000 },
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: false,
+            },
+          },
+        });
+        expect(mintAndRegisterIpAndMakeDerivativeStub.callCount).to.equal(1);
+        expect(mintAndRegisterIpAndMakeDerivativeStub.getCall(0).args[0]).to.deep.equal({
+          spgNftContract: mockERC721,
+          derivData,
+          txOptions: { timeout: 10000 },
+          allowDuplicates: false,
+          recipient: mockAddress,
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: false,
+            },
+          },
+        });
+      });
+
+      it("should call mintAndRegisterIpAndMakeDerivativeWithLicenseTokens with optional parameters", async () => {
+        const mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub = stub(
+          ipAssetClient,
+          "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+        ).resolves({
+          txHash: "0x1",
+          ipId: ipId,
+          tokenId: 1n,
+        });
+        await ipAssetClient.registerDerivativeIpAsset({
+          nft: {
+            type: "mint",
+            spgNftContract: mockERC721,
+            recipient: mockAddress,
+            allowDuplicates: false,
+          },
+          licenseTokenIds: [1, 2, 3],
+          maxRts: 100,
+          deadline: 2000,
+          txOptions: { timeout: 10000 },
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: true,
+            },
+          },
+        });
+        expect(mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub.callCount).to.equal(1);
+        expect(
+          mintAndRegisterIpAndMakeDerivativeWithLicenseTokensStub.getCall(0).args[0],
+        ).to.deep.equal({
+          spgNftContract: mockERC721,
+          licenseTokenIds: [1, 2, 3],
+          maxRts: 100,
+          txOptions: { timeout: 10000 },
+          allowDuplicates: false,
+          recipient: mockAddress,
+          ipMetadata: {
+            ipMetadataURI: "",
+            ipMetadataHash: toHex(0, { size: 32 }),
+            nftMetadataHash: toHex("nftMetadata", { size: 32 }),
+            nftMetadataURI: "",
+          },
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: true,
+            },
+          },
+        });
+      });
+    });
   });
 });
