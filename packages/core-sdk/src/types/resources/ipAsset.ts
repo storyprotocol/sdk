@@ -611,11 +611,86 @@ export type MintedNFT = {
   nftContract: Address;
   tokenId: TokenIdInput;
 };
+/**
+ * Request configuration for registering IP assets with flexible licensing and royalty options.
+ *
+ * @template T - The NFT type (MintNFT and MintedNFT)
+ *
+ * @example
+ * **Basic IP Registration:**
+ * ```typescript
+ * const request: RegisterIpAssetRequest<MintedNFT> = {
+ *   nft: {
+ *     type: "minted",
+ *     nftContract: "0x1234567890123456789012345678901234567890",
+ *     tokenId: 1n
+ *   }
+ * };
+ * ```
+ *
+ * @example
+ * **IP Registration with License Terms:**
+ * ```typescript
+ * const request: RegisterIpAssetRequest<MintedNFT> = {
+ *   nft: {
+ *     type: "minted",
+ *     nftContract: "0x1234567890123456789012345678901234567890",
+ *     tokenId: 1n
+ *   },
+ *   licenseTermsData: [
+ *     {
+ *       terms: PILFlavor.commercialUse({
+ *         defaultMintingFee: 10000n,
+ *         currency: WIP_TOKEN_ADDRESS
+ *       })
+ *     }
+ *   ]
+ * };
+ * ```
+ * @example
+ * **Mint New NFT and with License Terms and Royalty Distribution:**
+ * ```typescript
+ * const request: RegisterIpAssetRequest<MintNFT> = {
+ *   nft: {
+ *     type: "mint",
+ *     spgNftContract: "0x1234567890123456789012345678901234567890",
+ *     recipient: "0xRecipient...",
+ *     allowDuplicates: false
+ *   },
+ *   licenseTermsData: [
+ *     {
+ *       terms: PILFlavor.nonCommercialSocialRemixing()
+ *     }
+ *   ],
+ *  royaltyShares: [
+ *     { recipient: "0xArtist...", percentage: 70 },
+ *     { recipient: "0xCollaborator...", percentage: 30 }
+ *   ],
+ * };
+ * ```
+ */
 export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptions &
   WithIpMetadata & {
+    /** The NFT to be registered as an IP asset. */
     nft: T;
+
+    /**
+     * License terms and configuration to be attached to the IP asset.
+     *
+     * @remarks
+     * Can be specified independently or together with `royaltyShares` for revenue distribution.
+     */
     licenseTermsData?: LicenseTermsDataInput[];
+
+    /**
+     * Authors of the IP and their shares of the royalty tokens.
+     *
+     * @remarks
+     * Can only be specified when `licenseTermsData` is also provided, ensuring
+     * that distribute royalty.
+     */
     royaltyShares?: RoyaltyShare[];
+
     /**
      * The deadline for the signature in seconds.
      * @default 1000
@@ -624,6 +699,26 @@ export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptio
     txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
   };
 
+/**
+ * Response type for IP asset registration with conditional return types based on input parameters.
+ *
+ * @template T - The request type extending `RegisterIpAssetRequest`
+ *
+ * @remarks
+ * The response structure varies based on the registration type:
+ *
+ * **Full Registration (with license terms + royalty shares):**
+ * - Returns detailed response with royalty vault information
+ * - Includes transaction hashes for both registration and royalty distribution
+ *
+ * **License Terms Only:**
+ * - Returns response with license terms IDs
+ * - Includes IP registration details
+ *
+ * **Basic Registration:**
+ * - Returns minimal response with IP ID and transaction hash
+ *
+ */
 export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT | MintNFT>> =
   T extends { licenseTermsData: LicenseTermsDataInput[]; royaltyShares: RoyaltyShare[] }
     ? T extends { nft: { type: "minted" } }

@@ -3497,190 +3497,192 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe("Register IP Asset with Minted NFT", () => {
-    it("should successfully when give license terms data and royalty shares", async () => {
-      const tokenId = await getTokenId();
-      const result = await client.ipAsset.registerIpAsset({
-        nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
-        licenseTermsData: [
-          {
-            terms: PILFlavor.creativeCommonsAttribution({
-              currency: WIP_TOKEN_ADDRESS,
-              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-            }),
-            licensingConfig: {
-              isSet: true,
-              mintingFee: 0n,
-              licensingHook: zeroAddress,
-              hookData: zeroAddress,
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: zeroAddress,
+  describe("Register ip asset with minted and mint nft", () => {
+    describe("Register IP Asset with Minted NFT", () => {
+      it("should successfully when give license terms data and royalty shares", async () => {
+        const tokenId = await getTokenId();
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              licensingConfig: {
+                isSet: true,
+                mintingFee: 0n,
+                licensingHook: zeroAddress,
+                hookData: zeroAddress,
+                commercialRevShare: 0,
+                disabled: false,
+                expectMinimumGroupRewardShare: 0,
+                expectGroupRewardPool: zeroAddress,
+              },
+              maxLicenseTokens: 100,
             },
-            maxLicenseTokens: 100,
-          },
-        ],
-        royaltyShares: [
-          {
-            recipient: TEST_WALLET_ADDRESS,
-            percentage: 100,
-          },
-        ],
-        deadline: 1000n,
+          ],
+          royaltyShares: [
+            {
+              recipient: TEST_WALLET_ADDRESS,
+              percentage: 100,
+            },
+          ],
+          deadline: 1000n,
+        });
+        expect(result.ipId).to.be.a("string");
+        expect(result.licenseTermsIds.length).to.be.equal(1);
+        expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string");
+        expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
+        expect(result.ipRoyaltyVault).to.be.a("string");
+        expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
       });
-      expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsIds.length).to.be.equal(1);
-      expect(result.registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash).to.be.a("string");
-      expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
-      expect(result.ipRoyaltyVault).to.be.a("string");
-      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
+
+      it("should successfully when give license terms data without royalty shares", async () => {
+        const tokenId = await getTokenId();
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.commercialRemix({
+                defaultMintingFee: 10000n,
+                commercialRevShare: 100,
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+        });
+        expect(result.ipId).to.be.a("string");
+        expect(result.txHash).to.be.a("string");
+        expect(result.licenseTermsIds).to.be.an("array");
+        expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
+        expect(result.tokenId).to.be.a("bigint");
+      });
+
+      it("should successfully when without license terms data, royalty shares, ip metadata", async () => {
+        const tokenId = await getTokenId();
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
+        });
+        expect(result.ipId).to.be.a("string");
+        expect(result.txHash).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+
+      it("should successfully when without license terms data and royalty shares, with ip metadata", async () => {
+        const tokenId = await getTokenId();
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+            nftMetadataURI: "test-nft-uri",
+          },
+        });
+        expect(result.ipId).to.be.a("string");
+        expect(result.txHash).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
     });
 
-    it("should successfully when give license terms data without royalty shares", async () => {
-      const tokenId = await getTokenId();
-      const result = await client.ipAsset.registerIpAsset({
-        nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
-        licenseTermsData: [
-          {
-            terms: PILFlavor.commercialRemix({
-              defaultMintingFee: 10000n,
-              commercialRevShare: 100,
-              currency: WIP_TOKEN_ADDRESS,
-              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-            }),
-            maxLicenseTokens: 100,
+    describe("Register IP Asset by minting a new NFT", () => {
+      let spgNftContract: Address;
+      before(async () => {
+        const txData = await client.nftClient.createNFTCollection({
+          name: "test-collection",
+          symbol: "TEST_FOR_MINT",
+          maxSupply: 100,
+          isPublicMinting: false,
+          mintOpen: true,
+          mintFeeRecipient: TEST_WALLET_ADDRESS,
+          contractURI: "test-uri",
+          mintFee: 10n,
+          mintFeeToken: WIP_TOKEN_ADDRESS,
+        });
+        spgNftContract = txData.spgNftContract!;
+      });
+
+      it("should successfully when give license terms data and royalty shares", async () => {
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "mint", spgNftContract: spgNftContract },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+            },
+            {
+              terms: PILFlavor.commercialRemix({
+                defaultMintingFee: 10000n,
+                commercialRevShare: 100,
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+          royaltyShares: [
+            {
+              recipient: TEST_WALLET_ADDRESS,
+              percentage: 10,
+            },
+          ],
+        });
+
+        expect(result.ipId).to.be.a("string");
+        expect(result.licenseTermsIds?.length).to.be.equal(2);
+        expect(result.ipRoyaltyVault).to.be.a("string");
+        expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
+        expect(result.tokenId).to.be.a("bigint");
+      });
+
+      it("should successfully when give license terms data without royalty shares", async () => {
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "mint", spgNftContract: spgNftContract },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.creativeCommonsAttribution({
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLapAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+            {
+              terms: PILFlavor.commercialRemix({
+                defaultMintingFee: 10000n,
+                commercialRevShare: 100,
+                currency: WIP_TOKEN_ADDRESS,
+                royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
+              }),
+              maxLicenseTokens: 100,
+            },
+          ],
+        });
+        expect(result.txHash).to.be.a("string");
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+        expect(result.licenseTermsIds?.length).to.be.equal(2);
+        expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
+      });
+
+      it("should successfully when without license terms data and royalty shares", async () => {
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "mint", spgNftContract: spgNftContract },
+          ipMetadata: {
+            ipMetadataURI: "test-uri",
+            ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
+            nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
+            nftMetadataURI: "test-nft-uri",
           },
-        ],
+        });
+        expect(result.txHash).to.be.a("string");
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
       });
-      expect(result.ipId).to.be.a("string");
-      expect(result.txHash).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
-      expect(result.tokenId).to.be.a("bigint");
-    });
-
-    it("should successfully when without license terms data, royalty shares, ip metadata", async () => {
-      const tokenId = await getTokenId();
-      const result = await client.ipAsset.registerIpAsset({
-        nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
-      });
-      expect(result.ipId).to.be.a("string");
-      expect(result.txHash).to.be.a("string");
-      expect(result.tokenId).to.be.a("bigint");
-    });
-
-    it("should successfully when without license terms data and royalty shares, with ip metadata", async () => {
-      const tokenId = await getTokenId();
-      const result = await client.ipAsset.registerIpAsset({
-        nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
-        ipMetadata: {
-          ipMetadataURI: "test-uri",
-          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          nftMetadataURI: "test-nft-uri",
-        },
-      });
-      expect(result.ipId).to.be.a("string");
-      expect(result.txHash).to.be.a("string");
-      expect(result.tokenId).to.be.a("bigint");
-    });
-  });
-
-  describe("Register IP Asset by minting a new NFT", () => {
-    let spgNftContract: Address;
-    before(async () => {
-      const txData = await client.nftClient.createNFTCollection({
-        name: "test-collection",
-        symbol: "TEST_FOR_MINT",
-        maxSupply: 100,
-        isPublicMinting: false,
-        mintOpen: true,
-        mintFeeRecipient: TEST_WALLET_ADDRESS,
-        contractURI: "test-uri",
-        mintFee: 10n,
-        mintFeeToken: WIP_TOKEN_ADDRESS,
-      });
-      spgNftContract = txData.spgNftContract!;
-    });
-
-    it("should successfully when give license terms data and royalty shares", async () => {
-      const result = await client.ipAsset.registerIpAsset({
-        nft: { type: "mint", spgNftContract: spgNftContract },
-        licenseTermsData: [
-          {
-            terms: PILFlavor.creativeCommonsAttribution({
-              currency: WIP_TOKEN_ADDRESS,
-              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-            }),
-          },
-          {
-            terms: PILFlavor.commercialRemix({
-              defaultMintingFee: 10000n,
-              commercialRevShare: 100,
-              currency: WIP_TOKEN_ADDRESS,
-              royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
-            }),
-            maxLicenseTokens: 100,
-          },
-        ],
-        royaltyShares: [
-          {
-            recipient: TEST_WALLET_ADDRESS,
-            percentage: 10,
-          },
-        ],
-      });
-
-      expect(result.ipId).to.be.a("string");
-      expect(result.licenseTermsIds?.length).to.be.equal(2);
-      expect(result.ipRoyaltyVault).to.be.a("string");
-      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(1);
-      expect(result.tokenId).to.be.a("bigint");
-    });
-
-    it("should successfully when give license terms data without royalty shares", async () => {
-      const result = await client.ipAsset.registerIpAsset({
-        nft: { type: "mint", spgNftContract: spgNftContract },
-        licenseTermsData: [
-          {
-            terms: PILFlavor.creativeCommonsAttribution({
-              currency: WIP_TOKEN_ADDRESS,
-              royaltyPolicy: royaltyPolicyLapAddress[aeneid],
-            }),
-            maxLicenseTokens: 100,
-          },
-          {
-            terms: PILFlavor.commercialRemix({
-              defaultMintingFee: 10000n,
-              commercialRevShare: 100,
-              currency: WIP_TOKEN_ADDRESS,
-              royaltyPolicy: royaltyPolicyLrpAddress[aeneid],
-            }),
-            maxLicenseTokens: 100,
-          },
-        ],
-      });
-      expect(result.txHash).to.be.a("string");
-      expect(result.ipId).to.be.a("string");
-      expect(result.tokenId).to.be.a("bigint");
-      expect(result.licenseTermsIds?.length).to.be.equal(2);
-      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
-    });
-
-    it("should successfully when without license terms data and royalty shares", async () => {
-      const result = await client.ipAsset.registerIpAsset({
-        nft: { type: "mint", spgNftContract: spgNftContract },
-        ipMetadata: {
-          ipMetadataURI: "test-uri",
-          ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
-          nftMetadataHash: toHex("test-nft-metadata-hash", { size: 32 }),
-          nftMetadataURI: "test-nft-uri",
-        },
-      });
-      expect(result.txHash).to.be.a("string");
-      expect(result.ipId).to.be.a("string");
-      expect(result.tokenId).to.be.a("bigint");
     });
   });
 });
