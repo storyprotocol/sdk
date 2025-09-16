@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 import {
   Address,
   encodeFunctionData,
@@ -51,6 +50,7 @@ import {
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
+import { TransactionResponse } from "../types/options";
 import {
   BatchMintAndRegisterIpAndMakeDerivativeRequest,
   BatchMintAndRegisterIpAndMakeDerivativeResponse,
@@ -85,6 +85,8 @@ import {
   MintNFT,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
+  RegisterDerivativeIpAssetRequest,
+  RegisterDerivativeIpAssetResponse,
   RegisterDerivativeRequest,
   RegisterDerivativeResponse,
   RegisterDerivativeWithLicenseTokensRequest,
@@ -134,7 +136,6 @@ import {
 } from "../utils/registrationUtils/transformRegistrationRequest";
 import { getRevenueShare } from "../utils/royalty";
 import { validateAddress } from "../utils/utils";
-import { TransactionResponse } from "../types/options";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -1752,6 +1753,217 @@ export class IPAssetClient {
     } catch (error) {
       return handleError(error, "Failed to register IP Asset");
     }
+  }
+  /**
+   * Register a derivative IP asset, supporting both minted and mint-on-demand NFTs, with optional `derivData`, `royaltyShares` and `licenseTokenIds`, `maxRts`.
+   *
+   * This method automatically selects and calls the appropriate workflow from 6 available methods based on your input parameters.
+   * Here are three common usage patterns:
+   *
+   * **1. Minted NFT with License Terms and Royalty Distribution:**
+   * ```typescript
+   * const result = await client.ipAsset.registerDerivativeIpAsset({
+   *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
+   *   derivData: {
+   *     parentIpIds: ["0x..."],
+   *     licenseTermsIds: [1n],
+   *     maxMintingFee: 10000n,
+   *     maxRts: 100,
+   *     maxRevenueShare: 100
+   *   },
+   *   royaltyShares: [
+   *     { recipient: "0x...", percentage: 100 }
+   *   ]
+   * });
+   * ```
+   *
+   * **2. Minted NFT with Basic Derivative Registration:**
+   * ```typescript
+   * const result = await client.ipAsset.registerDerivativeIpAsset({
+   *   nft: { type: "minted", nftContract: "0x...", tokenId: 1n },
+   *   derivData: {
+   *     parentIpIds: ["0x..."],
+   *     licenseTermsIds: [1n],
+   *     maxMintingFee: 10000n,
+   *     maxRts: 100,
+   *     maxRevenueShare: 100
+   *   }
+   * });
+   * ```
+   *
+   * **3. Mint NFT with License Token IDs and maxRts:**
+   * ```typescript
+   * const result = await client.ipAsset.registerDerivativeIpAsset({
+   *   nft: { type: "mint", spgNftContract: "0x...", recipient: "0x...", allowDuplicates: false },
+   *   licenseTokenIds: [1, 2, 3],
+   *   maxRts: 100
+   * });
+   * ```
+   *
+   * **Supported Workflows (6 methods automatically selected based on parameters):**
+   * - {@link registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens} - Register derivative with license terms and royalty distribution
+   * - {@link registerDerivativeIp} - Register derivative with basic derivative data
+   * - {@link registerIpAndMakeDerivativeWithLicenseTokens} - Register derivative using existing license tokens
+   * - {@link mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens} - Mint NFT and register as derivative with royalty distribution
+   * - {@link mintAndRegisterIpAndMakeDerivative} - Mint NFT and register as derivative
+   * - {@link mintAndRegisterIpAndMakeDerivativeWithLicenseTokens} - Mint NFT and register as derivative using license tokens
+   *
+   * **Automatic Token Handling:**
+   * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
+   * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
+   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   *
+   * @throws {Error} If `licenseTokenIds` and `maxRts` are not provided together.
+   * @throws {Error} If `derivData` is not provided when `royaltyShares` are provided.
+   * @throws {Error} If neither `derivData` nor (`licenseTokenIds` and `maxRts`) are provided.
+   * @throws {Error} If the NFT type is invalid.
+   */
+  public async registerDerivativeIpAsset<
+    T extends RegisterDerivativeIpAssetRequest<MintedNFT | MintNFT>,
+  >(request: T): Promise<RegisterDerivativeIpAssetResponse<T>> {
+    try {
+      const { nft, licenseTokenIds, maxRts, royaltyShares, derivData } = request;
+      if (
+        (licenseTokenIds && licenseTokenIds.length > 0 && maxRts === undefined) ||
+        (maxRts !== undefined && (!licenseTokenIds || licenseTokenIds.length === 0))
+      ) {
+        throw new Error("licenseTokenIds and maxRts must be provided together.");
+      }
+
+      if (royaltyShares && !derivData) {
+        throw new Error("derivData must be provided when royaltyShares are provided.");
+      }
+
+      // Validate that at least one valid combination is provided
+      const hasDerivData = !!derivData;
+      const hasLicenseTokens = !!(
+        licenseTokenIds &&
+        licenseTokenIds.length > 0 &&
+        maxRts !== undefined
+      );
+
+      if (!hasDerivData && !hasLicenseTokens) {
+        throw new Error("Either derivData or (licenseTokenIds and maxRts) must be provided.");
+      }
+
+      if (nft.type === "minted") {
+        return (await this.handleMintedNftDerivativeRegistration(
+          request as RegisterDerivativeIpAssetRequest<MintedNFT>,
+        )) as RegisterDerivativeIpAssetResponse<T>;
+      } else if (nft.type === "mint") {
+        return (await this.handleMintNftDerivativeRegistration(
+          request as RegisterDerivativeIpAssetRequest<MintNFT>,
+        )) as RegisterDerivativeIpAssetResponse<T>;
+      } else {
+        throw new Error("Invalid NFT type.");
+      }
+    } catch (error) {
+      return handleError(error, "Failed to register derivative IP Asset");
+    }
+  }
+
+  /**
+   * Handles derivative registration for already minted NFTs with optional `derivData`, `royaltyShares` and `licenseTokenIds`, `maxRts`.
+   *
+   * Supports the following workflows:
+   * - {@link registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens}
+   * - {@link registerDerivativeIp}
+   * - {@link registerIpAndMakeDerivativeWithLicenseTokens}
+   */
+  private async handleMintedNftDerivativeRegistration(
+    request: RegisterDerivativeIpAssetRequest<MintedNFT>,
+  ): Promise<RegisterDerivativeIpAssetResponse<typeof request>> {
+    const {
+      nft,
+      royaltyShares,
+      derivData,
+      maxRts,
+      licenseTokenIds,
+      deadline,
+      txOptions,
+      options,
+      ipMetadata,
+    } = request;
+    const baseParams = {
+      nftContract: nft.nftContract,
+      tokenId: nft.tokenId,
+      ipMetadata: ipMetadata,
+      deadline: deadline,
+      txOptions: txOptions,
+      options: options,
+    };
+    if (royaltyShares && derivData) {
+      return this.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+        ...baseParams,
+        royaltyShares: royaltyShares,
+        derivData: derivData,
+      });
+    }
+
+    if (derivData) {
+      return this.registerDerivativeIp({
+        ...baseParams,
+        derivData: derivData,
+      });
+    }
+
+    return this.registerIpAndMakeDerivativeWithLicenseTokens({
+      ...baseParams,
+      licenseTokenIds: licenseTokenIds!,
+      maxRts: maxRts!,
+    });
+  }
+
+  /**
+   * Handles derivative registration for minted NFTs with optional `derivData`, `royaltyShares` and `licenseTokenIds`, `maxRts`.
+   *
+   * Supports the following workflows:
+   * - {@link mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens}
+   * - {@link mintAndRegisterIpAndMakeDerivative}
+   * - {@link mintAndRegisterIpAndMakeDerivativeWithLicenseTokens}
+   */
+  private async handleMintNftDerivativeRegistration(
+    request: RegisterDerivativeIpAssetRequest<MintNFT>,
+  ): Promise<RegisterDerivativeIpAssetResponse<typeof request>> {
+    const {
+      nft,
+      royaltyShares,
+      derivData,
+      maxRts,
+      licenseTokenIds,
+      txOptions,
+      options,
+      ipMetadata,
+    } = request;
+    const baseParams = {
+      spgNftContract: nft.spgNftContract,
+      recipient: nft.recipient,
+      allowDuplicates: nft.allowDuplicates,
+      ipMetadata: ipMetadata,
+      txOptions: txOptions,
+      options: options,
+    };
+
+    if (royaltyShares && derivData) {
+      return this.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+        ...baseParams,
+        royaltyShares: royaltyShares,
+        derivData: derivData,
+      });
+    }
+
+    if (derivData) {
+      return this.mintAndRegisterIpAndMakeDerivative({
+        ...baseParams,
+        derivData: derivData,
+      });
+    }
+
+    return this.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
+      ...baseParams,
+      licenseTokenIds: licenseTokenIds!,
+      maxRts: maxRts!,
+    });
   }
 
   /**

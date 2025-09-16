@@ -3685,4 +3685,170 @@ describe("IP Asset Functions", () => {
       });
     });
   });
+
+  describe("Register derivative IP Asset", () => {
+    let parentIpId: Address;
+    let commercialRemixLicenseTermsId: bigint;
+    before(async () => {
+      const tokenId = await getTokenId();
+      const result = await client.ipAsset.registerIpAndAttachPilTerms({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 10000n,
+              commercialRevShare: 100,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+          },
+        ],
+      });
+      parentIpId = result.ipId!;
+      commercialRemixLicenseTermsId = result.licenseTermsIds![0];
+    });
+    describe("Register derivative IP Asset with Minted NFT", () => {
+      it("should successfully when give derivData and royalty shares", async () => {
+        const tokenId = await getTokenId();
+        const result = await client.ipAsset.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
+          derivData: {
+            parentIpIds: [parentIpId!],
+            licenseTermsIds: [commercialRemixLicenseTermsId],
+            maxMintingFee: 10000n,
+            maxRts: 100,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: TEST_WALLET_ADDRESS,
+              percentage: 100,
+            },
+          ],
+        });
+        expect(
+          result.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokensTxHash,
+        ).to.be.a("string");
+        expect(result.distributeRoyaltyTokensTxHash).to.be.a("string");
+        expect(result.ipRoyaltyVault).to.be.a("string");
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.equal(BigInt(tokenId!));
+      });
+
+      it("should successfully given derivData", async () => {
+        const tokenId = await getTokenId();
+        const result = await client.ipAsset.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
+          derivData: {
+            parentIpIds: [parentIpId!],
+            licenseTermsIds: [commercialRemixLicenseTermsId],
+            maxMintingFee: 10000n,
+            maxRts: 100,
+            maxRevenueShare: 100,
+          },
+        });
+
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.equal(BigInt(tokenId!));
+        expect(result.txHash).to.be.a("string");
+      });
+
+      it("should successfully given licenseTokenIds and maxRts", async () => {
+        const { licenseTokenIds } = await client.license.mintLicenseTokens({
+          licenseTermsId: commercialRemixLicenseTermsId,
+          licensorIpId: parentIpId,
+          maxMintingFee: 0n,
+          maxRevenueShare: 100,
+        });
+        await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
+
+        const tokenId = await getTokenId();
+        const result = await client.ipAsset.registerDerivativeIpAsset({
+          nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
+          licenseTokenIds: licenseTokenIds!,
+          maxRts: 100,
+        });
+
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.equal(BigInt(tokenId!));
+        expect(result.txHash).to.be.a("string");
+      });
+    });
+
+    describe("Register derivative IP Asset by minting a new NFT", () => {
+      let spgNftContract: Address;
+      before(async () => {
+        const txData = await client.nftClient.createNFTCollection({
+          name: "test-collection",
+          symbol: "TEST_FOR_MINT",
+          maxSupply: 100,
+          isPublicMinting: false,
+          mintOpen: true,
+          mintFeeRecipient: TEST_WALLET_ADDRESS,
+          contractURI: "test-uri",
+          mintFee: 10n,
+          mintFeeToken: WIP_TOKEN_ADDRESS,
+        });
+        spgNftContract = txData.spgNftContract!;
+      });
+      it("should successfully when give derivData and royalty shares", async () => {
+        const result = await client.ipAsset.registerDerivativeIpAsset({
+          nft: { type: "mint", spgNftContract },
+          derivData: {
+            parentIpIds: [parentIpId!],
+            licenseTermsIds: [commercialRemixLicenseTermsId],
+            maxMintingFee: 10000n,
+            maxRts: 100,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: TEST_WALLET_ADDRESS,
+              percentage: 100,
+            },
+          ],
+        });
+
+        expect(result.ipId).to.be.a("string");
+        expect(result.txHash).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+
+      it("should successfully when give licenseTokenIds and maxRts", async () => {
+        const { licenseTokenIds } = await client.license.mintLicenseTokens({
+          licenseTermsId: commercialRemixLicenseTermsId,
+          licensorIpId: parentIpId,
+          maxMintingFee: 0n,
+          maxRevenueShare: 100,
+        });
+        await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
+        const result = await client.ipAsset.registerDerivativeIpAsset({
+          nft: { type: "mint", spgNftContract },
+          licenseTokenIds: licenseTokenIds!,
+          maxRts: 100,
+        });
+
+        expect(result.ipId).to.be.a("string");
+        expect(result.txHash).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+
+      it("should successfully when give derivData", async () => {
+        const result = await client.ipAsset.registerDerivativeIpAsset({
+          nft: { type: "mint", spgNftContract },
+          derivData: {
+            parentIpIds: [parentIpId!],
+            licenseTermsIds: [commercialRemixLicenseTermsId],
+            maxMintingFee: 10000n,
+            maxRts: 100,
+            maxRevenueShare: 100,
+          },
+        });
+
+        expect(result.ipId).to.be.a("string");
+        expect(result.txHash).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+    });
+  });
 });
