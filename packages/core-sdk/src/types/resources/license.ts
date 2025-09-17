@@ -4,21 +4,6 @@ import { EncodedTxData } from "../../abi/generated";
 import { LicensingConfigInput } from "../common";
 import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
 import { RoyaltyPolicyInput } from "./royalty";
-
-export type LicenseApiResponse = {
-  data: License;
-};
-
-export type License = {
-  id: string;
-  policyId: string;
-  licensorIpId: Address;
-};
-
-export type RegisterNonComSocialRemixingPILRequest = {
-  txOptions?: TxOptions;
-};
-
 /**
  * This structure defines the terms for a Programmable IP License (PIL).
  * These terms can be attached to IP Assets.
@@ -102,47 +87,6 @@ export type RegisterPILResponse = {
   licenseTermsId?: bigint;
   txHash?: Hash;
   encodedTxData?: EncodedTxData;
-};
-
-export type RegisterCommercialUsePILRequest = {
-  /** The fee to be paid when minting a license. */
-  defaultMintingFee: string | number | bigint;
-  /** The ERC20 token to be used to pay the minting fee */
-  currency: Address;
-  /**
-   * The address of the royalty policy contract.
-   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
-   */
-  royaltyPolicyAddress?: Address;
-  txOptions?: TxOptions;
-};
-
-export type RegisterCommercialRemixPILRequest = {
-  /** The fee to be paid when minting a license. */
-  defaultMintingFee: string | number | bigint;
-  /**
-   * Percentage of revenue that must be shared with the licensor.
-   * Must be between 0 and 100 (where 100% represents 100_000_000).
-   */
-  commercialRevShare: number;
-  /** The ERC20 token to be used to pay the minting fee */
-  currency: Address;
-  /**
-   * The address of the royalty policy contract.
-   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
-   */
-  royaltyPolicyAddress?: Address;
-  txOptions?: TxOptions;
-};
-
-export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
-  /** The ERC20 or WIP token to be used to pay the minting fee. */
-  currency: Address;
-  /**
-   * The address of the royalty policy contract.
-   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
-   */
-  royaltyPolicyAddress?: Address;
 };
 
 export type AttachLicenseTermsRequest = {

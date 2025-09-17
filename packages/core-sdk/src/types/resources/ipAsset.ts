@@ -872,7 +872,6 @@ export type RegisterDerivativeIpAssetResponse<
   ? RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse
   : RegisterIpResponse;
 
-
 export type LinkDerivativeResponse<
   T extends RegisterIpAndMakeDerivativeRequest | RegisterDerivativeWithLicenseTokensRequest,
 > = T extends RegisterIpAndMakeDerivativeRequest
