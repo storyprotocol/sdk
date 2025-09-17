@@ -71,6 +71,7 @@ import {
   DistributeRoyaltyTokens,
   ExtraData,
   IpIdAndTokenId,
+  LinkDerivativeResponse,
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest,
   MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse,
   MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest,
@@ -1966,6 +1967,49 @@ export class IPAssetClient {
     });
   }
 
+  /**
+   * Links a derivative IP asset by either registering an existing IP as derivative or registering a new IP and making it derivative.
+   *
+   * Supports the following workflows:
+   * - {@link registerDerivativeIp}
+   * - {@link registerDerivativeWithLicenseTokens}
+   *
+   * @example
+   * ```typescript
+   * const result = await client.ipAsset.linkDerivative({
+   *   licenseTokenIds: [1, 2, 3],
+   *   maxRts: 100,
+   *   childIpId: "0x...",
+   * });
+   * ```
+   *
+   * @example
+   * ```typescript
+   * const result = await client.ipAsset.linkDerivative({
+   *   nftContract: "0x...",
+   *   tokenId: 1n,
+   *   derivData: { parentIpIds: ["0x..."], licenseTermsIds: [1n], maxRts: 100 },
+   * });
+   * ```
+   *
+   * **Automatic Token Handling:**
+   * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
+   * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
+   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   */
+  public async linkDerivative<
+    T extends RegisterDerivativeWithLicenseTokensRequest | RegisterIpAndMakeDerivativeRequest,
+  >(request: T): Promise<LinkDerivativeResponse<T>> {
+    try {
+      if ("derivData" in request) {
+        return this.registerDerivativeIp(request);
+      } else {
+        return this.registerDerivativeWithLicenseTokens(request);
+      }
+    } catch (error) {
+      return handleError(error, "Failed to link derivative");
+    }
+  }
   /**
    * Handles registration for already minted NFTs with optional license terms and royalty shares.
    *
