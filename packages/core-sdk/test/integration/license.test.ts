@@ -2,7 +2,7 @@ import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Hex, maxUint256, zeroAddress } from "viem";
 
-import { LicensingConfig, StoryClient } from "../../src";
+import { LicensingConfig, NativeRoyaltyPolicy, PILFlavor, StoryClient } from "../../src";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import { generateHex } from "./utils/generateHex";
 import {
@@ -55,34 +55,6 @@ describe("License Functions", () => {
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
-    it("should register license with non commercial social remixing PIL", async () => {
-      const result = await client.license.registerNonComSocialRemixingPIL();
-      expect(result.licenseTermsId).to.be.a("bigint");
-    });
-    it("should register license with commercial use", async () => {
-      const result = await client.license.registerCommercialUsePIL({
-        defaultMintingFee: "1",
-        currency: WIP_TOKEN_ADDRESS,
-      });
-      expect(result.licenseTermsId).to.be.a("bigint");
-    });
-
-    it("should register license with commercial Remix use", async () => {
-      const result = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: "1",
-        commercialRevShare: 100,
-        currency: WIP_TOKEN_ADDRESS,
-      });
-      expect(result.licenseTermsId).to.be.a("bigint");
-    });
-
-    it("should register license with creative commons attribution PIL", async () => {
-      const result = await client.license.registerCreativeCommonsAttributionPIL({
-        currency: WIP_TOKEN_ADDRESS,
-        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
-      });
-      expect(result.licenseTermsId).to.be.a("bigint");
-    });
   });
 
   describe("attach License Terms and mint license tokens", () => {
@@ -99,18 +71,22 @@ describe("License Functions", () => {
       const mockERC20 = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
       await mockERC20.approve(licensingModuleAddress[aeneid], maxUint256);
       ipId = registerResult.ipId!;
-      const registerLicenseResult = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: 0,
-        commercialRevShare: 100,
-        currency: WIP_TOKEN_ADDRESS,
-      });
+      const registerLicenseResult = await client.license.registerPILTerms(
+        PILFlavor.commercialRemix({
+          defaultMintingFee: 100n,
+          commercialRevShare: 10,
+          currency: WIP_TOKEN_ADDRESS,
+        }),
+      );
       licenseId = registerLicenseResult.licenseTermsId!;
 
-      const paidLicenseResult = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: 100n,
-        commercialRevShare: 10,
-        currency: WIP_TOKEN_ADDRESS,
-      });
+      const paidLicenseResult = await client.license.registerPILTerms(
+        PILFlavor.commercialRemix({
+          defaultMintingFee: 100n,
+          commercialRevShare: 10,
+          currency: WIP_TOKEN_ADDRESS,
+        }),
+      );
       paidLicenseId = paidLicenseResult.licenseTermsId!;
     });
 
@@ -271,10 +247,12 @@ describe("License Functions", () => {
       ipId = registerResult.ipId!;
 
       // Create a Creative Commons Attribution license
-      const ccLicenseResult = await client.license.registerCreativeCommonsAttributionPIL({
-        currency: WIP_TOKEN_ADDRESS,
-        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
-      });
+      const ccLicenseResult = await client.license.registerPILTerms(
+        PILFlavor.creativeCommonsAttribution({
+          currency: WIP_TOKEN_ADDRESS,
+          royaltyPolicy: NativeRoyaltyPolicy.LAP,
+        }),
+      );
       ccLicenseTermsId = ccLicenseResult.licenseTermsId!;
     });
 
