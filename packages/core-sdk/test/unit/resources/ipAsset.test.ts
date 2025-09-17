@@ -6336,4 +6336,70 @@ describe("Test IpAssetClient", () => {
       });
     });
   });
+
+  describe("Link Derivative", () => {
+    beforeEach(() => {
+      stub(IpAssetRegistryClient.prototype, "ipId").resolves(ipId);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: ipId,
+          tokenId: 1n,
+          chainId: 0n,
+          tokenContract: mockAddress,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+    });
+    it("should successfully when give derivData", async () => {
+      stub(ipAssetClient.derivativeWorkflowsClient, "registerIpAndMakeDerivative").resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      const result = await ipAssetClient.linkDerivative({
+        nftContract: mockERC721,
+        tokenId: 1n,
+        derivData: {
+          parentIpIds: [ipId],
+          licenseTermsIds: [1],
+          maxRts: 100,
+        },
+        txOptions: { timeout: 10000 },
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.ipId).to.equal(ipId);
+      expect(result.tokenId).to.equal(1n);
+    });
+
+    it("should successfully when give licenseTokenIds", async () => {
+      stub(ipAssetClient.licensingModuleClient, "registerDerivativeWithLicenseTokens").resolves(
+        txHash,
+      );
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const result = await ipAssetClient.linkDerivative({
+        tokenId: 1n,
+        licenseTokenIds: [1, 2, 3],
+        maxRts: 100,
+        childIpId: ipId,
+      });
+      expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should throw error when parent ip is not registered", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      await expect(
+        ipAssetClient.linkDerivative({
+          nftContract: mockERC721,
+          tokenId: 1n,
+          derivData: {
+            parentIpIds: [ipId],
+            licenseTermsIds: [1],
+            maxRts: 100,
+          },
+          txOptions: { timeout: 10000 },
+        }),
+      ).to.be.rejectedWith(
+        "Failed to register derivative IP: The NFT with id 1 is already registered as IP.",
+      );
+    });
+  });
 });
