@@ -3903,24 +3903,24 @@ describe("IP Asset Functions", () => {
     });
 
     it("should successfully when give parentIpId and licenseTokenIds", async () => {
-      const tokenChildId = await getTokenId();
+      const tokenId = await getTokenId();
+      const childIpId = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+        })
+      ).ipId!;
+
       const result = await client.ipAsset.linkDerivative({
-        nftContract: mockERC721,
-        tokenId: tokenChildId!,
-        derivData: {
-          parentIpIds: [parentIpId!],
-          licenseTermsIds: [commercialRemixLicenseTermsId],
-          maxMintingFee: 0n,
-          maxRts: 5 * 10 ** 6,
-          maxRevenueShare: 0,
-        },
-        deadline: 1000n,
+        childIpId: childIpId,
+        parentIpIds: [parentIpId],
+        licenseTermsIds: [commercialRemixLicenseTermsId],
+        maxMintingFee: "0",
+        maxRts: 5 * 10 ** 6,
+        maxRevenueShare: "0",
       });
 
       expect(result.txHash).to.be.a("string");
-      expect(result.ipId).to.be.a("string");
-      expect(result.tokenId).to.be.a("bigint");
-      expect(result.receipt?.status).to.be.equal("success");
     });
   });
 });

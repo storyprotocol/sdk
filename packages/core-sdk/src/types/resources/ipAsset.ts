@@ -86,21 +86,12 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
   txOptions?: TxOptions;
 };
 
-export type RegisterDerivativeWithLicenseTokensResponse = {
-  txHash?: Hash;
-  encodedTxData?: EncodedTxData;
-};
-
 export type RegisterDerivativeRequest = WithWipOptions &
   DerivativeDataInput & {
     txOptions?: TxOptions;
     childIpId: Address;
   };
 
-export type RegisterDerivativeResponse = {
-  txHash?: Hash;
-  encodedTxData?: EncodedTxData;
-};
 export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
   /** Programmable IP License */
   terms: T;
@@ -872,8 +863,7 @@ export type RegisterDerivativeIpAssetResponse<
   ? RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse
   : RegisterIpResponse;
 
-export type LinkDerivativeResponse<
-  T extends RegisterIpAndMakeDerivativeRequest | RegisterDerivativeWithLicenseTokensRequest,
-> = T extends RegisterIpAndMakeDerivativeRequest
-  ? RegisterIpAndMakeDerivativeResponse
-  : RegisterDerivativeWithLicenseTokensResponse;
+export type LinkDerivativeResponse = {
+  txHash?: Hash;
+  encodedTxData?: EncodedTxData;
+};

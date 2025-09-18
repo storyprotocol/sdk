@@ -89,9 +89,7 @@ import {
   RegisterDerivativeIpAssetRequest,
   RegisterDerivativeIpAssetResponse,
   RegisterDerivativeRequest,
-  RegisterDerivativeResponse,
   RegisterDerivativeWithLicenseTokensRequest,
-  RegisterDerivativeWithLicenseTokensResponse,
   RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest,
   RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse,
   RegisterIpAndAttachPilTermsRequest,
@@ -357,7 +355,7 @@ export class IPAssetClient {
    */
   public async registerDerivative(
     request: RegisterDerivativeRequest,
-  ): Promise<RegisterDerivativeResponse> {
+  ): Promise<LinkDerivativeResponse> {
     try {
       const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
       if (!isChildIpIdRegistered) {
@@ -489,7 +487,7 @@ export class IPAssetClient {
    */
   public async registerDerivativeWithLicenseTokens(
     request: RegisterDerivativeWithLicenseTokensRequest,
-  ): Promise<RegisterDerivativeWithLicenseTokensResponse> {
+  ): Promise<LinkDerivativeResponse> {
     try {
       const req = {
         childIpId: validateAddress(request.childIpId),
@@ -1968,10 +1966,10 @@ export class IPAssetClient {
   }
 
   /**
-   * Links a derivative IP asset by either registering an existing IP as derivative or registering a new IP and making it derivative.
+   * Link a derivative IP asset using parent IP's license terms or license tokens.
    *
    * Supports the following workflows:
-   * - {@link registerDerivativeIp}
+   * - {@link registerDerivative}
    * - {@link registerDerivativeWithLicenseTokens}
    *
    * @example
@@ -1986,9 +1984,10 @@ export class IPAssetClient {
    * @example
    * ```typescript
    * const result = await client.ipAsset.linkDerivative({
-   *   nftContract: "0x...",
-   *   tokenId: 1n,
-   *   derivData: { parentIpIds: ["0x..."], licenseTermsIds: [1n], maxRts: 100 },
+   *   parentIpIds: ["0x..."],
+   *   licenseTermsIds: [1],
+   *   maxRts: 100,
+   *   childIpId: "0x...",
    * });
    * ```
    *
@@ -1997,12 +1996,12 @@ export class IPAssetClient {
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
    * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
    */
-  public async linkDerivative<
-    T extends RegisterDerivativeWithLicenseTokensRequest | RegisterIpAndMakeDerivativeRequest,
-  >(request: T): Promise<LinkDerivativeResponse<T>> {
+  public async linkDerivative(
+    request: RegisterDerivativeWithLicenseTokensRequest | RegisterDerivativeRequest,
+  ): Promise<LinkDerivativeResponse> {
     try {
-      if ("derivData" in request) {
-        return this.registerDerivativeIp(request);
+      if ("parentIpIds" in request) {
+        return this.registerDerivative(request);
       } else {
         return this.registerDerivativeWithLicenseTokens(request);
       }
