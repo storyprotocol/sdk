@@ -6336,4 +6336,57 @@ describe("Test IpAssetClient", () => {
       });
     });
   });
+
+  describe("Link Derivative", () => {
+    beforeEach(() => {
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([]);
+    });
+    it("should successfully when give parentIpIds", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(ipAssetClient.licensingModuleClient, "registerDerivative").resolves(txHash);
+      const result = await ipAssetClient.linkDerivative({
+        childIpId: ipId,
+        parentIpIds: [ipId],
+        licenseTermsIds: [1],
+        maxRts: 100,
+        maxMintingFee: "0",
+        maxRevenueShare: "0",
+        txOptions: { timeout: 10000 },
+      });
+      expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should successfully when give licenseTokenIds", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(ipAssetClient.licensingModuleClient, "registerDerivativeWithLicenseTokens").resolves(
+        txHash,
+      );
+      const result = await ipAssetClient.linkDerivative({
+        childIpId: ipId,
+        licenseTokenIds: [1, 2, 3],
+        maxRts: 100,
+        maxMintingFee: "0",
+        maxRevenueShare: "0",
+        txOptions: { timeout: 10000 },
+      });
+      expect(result.txHash).to.equal(txHash);
+    });
+
+    it("should throw error when parent ip is not registered", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      await expect(
+        ipAssetClient.linkDerivative({
+          childIpId: ipId,
+          parentIpIds: [ipId],
+          licenseTermsIds: [1],
+          maxRts: 100,
+          maxMintingFee: "0",
+          maxRevenueShare: "0",
+          txOptions: { timeout: 10000 },
+        }),
+      ).to.be.rejectedWith(
+        `Failed to register derivative: The child IP with id ${ipId} is not registered.`,
+      );
+    });
+  });
 });

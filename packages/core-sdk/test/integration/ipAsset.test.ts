@@ -3851,4 +3851,70 @@ describe("IP Asset Functions", () => {
       });
     });
   });
+
+  describe("Link Derivative", () => {
+    let parentIpId: Address;
+    let commercialRemixLicenseTermsId: bigint;
+    before(async () => {
+      const tokenId = await getTokenId();
+      const result = await client.ipAsset.registerIpAndAttachPilTerms({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 10000n,
+              commercialRevShare: 100,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+          },
+        ],
+      });
+      parentIpId = result.ipId!;
+      commercialRemixLicenseTermsId = result.licenseTermsIds![0];
+    });
+    it("should successfully when give childIpId and licenseTokenIds", async () => {
+      // register a child ip
+      const tokenId = await getTokenId();
+      const childIpId = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+        })
+      ).ipId!;
+      const mintLicenseTokensResult = await client.license.mintLicenseTokens({
+        licenseTermsId: commercialRemixLicenseTermsId,
+        licensorIpId: parentIpId,
+        maxMintingFee: "0",
+        maxRevenueShare: 100,
+      });
+      const result = await client.ipAsset.linkDerivative({
+        childIpId: childIpId,
+        licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
+        maxRts: 5 * 10 ** 6,
+      });
+      expect(result.txHash).to.be.a("string");
+    });
+
+    it("should successfully when give parentIpId and licenseTokenIds", async () => {
+      const tokenId = await getTokenId();
+      const childIpId = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+        })
+      ).ipId!;
+
+      const result = await client.ipAsset.linkDerivative({
+        childIpId: childIpId,
+        parentIpIds: [parentIpId],
+        licenseTermsIds: [commercialRemixLicenseTermsId],
+        maxMintingFee: "0",
+        maxRts: 5 * 10 ** 6,
+        maxRevenueShare: "0",
+      });
+
+      expect(result.txHash).to.be.a("string");
+    });
+  });
 });
