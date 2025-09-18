@@ -3,7 +3,7 @@ import chaiAsPromised from "chai-as-promised";
 import { SinonStub, stub } from "sinon";
 import { Address, Hex, PublicClient, WalletClient, zeroAddress } from "viem";
 
-import { LicenseClient, LicensingConfig, NativeRoyaltyPolicy, PILFlavor } from "../../../src";
+import { LicenseClient, LicensingConfig, NativeRoyaltyPolicy } from "../../../src";
 import {
   IpAccountImplClient,
   PiLicenseTemplateGetLicenseTermsResponse,
