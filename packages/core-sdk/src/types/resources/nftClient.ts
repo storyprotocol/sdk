@@ -1,7 +1,7 @@
 import { Address, Hash } from "viem";
 
 import { EncodedTxData } from "../../abi/generated";
-import { TokenIdInput } from "../common";
+import { FeeInput, TokenIdInput } from "../common";
 import { TxOptions } from "../options";
 
 export type CreateNFTCollectionRequest = {
@@ -19,7 +19,7 @@ export type CreateNFTCollectionRequest = {
   baseURI?: string;
   maxSupply?: number;
   /** The cost to mint a token. */
-  mintFee?: bigint;
+  mintFee?: FeeInput;
   /** The token to mint. */
   mintFeeToken?: Address;
   /** The owner of the collection. */

@@ -23,7 +23,7 @@ export type LicensingConfigInput = {
   /** Whether the licensing configuration is active. If false, the configuration is ignored. */
   isSet: boolean;
   /** The minting fee to be paid when minting license tokens. */
-  mintingFee: bigint | string | number;
+  mintingFee: FeeInput;
   /**
    * The licensingHook is an address to a smart contract that implements the `ILicensingHook` interface.
    * This contract's `beforeMintLicenseTokens` function is executed before a user mints a License Token,
@@ -40,21 +40,21 @@ export type LicensingConfigInput = {
    * Percentage of revenue that must be shared with the licensor.
    * Must be between 0 and 100 (where 100% represents 100_000_000).
    */
-  commercialRevShare: number | string;
+  commercialRevShare: RevShareInput;
   /** Whether the licensing is disabled or not. If this is true, then no licenses can be minted and no more derivatives can be attached at all. */
   disabled: boolean;
   /**
    * The minimum percentage of the group’s reward share (from 0 to 100%, represented as 100_000_000) that can be allocated to the IP when it is added to the group.
    * Must be between 0 and 100 (where 100% represents 100_000_000).
    */
-  expectMinimumGroupRewardShare: number | string;
+  expectMinimumGroupRewardShare: RevShareInput;
   /** The address of the expected group reward pool. The IP can only be added to a group with this specified reward pool address, or zero address if the IP does not want to be added to any group. */
   expectGroupRewardPool: Address;
 };
 
 export type LicensingConfig = LicensingConfigInput & {
   mintingFee: bigint;
-  commercialRevShare: number;
+  commercialRevShare: RevShareInput;
   expectMinimumGroupRewardShare: number;
 };
 
@@ -92,3 +92,14 @@ export type LicenseTermsIdInput = number | bigint;
  * Will be converted to bigint for contract calls.
  */
 export type DeadlineInput = number | bigint;
+
+/**
+ * Input for revenue share, can be number.
+ */
+export type RevShareInput = number;
+
+/**
+ * Input for fee, can be bigint or number.
+ * Will be converted to bigint for contract calls.
+ */
+export type FeeInput = bigint | number;

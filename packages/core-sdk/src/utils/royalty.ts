@@ -2,7 +2,7 @@ import { Address } from "viem";
 
 import { chain, validateAddress } from "./utils";
 import { royaltyPolicyLapAddress, royaltyPolicyLrpAddress } from "../abi/generated";
-import { RevShareType } from "../types/common";
+import { RevShareInput, RevShareType } from "../types/common";
 import { SupportedChainIds } from "../types/config";
 import { NativeRoyaltyPolicy, RoyaltyPolicyInput } from "../types/resources/royalty";
 
@@ -27,7 +27,7 @@ export const royaltyPolicyInputToAddress = (
 };
 
 export const getRevenueShare = (
-  revShare: number | string,
+  revShare: RevShareInput,
   type: RevShareType = RevShareType.COMMERCIAL_REVENUE_SHARE,
 ): number => {
   const revShareNumber = Number(revShare);

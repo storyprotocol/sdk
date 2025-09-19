@@ -16,6 +16,7 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
 } from "../../abi/generated";
+import { TokenIdInput } from "../common";
 import { ChainIds } from "../config";
 import { TransactionResponse, WipOptions } from "../options";
 import { Erc20Spender } from "./wip";
@@ -83,7 +84,7 @@ export type CalculateDerivativeMintingFeeConfig = BasicConfig & {
 };
 export type GetIpIdAddressConfig = BasicConfig & {
   nftContract: Address;
-  tokenId: bigint | number;
+  tokenId: TokenIdInput;
 };
 export type ValidateDerivativeDataConfig = BasicConfig & {
   derivativeDataInput: DerivativeDataInput;
