@@ -1,7 +1,7 @@
 import { Address, Hash, Hex } from "viem";
 
 import { EncodedTxData } from "../../abi/generated";
-import { TokenAmountInput } from "../common";
+import { DeadlineInput, TokenAmountInput } from "../common";
 import { TxOptions } from "../options";
 
 export type IPAccountExecuteRequest = {
@@ -31,11 +31,11 @@ export type IPAccountExecuteWithSigRequest = {
   /** The signer of the transaction. */
   signer: Address;
   /** The deadline of the transaction signature in seconds. */
-  deadline: number | bigint | string;
+  deadline: DeadlineInput;
   /** The signature of the transaction, EIP-712 encoded. The helper method `getPermissionSignature` supports generating the signature. */
   signature: Address;
   /** The amount of IP to send. */
-  value?: number | bigint | string;
+  value?: number | bigint;
   txOptions?: TxOptions;
 };
 

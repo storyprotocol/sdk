@@ -48,7 +48,7 @@ import {
   WrappedIpClient,
 } from "../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../constants/common";
-import { RevShareType } from "../types/common";
+import { LicenseTermsIdInput, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
 import {
@@ -2101,9 +2101,7 @@ export class IPAssetClient {
     return licenseTermsIds;
   }
 
-  private async validateLicenseTokenIds(
-    licenseTokenIds: string[] | bigint[] | number[],
-  ): Promise<bigint[]> {
+  private async validateLicenseTokenIds(licenseTokenIds: LicenseTermsIdInput[]): Promise<bigint[]> {
     if (licenseTokenIds.length === 0) {
       throw new Error("License token IDs must be provided.");
     }

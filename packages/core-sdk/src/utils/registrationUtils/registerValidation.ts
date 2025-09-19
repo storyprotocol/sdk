@@ -9,7 +9,7 @@ import {
   totalLicenseTokenLimitHookAddress,
 } from "../../abi/generated";
 import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../constants/common";
-import { RevShareType } from "../../types/common";
+import { DeadlineInput, RevShareType } from "../../types/common";
 import { ChainIds } from "../../types/config";
 import {
   DerivativeData,
@@ -219,7 +219,7 @@ export const getIpIdAddress = async ({
 
 export const getCalculatedDeadline = async (
   rpcClient: PublicClient,
-  requestDeadline?: string | number | bigint,
+  requestDeadline?: DeadlineInput,
 ): Promise<bigint> => {
   const blockTimestamp = (await rpcClient.getBlock()).timestamp;
   return getDeadline(blockTimestamp, requestDeadline);
