@@ -2,7 +2,7 @@ import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Hex, maxUint256, zeroAddress } from "viem";
 
-import { LicensingConfig, NativeRoyaltyPolicy, PILFlavor, StoryClient } from "../../src";
+import { LicensingConfig, PILFlavor, StoryClient } from "../../src";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import { generateHex } from "./utils/generateHex";
 import {
