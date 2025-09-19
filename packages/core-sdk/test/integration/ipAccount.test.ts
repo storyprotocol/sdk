@@ -88,7 +88,7 @@ describe("IPAccount Functions", () => {
     it("should successfully execute with valid signature", async () => {
       // Get the IP Account nonce (state)
       const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-      
+
       // Generate signature for the execute operation itself
       // We need to sign the data that will be executed, not the permission data
       const { signature } = await getSignature({
@@ -144,7 +144,7 @@ describe("IPAccount Functions", () => {
       // Generate signature with wrong signer
       const wrongSigner = "0x1234567890123456789012345678901234567890" as Address;
       const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-      
+
       const { signature } = await getSignature({
         state: nonceResult,
         to: permissionAddress,
@@ -169,7 +169,7 @@ describe("IPAccount Functions", () => {
 
     it("should fail with invalid ipId format", async () => {
       const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-      
+
       const { signature } = await getSignature({
         state: nonceResult,
         to: permissionAddress,
@@ -195,12 +195,12 @@ describe("IPAccount Functions", () => {
     it("should fail when IP account does not exist", async () => {
       // Create a real non-existent IP address (but with correct format)
       const nonExistentIpId = "0x1111111111111111111111111111111111111111" as Address;
-      
+
       // Generate signature for this non-existent IP
       // Note: We need to try to get nonce first, if IP doesn't exist, this step should fail
       try {
         const nonceResult = await client.ipAccount.getIpAccountNonce(nonExistentIpId);
-        
+
         const { signature } = await getSignature({
           state: nonceResult,
           to: permissionAddress,
@@ -230,7 +230,7 @@ describe("IPAccount Functions", () => {
     it("should fail with unauthorized signer", async () => {
       // Test various unauthorized signer scenarios
       const unauthorizedSigner = "0x2222222222222222222222222222222222222222" as Address;
-      
+
       const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
       const { signature } = await getSignature({
         state: nonceResult,
@@ -269,7 +269,7 @@ describe("IPAccount Functions", () => {
       });
 
       const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-      
+
       const { signature } = await getSignature({
         state: nonceResult,
         to: permissionAddress,
@@ -296,7 +296,7 @@ describe("IPAccount Functions", () => {
       // Generate signature for different target address than what we execute
       const wrongTarget = "0x1234567890123456789012345678901234567890" as Address;
       const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-      
+
       const { signature } = await getSignature({
         state: nonceResult,
         to: wrongTarget, // Sign for wrong target
@@ -322,7 +322,7 @@ describe("IPAccount Functions", () => {
     it("should execute with zero value transaction", async () => {
       // Test successful execution with zero value
       const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-      
+
       const { signature } = await getSignature({
         state: nonceResult,
         to: permissionAddress,

@@ -33,10 +33,6 @@ import {
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
   PredictMintingLicenseFeeRequest,
-  RegisterCommercialRemixPILRequest,
-  RegisterCommercialUsePILRequest,
-  RegisterCreativeCommonsAttributionPILRequest,
-  RegisterNonComSocialRemixingPILRequest,
   RegisterPILResponse,
   RegisterPILTermsRequest,
   SetLicensingConfigRequest,
@@ -95,111 +91,6 @@ export class LicenseClient {
       return await this.registerPILTermsHelper(object, request.txOptions);
     } catch (error) {
       return handleError(error, "Failed to register license terms");
-    }
-  }
-
-  /**
-   * @deprecated Use {@link PILFlavor.nonCommercialSocialRemixing} with {@link LicenseClient.registerPILTerms} instead.
-   *  The method will be removed in the `v1.4.0`.
-   *
-   * Convenient function to register a PIL non commercial social remix license to the registry
-   *
-   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%231%3A-non-commercial-social-remixing | Non Commercial Social Remixing}.
-   *
-   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
-   */
-  public async registerNonComSocialRemixingPIL(
-    request?: RegisterNonComSocialRemixingPILRequest,
-  ): Promise<RegisterPILResponse> {
-    try {
-      const licenseTerms = PILFlavor.nonCommercialSocialRemixing();
-      return await this.registerPILTermsHelper(licenseTerms, request?.txOptions);
-    } catch (error) {
-      return handleError(error, "Failed to register non commercial social remixing PIL");
-    }
-  }
-
-  /**
-   * @deprecated Use {@link PILFlavor.commercialUse} with {@link LicenseClient.registerPILTerms} instead.
-   *  The method will be removed in the `v1.4.0`.
-   *
-   * Convenient function to register a PIL commercial use license to the registry.
-   *
-   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%232%3A-commercial-use | Commercial Use}.
-   *
-   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
-   */
-  public async registerCommercialUsePIL(
-    request: RegisterCommercialUsePILRequest,
-  ): Promise<RegisterPILResponse> {
-    try {
-      const licenseTerms = PILFlavor.commercialUse({
-        defaultMintingFee: Number(request.defaultMintingFee),
-        currency: request.currency,
-        royaltyPolicy: request.royaltyPolicyAddress,
-      });
-      return await this.registerPILTermsHelper(licenseTerms, request.txOptions);
-    } catch (error) {
-      return handleError(error, "Failed to register commercial use PIL");
-    }
-  }
-
-  /**
-   * @deprecated Use {@link PILFlavor.commercialRemix} with {@link LicenseClient.registerPILTerms} instead.
-   *  The method will be removed in the v1.4.0.
-   *
-   * Convenient function to register a PIL commercial Remix license to the registry.
-   *
-   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%233%3A-commercial-remix | Commercial Remix }.
-   *
-   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
-   */
-  public async registerCommercialRemixPIL({
-    defaultMintingFee,
-    currency,
-    royaltyPolicyAddress,
-    commercialRevShare,
-    txOptions,
-  }: RegisterCommercialRemixPILRequest): Promise<RegisterPILResponse> {
-    try {
-      const licenseTerms = PILFlavor.commercialRemix({
-        defaultMintingFee: Number(defaultMintingFee),
-        currency,
-        royaltyPolicy: royaltyPolicyAddress,
-        commercialRevShare,
-      });
-      return await this.registerPILTermsHelper(licenseTerms, txOptions);
-    } catch (error) {
-      return handleError(error, "Failed to register commercial remix PIL");
-    }
-  }
-
-  /**
-   * @deprecated Use {@link PILFlavor.creativeCommonsAttribution} with {@link LicenseClient.registerPILTerms} instead.
-   *  The method will be removed in the `v1.4.0`.
-   *
-   * Convenient function to register a PIL creative commons attribution license to the registry.
-   * Creates a Creative Commons Attribution (CC-BY) license terms flavor.
-   *
-   * For more details, see {@link https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%234%3A-creative-commons-attribution | Creative Commons Attribution}.
-   *
-   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicenseTemplate.sol#L19 | `LicenseTermsRegistered`} event.
-   */
-  public async registerCreativeCommonsAttributionPIL({
-    currency,
-    royaltyPolicyAddress,
-    txOptions,
-  }: RegisterCreativeCommonsAttributionPILRequest): Promise<RegisterPILResponse> {
-    try {
-      return await this.registerPILTermsHelper(
-        PILFlavor.creativeCommonsAttribution({
-          currency,
-          royaltyPolicy: royaltyPolicyAddress,
-        }),
-        txOptions,
-      );
-    } catch (error) {
-      return handleError(error, "Failed to register creative commons attribution PIL");
     }
   }
 

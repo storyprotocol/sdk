@@ -41,7 +41,7 @@ describe("IP Asset Functions", () => {
 
   before(async () => {
     client = getStoryClient();
-    const res = await client.license.registerNonComSocialRemixingPIL();
+    const res = await client.license.registerPILTerms(PILFlavor.nonCommercialSocialRemixing());
     noCommercialLicenseTermsId = res.licenseTermsId!;
   });
 
@@ -128,11 +128,14 @@ describe("IP Asset Functions", () => {
 
     it("should register derivative with Commercial Remix PIL", async () => {
       // Register commercial remix PIL
-      const licenseResponse = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: 10n,
-        commercialRevShare: 10,
-        currency: WIP_TOKEN_ADDRESS,
-      });
+      const licenseResponse = await client.license.registerPILTerms(
+        PILFlavor.commercialRemix({
+          defaultMintingFee: 10n,
+          commercialRevShare: 10,
+          currency: WIP_TOKEN_ADDRESS,
+          royaltyPolicy: NativeRoyaltyPolicy.LAP,
+        }),
+      );
 
       // Register parent IP
       const tokenId = await getTokenId();
@@ -2105,11 +2108,14 @@ describe("IP Asset Functions", () => {
       spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
 
       // Register a commercial remix PIL license
-      const commercialRemixPILResult = await client.license.registerCommercialRemixPIL({
-        defaultMintingFee: 10n,
-        commercialRevShare: 10,
-        currency: WIP_TOKEN_ADDRESS,
-      });
+      const commercialRemixPILResult = await client.license.registerPILTerms(
+        PILFlavor.commercialRemix({
+          defaultMintingFee: 10n,
+          commercialRevShare: 10,
+          currency: WIP_TOKEN_ADDRESS,
+          royaltyPolicy: NativeRoyaltyPolicy.LAP,
+        }),
+      );
       licenseTermsId1 = commercialRemixPILResult.licenseTermsId!;
 
       // Register a commercial use PIL license
