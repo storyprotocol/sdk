@@ -1,6 +1,7 @@
 import { Address, Hash, Hex } from "viem";
 
 import { EncodedTxData, SimpleWalletClient } from "../../abi/generated";
+import { DeadlineInput } from "../common";
 import { ChainIds } from "../config";
 import { TxOptions } from "../options";
 
@@ -61,7 +62,7 @@ export type CreateSetPermissionSignatureRequest = {
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: bigint | number | string;
+  deadline?: DeadlineInput;
 } & SetPermissionsRequest;
 
 export type SetBatchPermissionsRequest = {
@@ -76,14 +77,14 @@ export type CreateBatchPermissionSignatureRequest = {
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: bigint | number | string;
+  deadline?: DeadlineInput;
 } & SetBatchPermissionsRequest;
 
 export type PermissionSignatureRequest = {
   ipId: Address;
   state: Hex;
   /** The deadline for the signature in seconds. */
-  deadline: string | number | bigint;
+  deadline: DeadlineInput;
   wallet: SimpleWalletClient;
   chainId: ChainIds;
   permissions: Omit<SetPermissionsRequest, "txOptions">[];
@@ -104,7 +105,7 @@ export type SignatureRequest = {
    */
   verifyingContract: Address;
   /** The deadline for the signature in seconds. */
-  deadline: bigint | number | string;
+  deadline: DeadlineInput;
   chainId: ChainIds;
 };
 

@@ -80,3 +80,15 @@ export enum RevShareType {
   EXPECT_MINIMUM_GROUP_REWARD_SHARE = "expectMinimumGroupRewardShare",
   MAX_ALLOWED_REWARD_SHARE_PERCENTAGE = "maxAllowedRewardSharePercentage",
 }
+
+/**
+ * Input for license terms id, can be bigint or number.
+ * Will be converted to bigint for contract calls.
+ */
+export type LicenseTermsIdInput = number | bigint;
+
+/**
+ * Input for deadline, can be bigint or number.
+ * Will be converted to bigint for contract calls.
+ */
+export type DeadlineInput = number | bigint;

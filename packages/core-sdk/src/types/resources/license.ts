@@ -1,7 +1,7 @@
 import { Address, Hash, TransactionReceipt } from "viem";
 
 import { EncodedTxData } from "../../abi/generated";
-import { LicensingConfigInput } from "../common";
+import { LicenseTermsIdInput, LicensingConfigInput, TokenAmountInput } from "../common";
 import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
 import { RoyaltyPolicyInput } from "./royalty";
 /**
@@ -57,13 +57,13 @@ export type LicenseTermsInput = Omit<
   | "commercialRevShare"
 > & {
   /** The default minting fee to be paid when minting a license. */
-  defaultMintingFee: bigint | string | number;
+  defaultMintingFee: bigint | number;
   /** The expiration period of the license. */
-  expiration: bigint | string | number;
+  expiration: bigint | number;
   /** The maximum revenue that can be generated from the commercial use of the work. */
-  commercialRevCeiling: bigint | string | number;
+  commercialRevCeiling: bigint | number;
   /** The maximum revenue that can be generated from the derivative use of the work. */
-  derivativeRevCeiling: bigint | string | number;
+  derivativeRevCeiling: bigint | number;
   /**
    * The address of the royalty policy contract.
    * @default LAP
@@ -92,7 +92,7 @@ export type RegisterPILResponse = {
 export type AttachLicenseTermsRequest = {
   /** The address of the IP ID to which the license terms are being attached. */
   ipId: Address;
-  licenseTermsId: string | number | bigint;
+  licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -109,21 +109,21 @@ export type AttachLicenseTermsResponse = {
 
 export type MintLicenseTokensRequest = {
   licensorIpId: Address;
-  licenseTermsId: string | number | bigint;
+  licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   /** The maximum minting fee that the caller is willing to pay. if set to 0 then no limit. */
-  maxMintingFee: bigint | string | number;
+  maxMintingFee: bigint | number;
   /** The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%). */
-  maxRevenueShare: number | string;
+  maxRevenueShare: number;
   /**
    * The amount of license tokens to mint.
    * @default 1
    */
-  amount?: number | string | bigint;
+  amount?: number | bigint;
   /** The address of the receiver. */
   receiver?: Address;
 } & WithTxOptions &
@@ -136,13 +136,12 @@ export type MintLicenseTokensResponse = {
   encodedTxData?: EncodedTxData;
 };
 
-export type LicenseTermsId = string | number | bigint;
 
 export type PredictMintingLicenseFeeRequest = {
   licensorIpId: Address;
-  licenseTermsId: LicenseTermsId;
+  licenseTermsId: LicenseTermsIdInput;
   /** The amount of license tokens to mint. */
-  amount: string | number | bigint;
+  amount: number | bigint;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -168,7 +167,7 @@ export type GetLicensingConfigRequest = {
   /** The address of the IP for which the configuration is being set. */
   ipId: Address;
   /** The ID of the license terms within the license template. */
-  licenseTermsId: number | bigint;
+  licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -179,5 +178,5 @@ export type GetLicensingConfigRequest = {
 export type SetMaxLicenseTokensRequest = GetLicensingConfigRequest &
   WithTxOptions & {
     /** The total license token limit, 0 means no limit */
-    maxLicenseTokens: bigint | number;
+    maxLicenseTokens: TokenAmountInput;
   };

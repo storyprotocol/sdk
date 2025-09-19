@@ -17,9 +17,12 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest,
 } from "../../abi/generated";
 import {
+  DeadlineInput,
   IpMetadataAndTxOptions,
+  LicenseTermsIdInput,
   LicensingConfig,
   LicensingConfigInput,
+  TokenAmountInput,
   TokenIdInput,
 } from "../common";
 import { TxOptions, WipOptions, WithWipOptions } from "../options";
@@ -29,22 +32,22 @@ import { Erc20Spender } from "../utils/wip";
 export type DerivativeDataInput = {
   parentIpIds: Address[];
   /** The IDs of the license terms that the parent IP supports. */
-  licenseTermsIds: bigint[] | string[] | number[];
+  licenseTermsIds: LicenseTermsIdInput[];
   /**
    * The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
    * @default 0
    */
-  maxMintingFee?: bigint | string | number;
+  maxMintingFee?: bigint | number;
   /**
    *  The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
    * @default 100_000_000
    */
-  maxRts?: number | string;
+  maxRts?: number;
   /**
    * The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100 (where 100% represents 100_000_000).
    * @default 100
    */
-  maxRevenueShare?: number | string;
+  maxRevenueShare?: number;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} address if not provided.
@@ -68,21 +71,21 @@ export type RegisterRequest = {
   /** The address of the NFT. */
   nftContract: Address;
   /** The token identifier of the NFT. */
-  tokenId: string | number | bigint;
+  tokenId: TokenIdInput;
   /**
    * The deadline of the transaction signature in seconds.
    * @default 1000
    */
-  deadline?: string | number | bigint;
+  deadline?: DeadlineInput;
 } & IpMetadataAndTxOptions;
 
 export type RegisterDerivativeWithLicenseTokensRequest = {
   /** The derivative IP ID. */
   childIpId: Address;
   /** The IDs of the license tokens. */
-  licenseTokenIds: string[] | bigint[] | number[];
+  licenseTokenIds: LicenseTermsIdInput[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: number | string;
+  maxRts: number;
   txOptions?: TxOptions;
 };
 
@@ -103,7 +106,7 @@ export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInpu
    * - When specified, minting is capped at this value and the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook}
    *   is automatically configured as the {@link LicensingConfigInput.licensingHook}
    */
-  maxLicenseTokens?: number | bigint;
+  maxLicenseTokens?: TokenAmountInput;
 };
 
 export type LicenseTermsData = Omit<
@@ -139,12 +142,12 @@ export type MintAndRegisterIpAssetWithPilTermsResponse = {
 
 export type RegisterIpAndMakeDerivativeRequest = {
   nftContract: Address;
-  tokenId: string | number | bigint;
+  tokenId: TokenIdInput;
   /**
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: string | number | bigint;
+  deadline?: DeadlineInput;
   /** The derivative data to be used for register derivative. */
   derivData: DerivativeDataInput;
 } & IpMetadataAndTxOptions &
@@ -160,14 +163,14 @@ export type RegisterIpAndMakeDerivativeResponse = {
 
 export type RegisterIpAndAttachPilTermsRequest = {
   nftContract: Address;
-  tokenId: bigint | string | number;
+  tokenId: TokenIdInput;
   /** The data of the license and its configuration to be attached to the IP. */
   licenseTermsData: LicenseTermsDataInput[];
   /**
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: bigint | number | string;
+  deadline?: DeadlineInput;
 } & IpMetadataAndTxOptions;
 
 export type RegisterIpAndAttachPilTermsResponse = {
@@ -223,7 +226,7 @@ export type RegisterPilTermsAndAttachRequest = {
   /** The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: string | number | bigint;
+  deadline?: DeadlineInput;
   txOptions?: TxOptions;
 };
 
@@ -237,11 +240,11 @@ export type RegisterPilTermsAndAttachResponse = {
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
   /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
-  licenseTokenIds: string[] | bigint[] | number[];
+  licenseTokenIds: LicenseTermsIdInput[];
   /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: number | string;
+  maxRts: number;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
    * @default true
@@ -252,16 +255,16 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
 
 export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
-  tokenId: string | number | bigint;
+  tokenId: TokenIdInput;
   /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
-  licenseTokenIds: string[] | bigint[] | number[];
+  licenseTokenIds: LicenseTermsIdInput[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: number | string;
+  maxRts: number;
   /**
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: string | number | bigint;
+  deadline?: DeadlineInput;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -286,7 +289,7 @@ export type BatchRegisterDerivativeRequest = {
   /** The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: string | number | bigint;
+  deadline?: DeadlineInput;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 
@@ -314,14 +317,14 @@ export type BatchRegisterResponse = {
 };
 export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
-  tokenId: bigint | string | number;
+  tokenId: TokenIdInput;
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseTermsData: LicenseTermsDataInput[];
   /**
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: string | number | bigint;
+  deadline?: DeadlineInput;
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
@@ -336,7 +339,7 @@ export type RegisterIPAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = 
 };
 export type DistributeRoyaltyTokens = {
   ipId: Address;
-  deadline?: bigint | string | number;
+  deadline?: DeadlineInput;
   ipRoyaltyVault: Address;
   royaltyShares: RoyaltyShare[];
   totalAmount: number;
@@ -357,12 +360,12 @@ export type IpIdAndTokenId<T extends string | undefined> = T extends undefined
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensRequest = {
   nftContract: Address;
-  tokenId: bigint | string | number;
+  tokenId: TokenIdInput;
   /**
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: string | number | bigint;
+  deadline?: DeadlineInput;
   /** The derivative data to be used for register derivative.*/
   derivData: DerivativeDataInput;
   /** Authors of the IP and their shares of the royalty tokens. */
@@ -812,12 +815,12 @@ export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = Wi
     /** The IDs of the license tokens to be burned for linking the IP to parent IPs.
      * Must be provided together with `maxRts`.
      */
-    licenseTokenIds?: number[] | bigint[];
+    licenseTokenIds?: LicenseTermsIdInput[];
     /**
      * The deadline for the signature in seconds.
      * @default 1000
      */
-    deadline?: number | bigint;
+    deadline?: DeadlineInput;
     txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
   };
 
