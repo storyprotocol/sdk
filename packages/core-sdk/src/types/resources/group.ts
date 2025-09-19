@@ -11,6 +11,7 @@ import {
   LicenseTermsIdInput,
   LicensingConfig,
   LicensingConfigInput,
+  RevShareInput,
   TokenIdInput,
 } from "../common";
 import { TxOptions } from "../options";
@@ -43,7 +44,7 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
    * The maximum reward share percentage that can be allocated to each member IP.
    * Must be between 0 and 100 (where 100% represents 100_000_000).
    */
-  maxAllowedRewardShare: number;
+  maxAllowedRewardShare: RevShareInput;
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseDataInput[];
   /** The address of the recipient of the minted NFT. If not provided, the function will use the user's own wallet address. */
@@ -85,7 +86,7 @@ export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseDataInput[];
   /** The maximum reward share percentage that can be allocated to each member IP. */
-  maxAllowedRewardShare: number;
+  maxAllowedRewardShare: RevShareInput;
 } & IpMetadataAndTxOptions;
 
 export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
@@ -118,7 +119,7 @@ export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
    * The maximum reward share percentage that can be allocated to each member IP.
    * Must be between 0 and 100 (where 100% represents 100_000_000).
    */
-  maxAllowedRewardShare: number;
+  maxAllowedRewardShare: RevShareInput;
   txOptions?: TxOptions;
 };
 
@@ -164,7 +165,7 @@ export type AddIpRequest = {
    * Must be between 0 and 100 (where 100% represents 100_000_000).
    * @default 100
    */
-  maxAllowedRewardSharePercentage?: number;
+  maxAllowedRewardSharePercentage?: RevShareInput;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 

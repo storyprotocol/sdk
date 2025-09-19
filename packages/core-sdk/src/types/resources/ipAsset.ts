@@ -18,10 +18,12 @@ import {
 } from "../../abi/generated";
 import {
   DeadlineInput,
+  FeeInput,
   IpMetadataAndTxOptions,
   LicenseTermsIdInput,
   LicensingConfig,
   LicensingConfigInput,
+  RevShareInput,
   TokenAmountInput,
   TokenIdInput,
 } from "../common";
@@ -29,6 +31,7 @@ import { TxOptions, WipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsInput } from "./license";
 import { Erc20Spender } from "../utils/wip";
 
+export type MaxRtsInput = number;
 export type DerivativeDataInput = {
   parentIpIds: Address[];
   /** The IDs of the license terms that the parent IP supports. */
@@ -37,17 +40,17 @@ export type DerivativeDataInput = {
    * The maximum minting fee that the caller is willing to pay. if set to 0 then no limit.
    * @default 0
    */
-  maxMintingFee?: bigint | number;
+  maxMintingFee?: FeeInput;
   /**
    *  The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
    * @default 100_000_000
    */
-  maxRts?: number;
+  maxRts?: MaxRtsInput;
   /**
    * The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100 (where 100% represents 100_000_000).
    * @default 100
    */
-  maxRevenueShare?: number;
+  maxRevenueShare?: RevShareInput;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} address if not provided.
@@ -85,7 +88,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
   /** The IDs of the license tokens. */
   licenseTokenIds: LicenseTermsIdInput[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: number;
+  maxRts: MaxRtsInput;
   txOptions?: TxOptions;
 };
 
@@ -244,7 +247,7 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: number;
+  maxRts: MaxRtsInput;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
    * @default true
@@ -259,7 +262,7 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
   licenseTokenIds: LicenseTermsIdInput[];
   /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: number;
+  maxRts: MaxRtsInput;
   /**
    * The deadline for the signature in seconds.
    * @default 1000
@@ -689,7 +692,7 @@ export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptio
      * The deadline for the signature in seconds.
      * @default 1000
      */
-    deadline?: number | bigint;
+    deadline?: DeadlineInput;
     txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
   };
 
@@ -811,7 +814,7 @@ export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = Wi
      * The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
      * Must be provided together with `licenseTokenIds`.
      */
-    maxRts?: number;
+    maxRts?: MaxRtsInput;
     /** The IDs of the license tokens to be burned for linking the IP to parent IPs.
      * Must be provided together with `maxRts`.
      */
