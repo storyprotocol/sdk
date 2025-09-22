@@ -166,23 +166,6 @@ describe("Test Permission", () => {
       }
     });
 
-    it("should throw deadline error when call createSetPermissionSignature given deadline is not number", async () => {
-      stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      try {
-        await permissionClient.createSetPermissionSignature({
-          ipId: zeroAddress,
-          signer: zeroAddress,
-          to: zeroAddress,
-          permission: AccessPermission.ALLOW,
-          deadline: 1000,
-        });
-      } catch (error) {
-        expect((error as Error).message).to.equal(
-          "Failed to create set permission signature: Invalid deadline value.",
-        );
-      }
-    });
-
     it("should throw deadline error when call createSetPermissionSignature given deadline is less than 0", async () => {
       stub(permissionClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {

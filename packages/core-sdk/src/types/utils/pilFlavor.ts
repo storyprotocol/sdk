@@ -1,6 +1,6 @@
 import { Address } from "viem";
 
-import { RevShareInput } from "../common";
+import { FeeInput, RevShareInput } from "../common";
 import { SupportedChainIds } from "../config";
 import { LicenseTermsInput } from "../resources/license";
 import { RoyaltyPolicyInput } from "../resources/royalty";
@@ -18,7 +18,7 @@ export type NonCommercialSocialRemixingRequest = {
 
 export type CommercialRemixRequest = {
   /** The fee to be paid when minting a license. */
-  defaultMintingFee: bigint | number;
+  defaultMintingFee: FeeInput;
   /** Percentage of revenue that must be shared with the licensor. Must be between 0 and 100. */
   commercialRevShare: RevShareInput;
   /** The ERC20 token to be used to pay the minting fee */
@@ -42,7 +42,7 @@ export type CommercialRemixRequest = {
 
 export type CommercialUseRequest = {
   /** The fee to be paid when minting a license. */
-  defaultMintingFee: bigint | number;
+  defaultMintingFee: FeeInput;
   /** The ERC20 token to be used to pay the minting fee. */
   currency: Address;
   /**
