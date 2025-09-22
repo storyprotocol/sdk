@@ -11,7 +11,7 @@ import {
   zeroAddress,
 } from "viem";
 
-import { StoryClient } from "../../src";
+import { NativeRoyaltyPolicy, PILFlavor, StoryClient } from "../../src";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import {
   aeneid,
@@ -54,11 +54,14 @@ describe("Royalty Functions", () => {
   };
 
   const getCommercialPolicyId = async (): Promise<bigint> => {
-    const response = await client.license.registerCommercialRemixPIL({
-      defaultMintingFee: "100000",
-      currency: erc20Address[aeneid],
-      commercialRevShare: 10,
-    });
+    const response = await client.license.registerPILTerms(
+      PILFlavor.commercialRemix({
+        defaultMintingFee: 100000,
+        currency: erc20Address[aeneid],
+        commercialRevShare: 10,
+        royaltyPolicy: NativeRoyaltyPolicy.LAP,
+      }),
+    );
     return response.licenseTermsId!;
   };
 
