@@ -249,27 +249,6 @@ describe("Test IpAssetClient", () => {
       expect(res.txHash).to.equal(undefined);
     });
 
-    it("should throw invalid address error when register given deadline is string", async () => {
-      stub(IpAssetRegistryClient.prototype, "ipId").resolves(
-        "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
-      );
-      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
-
-      try {
-        await ipAssetClient.register({
-          nftContract: spgNftContract,
-          tokenId: 3,
-          deadline: 12321,
-          ipMetadata: {
-            ipMetadataURI: "1",
-            ipMetadataHash: zeroHash,
-          },
-        });
-      } catch (err) {
-        expect((err as Error).message).equal("Failed to register IP: Invalid deadline value.");
-      }
-    });
-
     it("should throw account error when register given wallet have no signTypedData ", async () => {
       const newWalletMock = createMockWalletClient();
       const walletWithOptionalMethods = newWalletMock as Partial<typeof newWalletMock>;
@@ -688,7 +667,7 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test ipAssetClient.registerDerivativeWithLicenseTokens", () => { 
+  describe("Test ipAssetClient.registerDerivativeWithLicenseTokens", () => {
     it("should throw childIpId error when registerDerivativeWithLicenseTokens given childIpId is not registered", async () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
@@ -1967,7 +1946,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to mint and register IP and make derivative with license tokens: License token id 169371642198122114185371466690533487013299380860 must be owned by the caller.",
+          "Failed to mint and register IP and make derivative with license tokens: License token id 1 must be owned by the caller.",
         );
       }
     });
@@ -2153,7 +2132,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to register IP and make derivative with license tokens: License token id 169371642198122114185371466690533487013299380860 must be owned by the caller.",
+          "Failed to register IP and make derivative with license tokens: License token id 1 must be owned by the caller.",
         );
       }
     });

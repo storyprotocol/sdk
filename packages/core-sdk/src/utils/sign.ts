@@ -60,7 +60,7 @@ export const getPermissionSignature = async (
 };
 
 export const getDeadline = (unixTimestamp: bigint, deadline?: DeadlineInput): bigint => {
-  if (deadline && (isNaN(Number(deadline)) || BigInt(deadline) < 0n)) {
+  if (deadline && BigInt(deadline) < 0n) {
     throw new Error("Invalid deadline value.");
   }
   return deadline ? unixTimestamp + BigInt(deadline) : unixTimestamp + 1000n;

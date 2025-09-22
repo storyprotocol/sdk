@@ -15,6 +15,7 @@ import {
   DerivativeData,
   LicenseTermsData,
   LicenseTermsDataInput,
+  MaxRtsInput,
   RoyaltyShare,
 } from "../../types/resources/ipAsset";
 import { LicenseTerms } from "../../types/resources/license";
@@ -191,11 +192,7 @@ export const validateDerivativeData = async ({
   return derivativeData;
 };
 
-export const validateMaxRts = (maxRts: number): void => {
-  if (isNaN(maxRts)) {
-    throw new Error(`The maxRts must be a number.`);
-  }
-
+export const validateMaxRts = (maxRts: MaxRtsInput): void => {
   if (maxRts < 0 || maxRts > MAX_ROYALTY_TOKEN) {
     throw new Error(`The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
   }

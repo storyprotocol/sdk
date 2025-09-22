@@ -27,9 +27,6 @@ export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): L
     isSet: licensingConfig.isSet,
     disabled: licensingConfig.disabled,
   };
-  if (isNaN(licenseConfig.expectMinimumGroupRewardShare)) {
-    throw new Error(`The expectMinimumGroupRewardShare must be a valid number.`);
-  }
 
   if (
     licenseConfig.expectMinimumGroupRewardShare < 0 ||
