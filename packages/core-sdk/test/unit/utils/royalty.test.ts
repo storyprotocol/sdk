@@ -38,12 +38,6 @@ describe("royaltyPolicyInputToAddress", () => {
 });
 
 describe("getRevenueShare", () => {
-  it("should throw error when call getRevenueShare given revShare is not a number", () => {
-    expect(() => getRevenueShare("not a number")).to.throw(
-      "commercialRevShare must be a valid number.",
-    );
-  });
-
   it("should throw error when call getRevenueShare given revShare is less than 0", () => {
     expect(() => getRevenueShare(-1, RevShareType.EXPECT_MINIMUM_GROUP_REWARD_SHARE)).to.throw(
       "expectMinimumGroupRewardShare must be between 0 and 100.",

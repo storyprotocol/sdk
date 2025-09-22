@@ -11,7 +11,7 @@ import { createMockPublicClient, createMockWalletClient } from "../testUtils";
 
 use(chaiAsPromised);
 const mockLicenseData: LicenseDataInput = {
-  licenseTermsId: "100",
+  licenseTermsId: 100,
   licensingConfig: {
     isSet: true,
     mintingFee: 0n,
@@ -342,7 +342,7 @@ describe("Test IpAssetClient", () => {
         await groupClient.registerIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: "100",
+          tokenId: 100,
           licenseData: [mockLicenseData],
           maxAllowedRewardShare: 5,
         });
@@ -361,7 +361,7 @@ describe("Test IpAssetClient", () => {
         await groupClient.registerIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: "100",
+          tokenId: 100,
           licenseData: [],
           maxAllowedRewardShare: 5,
         });
@@ -381,7 +381,7 @@ describe("Test IpAssetClient", () => {
         await groupClient.registerIpAndAttachLicenseAndAddToGroup({
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
           nftContract: "0x",
-          tokenId: "100",
+          tokenId: 100,
           licenseData: [mockLicenseData],
           maxAllowedRewardShare: 5,
         });
@@ -414,7 +414,7 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.registerIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        tokenId: "100",
+        tokenId: 100,
         licenseData: [mockLicenseData],
         maxAllowedRewardShare: 5,
       });
@@ -438,7 +438,7 @@ describe("Test IpAssetClient", () => {
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         maxAllowedRewardShare: 5,
-        tokenId: "100",
+        tokenId: 100,
         licenseData: [
           {
             ...mockLicenseData,

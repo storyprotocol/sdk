@@ -96,13 +96,6 @@ describe("Sign", () => {
     });
   });
   describe("Get Deadline", () => {
-    it("should throw invalid deadline value when call getDeadline given deadline is not number", () => {
-      try {
-        getDeadline(12n, "invalid");
-      } catch (e) {
-        expect((e as Error).message).to.equal("Invalid deadline value.");
-      }
-    });
 
     it("should throw invalid deadline value when call getDeadline given deadline is less than 0", () => {
       try {

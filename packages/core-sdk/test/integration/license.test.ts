@@ -48,9 +48,9 @@ describe("License Functions", () => {
         derivativesApproval: false,
         derivativesReciprocal: false,
         uri: "",
-        expiration: "",
-        commercialRevCeiling: "",
-        derivativeRevCeiling: "",
+        expiration: 0,
+        commercialRevCeiling: 0,
+        derivativeRevCeiling: 0,
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
@@ -109,8 +109,8 @@ describe("License Functions", () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
-        maxMintingFee: "1",
-        maxRevenueShare: "100",
+        maxMintingFee: 1,
+        maxRevenueShare: 100,
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTokenIds).to.be.a("array");
@@ -134,8 +134,8 @@ describe("License Functions", () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipIdB,
-        maxMintingFee: "1",
-        maxRevenueShare: "100",
+        maxMintingFee: 1,
+        maxRevenueShare: 100,
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTokenIds).to.be.a("array");

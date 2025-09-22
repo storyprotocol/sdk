@@ -174,7 +174,7 @@ describe("Test Permission", () => {
           signer: zeroAddress,
           to: zeroAddress,
           permission: AccessPermission.ALLOW,
-          deadline: "error",
+          deadline: 1000,
         });
       } catch (error) {
         expect((error as Error).message).to.equal(

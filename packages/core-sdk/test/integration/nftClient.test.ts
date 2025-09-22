@@ -48,7 +48,7 @@ describe("nftClient Functions", () => {
         mintFeeRecipient: TEST_WALLET_ADDRESS,
         mintOpen: true,
         contractURI: "test-uri",
-        mintFee: 10000000n,
+        mintFee: 10000000,
         mintFeeToken: erc20Address[aeneid],
       });
       expect(txData.spgNftContract).to.be.a("string");
@@ -124,7 +124,7 @@ describe("nftClient Functions", () => {
           mintFeeRecipient: TEST_WALLET_ADDRESS,
           mintOpen: true,
           contractURI: "test-uri",
-          mintFee: 1000000000000000000n,
+          mintFee: 1000000000000000000,
           mintFeeToken: "0x0000000000000000000000000000000000000000",
         }),
       ).to.be.rejectedWith("Invalid mint fee token address");

@@ -29,7 +29,7 @@ describe("validateLicenseConfig", () => {
       hookData: zeroAddress,
       commercialRevShare: 0,
       disabled: false,
-      expectMinimumGroupRewardShare: "a",
+      expectMinimumGroupRewardShare: 0,
       expectGroupRewardPool: zeroAddress,
     };
     expect(() => validateLicenseConfig(licensingConfig)).to.throw(
