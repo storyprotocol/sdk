@@ -14,11 +14,10 @@ import { ChainIds } from "../../types/config";
 import {
   DerivativeData,
   LicenseTermsData,
-  LicenseTermsDataInput,
   MaxRtsInput,
   RoyaltyShare,
 } from "../../types/resources/ipAsset";
-import { LicenseTerms } from "../../types/resources/license";
+import { LicenseTerms, LicenseTermsDataInput } from "../../types/resources/license";
 import {
   GetIpIdAddressConfig,
   ValidateDerivativeDataConfig,

@@ -1,8 +1,8 @@
 import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { Hex, maxUint256, zeroAddress } from "viem";
+import { Address, Hex, maxUint256, zeroAddress } from "viem";
 
-import { LicensingConfig, PILFlavor, StoryClient } from "../../src";
+import { LicensingConfig, NativeRoyaltyPolicy, PILFlavor, StoryClient } from "../../src";
 import { getDerivedStoryClient } from "./utils/BIP32";
 import { generateHex } from "./utils/generateHex";
 import {
@@ -23,7 +23,7 @@ import { ERC20Client } from "../../src/utils/token";
 
 use(chaiAsPromised);
 
-describe("License Functions", () => {
+describe.only("License Functions", () => {
   let client: StoryClient;
   let clientB: StoryClient;
   before(async () => {
@@ -227,6 +227,222 @@ describe("License Functions", () => {
         });
         expect(result.txHash).to.be.a("string");
       });
+    });
+
+    it("should register PIL terms and attach", async () => {
+      const result = await client.license.registerPilTermsAndAttach({
+        ipId: ipId,
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 0n,
+              commercialRevShare: 100,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+          },
+          {
+            terms: PILFlavor.nonCommercialSocialRemixing(),
+          },
+        ],
+        deadline: 1000n,
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTermsIds?.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
+    });
+
+    it("should register PIL terms and attach with license terms max limit", async () => {
+      const result = await client.license.registerPilTermsAndAttach({
+        ipId: ipId,
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 0n,
+              commercialRevShare: 100,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 0n,
+              commercialRevShare: 100,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 0n,
+              commercialRevShare: 100,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+          },
+        ],
+        deadline: 1000n,
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
+    });
+  });
+
+  describe("register pil terms and attach", () => {
+    let ipId: Address;
+    let tokenId: number | undefined;
+    before(async () => {
+      tokenId = await getTokenId();
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      ipId = registerResult.ipId!;
+    });
+    it("should register PIL terms and attach", async () => {
+      const result = await client.license.registerPilTermsAndAttach({
+        ipId: ipId,
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 0n,
+              commercialRevShare: 100,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+          },
+          {
+            terms: PILFlavor.nonCommercialSocialRemixing(),
+          },
+        ],
+        deadline: 1000n,
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTermsIds?.length).to.be.equal(2);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
+    });
+
+    it("should register PIL terms and attach with license terms max limit", async () => {
+      const result = await client.license.registerPilTermsAndAttach({
+        ipId: ipId,
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 0n,
+              commercialRevShare: 100,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 1,
+              commercialRevShare: 100,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 1n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 0n,
+              commercialRevShare: 100,
+              royaltyPolicy: NativeRoyaltyPolicy.LAP,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+            licensingConfig: {
+              isSet: true,
+              mintingFee: 0n,
+              licensingHook: zeroAddress,
+              hookData: zeroAddress,
+              commercialRevShare: 0,
+              disabled: false,
+              expectMinimumGroupRewardShare: 0,
+              expectGroupRewardPool: zeroAddress,
+            },
+          },
+        ],
+        deadline: 1000n,
+      });
+      expect(result.txHash).to.be.a("string");
+      expect(result.licenseTermsIds).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
     });
   });
 });

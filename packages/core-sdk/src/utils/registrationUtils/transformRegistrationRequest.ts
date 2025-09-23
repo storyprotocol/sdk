@@ -15,7 +15,6 @@ import {
   SpgnftImplReadOnlyClient,
 } from "../../abi/generated";
 import {
-  LicenseTermsDataInput,
   TransformedIpRegistrationWorkflowRequest,
   TransformIpRegistrationWorkflowRequest,
 } from "../../types/resources/ipAsset";
@@ -47,6 +46,7 @@ import {
   validateDerivativeData,
   validateLicenseTermsData,
 } from "./registerValidation";
+import { LicenseTermsDataInput } from "../../types/resources/license";
 /**
  * Transforms the registration request to the appropriate format based on workflow type.
  *
@@ -496,7 +496,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
   };
   if ("licenseTermsData" in request) {
     const { licenseTermsData, maxLicenseTokens } = await validateLicenseTermsData(
-      request.licenseTermsData as LicenseTermsDataInput[],
+      request.licenseTermsData,
       rpcClient,
       chainId,
     );

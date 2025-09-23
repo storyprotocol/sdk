@@ -1,9 +1,16 @@
 import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { SinonStub, stub } from "sinon";
-import { Address, Hex, PublicClient, WalletClient, zeroAddress } from "viem";
+import { Address, Hex, PublicClient, WalletClient, zeroAddress, zeroHash } from "viem";
 
-import { LicenseClient, LicensingConfig, NativeRoyaltyPolicy } from "../../../src";
+import {
+  LicenseClient,
+  LicenseTerms,
+  LicensingConfig,
+  LicensingConfigInput,
+  NativeRoyaltyPolicy,
+  PILFlavor,
+} from "../../../src";
 import {
   IpAccountImplClient,
   PiLicenseTemplateGetLicenseTermsResponse,
@@ -11,7 +18,6 @@ import {
   WrappedIpClient,
 } from "../../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
-import { LicenseTerms } from "../../../src/types/resources/license";
 import { ipId, mockAddress, walletAddress } from "../mockData";
 import {
   createMockPublicClient,
@@ -23,6 +29,36 @@ import {
 use(chaiAsPromised);
 
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
+const licenseTerms: LicenseTerms = {
+  defaultMintingFee: 1513n,
+  currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+  royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+  transferable: false,
+  expiration: 0n,
+  commercialUse: true,
+  commercialAttribution: false,
+  commercializerChecker: zeroAddress,
+  commercializerCheckerData: "0x",
+  commercialRevShare: 0,
+  commercialRevCeiling: 0n,
+  derivativesAllowed: false,
+  derivativesAttribution: false,
+  derivativesApproval: false,
+  derivativesReciprocal: false,
+  derivativeRevCeiling: 0n,
+  uri: "",
+};
+
+const licensingConfig: LicensingConfigInput = {
+  isSet: false,
+  mintingFee: 0,
+  licensingHook: zeroAddress,
+  hookData: zeroAddress,
+  commercialRevShare: 0,
+  disabled: false,
+  expectMinimumGroupRewardShare: 0,
+  expectGroupRewardPool: zeroAddress,
+};
 
 describe("Test LicenseClient", () => {
   let licenseClient: LicenseClient;
@@ -43,25 +79,7 @@ describe("Test LicenseClient", () => {
 
       stub(RoyaltyModuleReadOnlyClient.prototype, "isWhitelistedRoyaltyPolicy").resolves(true);
     });
-    const licenseTerms: LicenseTerms = {
-      defaultMintingFee: 1513n,
-      currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      transferable: false,
-      expiration: 0n,
-      commercialUse: true,
-      commercialAttribution: false,
-      commercializerChecker: zeroAddress,
-      commercializerCheckerData: "0x",
-      commercialRevShare: 0,
-      commercialRevCeiling: 0n,
-      derivativesAllowed: false,
-      derivativesAttribution: false,
-      derivativesApproval: false,
-      derivativesReciprocal: false,
-      derivativeRevCeiling: 0n,
-      uri: "",
-    };
+
     it("should return directly licenseTermsId when call registerPILTerms given request have already registered", async () => {
       stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
         selectedLicenseTermsId: BigInt(1),
@@ -1291,6 +1309,170 @@ describe("Test LicenseClient", () => {
         expectMinimumGroupRewardShare: 1 * 10 ** 6,
         expectGroupRewardPool: zeroAddress,
       });
+    });
+  });
+
+  describe("Test licenseClient.registerPilTermsAndAttach", () => {
+    it("should throw ipId error when registerPilTermsAndAttach given ipId is wrong address", async () => {
+      try {
+        await licenseClient.registerPilTermsAndAttach({
+          ipId: "0x",
+          licenseTermsData: [
+            {
+              terms: licenseTerms,
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register PIL terms and attach: Invalid address: 0x.",
+        );
+      }
+    });
+
+    it("should throw ipId have not registered error when registerPilTermsAndAttach given ipId have not registered", async () => {
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      try {
+        await licenseClient.registerPilTermsAndAttach({
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          licenseTermsData: [
+            {
+              terms: licenseTerms,
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to register PIL terms and attach: The IP with id 0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c is not registered.",
+        );
+      }
+    });
+
+    it("should return encoded tx data when registerPilTermsAndAttach given correct args and encodedTxDataOnly of true", async () => {
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 0n,
+      });
+
+      const result = await licenseClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+          },
+        ],
+        txOptions: {
+          encodedTxDataOnly: true,
+        },
+      });
+
+      expect(result.encodedTxData!.data).to.be.a("string");
+    });
+
+    it("should return txHash when registerPilTermsAndAttach given correct args ", async () => {
+      stub(licenseClient.licenseAttachmentWorkflowsClient, "registerPilTermsAndAttach").resolves(
+        txHash,
+      );
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 0n,
+      });
+      const result = await licenseClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+          },
+          {
+            terms: licenseTerms,
+          },
+        ],
+      });
+
+      expect(result.txHash).to.equal(txHash);
+      expect(result.licenseTermsIds).to.deep.equal([0n, 0n]);
+      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
+    });
+
+    it("should return licenseTermsMaxLimitTxHashes when registerPilTermsAndAttach given correct args with license terms max limit", async () => {
+      stub(licenseClient.licenseAttachmentWorkflowsClient, "registerPilTermsAndAttach").resolves(
+        txHash,
+      );
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(licenseClient.licenseTemplateClient, "getLicenseTermsId").resolves({
+        selectedLicenseTermsId: 1n,
+      });
+      const result = await licenseClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+            licensingConfig,
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: licenseTerms,
+            maxLicenseTokens: 100,
+          },
+          {
+            terms: licenseTerms,
+          },
+        ],
+      });
+      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
+      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
+    });
+
+    it("should call with default values of licensingConfig when registerPilTermsAndAttach given licensingConfig is not provided", async () => {
+      const registerPilTermsAndAttachStub = stub(
+        licenseClient.licenseAttachmentWorkflowsClient,
+        "registerPilTermsAndAttach",
+      ).resolves(txHash);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      await licenseClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: licenseTerms,
+          },
+        ],
+      });
+      expect(
+        registerPilTermsAndAttachStub.args[0][0].licenseTermsData[0].licensingConfig,
+      ).to.deep.equal({
+        isSet: false,
+        mintingFee: 0n,
+        licensingHook: zeroAddress,
+        hookData: zeroHash,
+        commercialRevShare: 0,
+        disabled: false,
+        expectMinimumGroupRewardShare: 0,
+        expectGroupRewardPool: zeroAddress,
+      });
+    });
+
+    it("should be called with expected values given PILFlavor.nonCommercialSocialRemixing", async () => {
+      const registerPilTermsAndAttachStub = stub(
+        licenseClient.licenseAttachmentWorkflowsClient,
+        "registerPilTermsAndAttach",
+      ).resolves(txHash);
+      stub(licenseClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+
+      await licenseClient.registerPilTermsAndAttach({
+        ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        licenseTermsData: [
+          {
+            terms: PILFlavor.nonCommercialSocialRemixing(),
+          },
+        ],
+      });
+      expect(registerPilTermsAndAttachStub.args[0][0].licenseTermsData[0].terms).to.deep.equal(
+        PILFlavor.nonCommercialSocialRemixing(),
+      );
     });
   });
 });

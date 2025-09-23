@@ -3,6 +3,8 @@ import { Address, PublicClient, zeroAddress } from "viem";
 import {
   IpAccountImplClient,
   IpAssetRegistryClient,
+  LicenseAttachmentWorkflowsClient,
+  LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest,
   LicenseRegistryGetLicensingConfigRequest,
   LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
@@ -33,17 +35,26 @@ import {
   MintLicenseTokensResponse,
   PredictMintingLicenseFeeRequest,
   RegisterPILResponse,
+  RegisterPilTermsAndAttachRequest,
+  RegisterPilTermsAndAttachResponse,
   RegisterPILTermsRequest,
   SetLicensingConfigRequest,
   SetLicensingConfigResponse,
   SetMaxLicenseTokensRequest,
 } from "../types/resources/license";
+import { SignatureMethodType } from "../types/utils/registerHelper";
 import { Erc20Spender } from "../types/utils/wip";
 import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
+import { generateOperationSignature } from "../utils/generateOperationSignature";
 import { PILFlavor } from "../utils/pilFlavor";
+import {
+  getCalculatedDeadline,
+  validateLicenseTermsData,
+} from "../utils/registrationUtils/registerValidation";
 import { getRevenueShare } from "../utils/royalty";
+import { setMaxLicenseTokens } from "../utils/setMaxLicenseTokens";
 import { waitForTxReceipt } from "../utils/txOptions";
 import { validateAddress } from "../utils/utils";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
@@ -58,6 +69,7 @@ export class LicenseClient {
   public multicall3Client: Multicall3Client;
   public totalLicenseTokenLimitHookClient: TotalLicenseTokenLimitHookClient;
   public wipClient: WrappedIpClient;
+  public licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: ChainIds;
@@ -73,6 +85,7 @@ export class LicenseClient {
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.wipClient = new WrappedIpClient(rpcClient, wallet);
     this.totalLicenseTokenLimitHookClient = new TotalLicenseTokenLimitHookClient(rpcClient, wallet);
+    this.licenseAttachmentWorkflowsClient = new LicenseAttachmentWorkflowsClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -441,8 +454,86 @@ export class LicenseClient {
     }
   }
 
-  private async getLicenseTermsId(request: LicenseTerms): Promise<LicenseTermsIdResponse> {
-    const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({ terms: request });
+  /**
+   * Register Programmable IP License Terms (if unregistered) and attach it to IP.
+   *
+   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} event.
+   */
+  public async registerPilTermsAndAttach(
+    request: RegisterPilTermsAndAttachRequest,
+  ): Promise<RegisterPilTermsAndAttachResponse> {
+    try {
+      const { ipId } = request;
+      const isRegistered = await this.ipAssetRegistryClient.isRegistered({
+        id: validateAddress(ipId)
+      });
+      if (!isRegistered) {
+        throw new Error(`The IP with id ${ipId} is not registered.`);
+      }
+      const { licenseTerms, licenseTermsData } = await validateLicenseTermsData(
+        request.licenseTermsData,
+        this.rpcClient,
+        this.chainId,
+      );
+      const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
+      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
+      const { result: state } = await ipAccount.state();
+      const signature = await generateOperationSignature({
+        ipIdAddress: ipId,
+        methodType: SignatureMethodType.REGISTER_PIL_TERMS_AND_ATTACH,
+        deadline: calculatedDeadline,
+        state,
+        wallet: this.wallet,
+        chainId: this.chainId,
+      });
+      const object: LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest = {
+        ipId: ipId,
+        licenseTermsData,
+        sigAttachAndConfig: {
+          signer: validateAddress(this.walletAddress),
+          deadline: calculatedDeadline,
+          signature,
+        },
+      };
+      if (request.txOptions?.encodedTxDataOnly) {
+        return {
+          encodedTxData:
+            this.licenseAttachmentWorkflowsClient.registerPilTermsAndAttachEncode(object),
+        };
+      } else {
+        const txHash = await this.licenseAttachmentWorkflowsClient.registerPilTermsAndAttach(
+          object,
+        );
+        await this.rpcClient.waitForTransactionReceipt({
+          ...request.txOptions,
+          hash: txHash,
+        });
+        const licenseTermsIds: bigint[] = [];
+        for (let i = 0; i < licenseTerms.length; i++) {
+          licenseTermsIds.push(await this.getLicenseTermsId(licenseTerms[i]));
+        }
+        const maxLicenseTokensTxHashes = await setMaxLicenseTokens({
+          maxLicenseTokensData: request.licenseTermsData,
+          licensorIpId: ipId,
+          licenseTermsIds,
+          totalLicenseTokenLimitHookClient: this.totalLicenseTokenLimitHookClient,
+          templateAddress: this.licenseTemplateClient.address,
+        });
+        return {
+          txHash,
+          licenseTermsIds,
+          ...(maxLicenseTokensTxHashes.length > 0 && { maxLicenseTokensTxHashes }),
+        };
+      }
+    } catch (error) {
+      return handleError(error, "Failed to register PIL terms and attach");
+    }
+  }
+
+  private async getLicenseTermsId(licenseTerms: LicenseTerms): Promise<LicenseTermsIdResponse> {
+    const licenseRes = await this.licenseTemplateClient.getLicenseTermsId({
+      terms: licenseTerms,
+    });
     return licenseRes.selectedLicenseTermsId;
   }
 
