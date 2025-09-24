@@ -6,6 +6,7 @@ import { handleError } from "./errors";
 import { chainStringToViemChain } from "./utils";
 import { ArbitrationPolicyUmaClient } from "../abi/generated";
 import { ASSERTION_ABI } from "../abi/oov3Abi";
+import { DisputeId } from "../types/resources/dispute";
 
 export const getOov3Contract = async (
   arbitrationPolicyUmaClient: ArbitrationPolicyUmaClient,
@@ -67,7 +68,7 @@ export const getMinimumBond = async (
  */
 export const settleAssertion = async (
   privateKey: Hex,
-  disputeId: bigint,
+  disputeId: DisputeId,
   transport?: string,
 ): Promise<Hex> => {
   try {

@@ -20,7 +20,7 @@ import {
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { LicensingConfig, RevShareType } from "../types/common";
+import { LicenseTermsIdInput, LicensingConfig, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse, TxOptions } from "../types/options";
 import {
@@ -28,7 +28,6 @@ import {
   AttachLicenseTermsResponse,
   GetLicensingConfigRequest,
   LicenseTerms,
-  LicenseTermsId,
   LicenseTermsIdResponse,
   MintLicenseTokensRequest,
   MintLicenseTokensResponse,
@@ -257,7 +256,7 @@ export class LicenseClient {
    * Gets license terms of the given ID.
    */
   public async getLicenseTerms(
-    selectedLicenseTermsId: LicenseTermsId,
+    selectedLicenseTermsId: LicenseTermsIdInput,
   ): Promise<PiLicenseTemplateGetLicenseTermsResponse> {
     try {
       return await this.piLicenseTemplateReadOnlyClient.getLicenseTerms({

@@ -91,9 +91,9 @@ describe("Royalty Functions", () => {
       childIpId: childIpId,
       parentIpIds: [parentIpId],
       licenseTermsIds: [licenseTermsId],
-      maxMintingFee: "0",
-      maxRts: "0",
-      maxRevenueShare: "0",
+      maxMintingFee: 0,
+      maxRts: 0,
+      maxRevenueShare: 0,
     });
   });
 

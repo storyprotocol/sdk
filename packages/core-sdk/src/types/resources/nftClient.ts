@@ -1,6 +1,7 @@
 import { Address, Hash } from "viem";
 
 import { EncodedTxData } from "../../abi/generated";
+import { FeeInput, TokenIdInput } from "../common";
 import { TxOptions } from "../options";
 
 export type CreateNFTCollectionRequest = {
@@ -18,7 +19,7 @@ export type CreateNFTCollectionRequest = {
   baseURI?: string;
   maxSupply?: number;
   /** The cost to mint a token. */
-  mintFee?: bigint;
+  mintFee?: FeeInput;
   /** The token to mint. */
   mintFeeToken?: Address;
   /** The owner of the collection. */
@@ -33,7 +34,7 @@ export type CreateNFTCollectionResponse = {
 };
 
 export type SetTokenURIRequest = {
-  tokenId: bigint | number;
+  tokenId: TokenIdInput;
   /** The new metadata URI to associate with the token. */
   tokenURI: string;
   spgNftContract: Address;
@@ -41,6 +42,6 @@ export type SetTokenURIRequest = {
 };
 
 export type GetTokenURIRequest = {
-  tokenId: bigint | number;
+  tokenId: TokenIdInput;
   spgNftContract: Address;
 };

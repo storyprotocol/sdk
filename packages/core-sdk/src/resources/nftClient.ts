@@ -55,7 +55,7 @@ export class NftClient {
           symbol: request.symbol,
           baseURI: request.baseURI ?? "",
           maxSupply: request.maxSupply ?? Number(maxUint32),
-          mintFee: request.mintFee ?? 0n,
+          mintFee: BigInt(request.mintFee ?? 0),
           mintFeeToken: request.mintFeeToken ?? zeroAddress,
           owner: validateAddress(request.owner || this.wallet.account!.address),
           mintFeeRecipient: validateAddress(request.mintFeeRecipient),

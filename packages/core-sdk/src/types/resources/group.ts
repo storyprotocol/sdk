@@ -5,11 +5,19 @@ import {
   GroupingModuleClaimedRewardEvent,
   GroupingModuleCollectedRoyaltiesToGroupPoolEvent,
 } from "../../abi/generated";
-import { IpMetadataAndTxOptions, LicensingConfig, LicensingConfigInput } from "../common";
+import {
+  DeadlineInput,
+  IpMetadataAndTxOptions,
+  LicenseTermsIdInput,
+  LicensingConfig,
+  LicensingConfigInput,
+  RevShareInput,
+  TokenIdInput,
+} from "../common";
 import { TxOptions } from "../options";
 
 export type LicenseDataInput = {
-  licenseTermsId: string | bigint | number;
+  licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
@@ -36,7 +44,7 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
    * The maximum reward share percentage that can be allocated to each member IP.
    * Must be between 0 and 100 (where 100% represents 100_000_000).
    */
-  maxAllowedRewardShare: number | string;
+  maxAllowedRewardShare: RevShareInput;
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseDataInput[];
   /** The address of the recipient of the minted NFT. If not provided, the function will use the user's own wallet address. */
@@ -45,7 +53,7 @@ export type MintAndRegisterIpAndAttachLicenseAndAddToGroupRequest = {
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: string | number | bigint;
+  deadline?: DeadlineInput;
 } & IpMetadataAndTxOptions;
 
 export type MintAndRegisterIpAndAttachLicenseAndAddToGroupResponse = {
@@ -67,18 +75,18 @@ export type RegisterGroupResponse = {
 };
 export type RegisterIpAndAttachLicenseAndAddToGroupRequest = {
   nftContract: Address;
-  tokenId: bigint | string | number;
+  tokenId: TokenIdInput;
   /** The ID of the group IP to add the newly registered IP. */
   groupId: Address;
   /**
    * The deadline for the signature in seconds.
    * @default 1000
    */
-  deadline?: bigint;
+  deadline?: DeadlineInput;
   /** The data of the license and its configuration to be attached to the new group IP. */
   licenseData: LicenseDataInput[];
   /** The maximum reward share percentage that can be allocated to each member IP. */
-  maxAllowedRewardShare: number | string;
+  maxAllowedRewardShare: RevShareInput;
 } & IpMetadataAndTxOptions;
 
 export type RegisterIpAndAttachLicenseAndAddToGroupResponse = {
@@ -111,7 +119,7 @@ export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
    * The maximum reward share percentage that can be allocated to each member IP.
    * Must be between 0 and 100 (where 100% represents 100_000_000).
    */
-  maxAllowedRewardShare: number | string;
+  maxAllowedRewardShare: RevShareInput;
   txOptions?: TxOptions;
 };
 
@@ -157,7 +165,7 @@ export type AddIpRequest = {
    * Must be between 0 and 100 (where 100% represents 100_000_000).
    * @default 100
    */
-  maxAllowedRewardSharePercentage?: number;
+  maxAllowedRewardSharePercentage?: RevShareInput;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 

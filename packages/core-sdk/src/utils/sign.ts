@@ -9,6 +9,7 @@ import {
 import { validateAddress } from "./utils";
 import { accessControllerAbi, accessControllerAddress, ipAccountImplAbi } from "../abi/generated";
 import { defaultFunctionSelector } from "../constants/common";
+import { DeadlineInput } from "../types/common";
 import {
   PermissionSignatureRequest,
   SignatureRequest,
@@ -58,8 +59,8 @@ export const getPermissionSignature = async (
   });
 };
 
-export const getDeadline = (unixTimestamp: bigint, deadline?: bigint | number | string): bigint => {
-  if (deadline && (isNaN(Number(deadline)) || BigInt(deadline) < 0n)) {
+export const getDeadline = (unixTimestamp: bigint, deadline?: DeadlineInput): bigint => {
+  if (deadline && BigInt(deadline) < 0n) {
     throw new Error("Invalid deadline value.");
   }
   return deadline ? unixTimestamp + BigInt(deadline) : unixTimestamp + 1000n;

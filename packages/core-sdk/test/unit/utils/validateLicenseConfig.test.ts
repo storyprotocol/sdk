@@ -21,21 +21,6 @@ describe("validateLicenseConfig", () => {
       expectMinimumGroupRewardShare: 10000000,
     });
   });
-  it("should throw error when expectMinimumGroupRewardShare is not a number", () => {
-    const licensingConfig = {
-      isSet: true,
-      mintingFee: 0n,
-      licensingHook: zeroAddress,
-      hookData: zeroAddress,
-      commercialRevShare: 0,
-      disabled: false,
-      expectMinimumGroupRewardShare: "a",
-      expectGroupRewardPool: zeroAddress,
-    };
-    expect(() => validateLicenseConfig(licensingConfig)).to.throw(
-      "The expectMinimumGroupRewardShare must be a valid number.",
-    );
-  });
   it("should throw error when expectMinimumGroupRewardShare is greater than 100", () => {
     const licensingConfig = {
       isSet: true,
