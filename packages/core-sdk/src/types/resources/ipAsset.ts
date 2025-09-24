@@ -22,13 +22,11 @@ import {
   IpMetadataAndTxOptions,
   LicenseTermsIdInput,
   LicensingConfig,
-  LicensingConfigInput,
   RevShareInput,
-  TokenAmountInput,
   TokenIdInput,
 } from "../common";
 import { TxOptions, WipOptions, WithWipOptions } from "../options";
-import { LicenseTerms, LicenseTermsInput } from "./license";
+import { LicenseTerms, LicenseTermsDataInput } from "./license";
 import { Erc20Spender } from "../utils/wip";
 
 export type MaxRtsInput = number;
@@ -97,20 +95,6 @@ export type RegisterDerivativeRequest = WithWipOptions &
     txOptions?: TxOptions;
     childIpId: Address;
   };
-
-export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
-  /** Programmable IP License */
-  terms: T;
-  licensingConfig?: C;
-  /**
-   * The max number of license tokens that can be minted from this license term.
-   *
-   * - When not specified, there is no limit on license token minting
-   * - When specified, minting is capped at this value and the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook}
-   *   is automatically configured as the {@link LicensingConfigInput.licensingHook}
-   */
-  maxLicenseTokens?: TokenAmountInput;
-};
 
 export type LicenseTermsData = Omit<
   LicenseTermsDataInput<LicenseTerms, LicensingConfig>,
@@ -222,23 +206,6 @@ export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
      */
     allowDuplicates?: boolean;
   };
-export type RegisterPilTermsAndAttachRequest = {
-  ipId: Address;
-  /** The data of the license and its configuration to be attached to the IP. */
-  licenseTermsData: LicenseTermsDataInput[];
-  /** The deadline for the signature in seconds.
-   * @default 1000
-   */
-  deadline?: DeadlineInput;
-  txOptions?: TxOptions;
-};
-
-export type RegisterPilTermsAndAttachResponse = {
-  txHash?: Hash;
-  encodedTxData?: EncodedTxData;
-  licenseTermsIds?: bigint[];
-  maxLicenseTokensTxHashes?: Hash[];
-};
 
 export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   spgNftContract: Address;
@@ -547,12 +514,6 @@ export type BatchRegisterIpAssetsWithOptimizedWorkflowsRequest = WithWipOptions 
 export type BatchRegisterIpAssetsWithOptimizedWorkflowsResponse = {
   distributeRoyaltyTokensTxHashes?: Hash[];
   registrationResults: BatchRegistrationResult[];
-};
-
-export type SetMaxLicenseTokens = {
-  maxLicenseTokensData: (LicenseTermsDataInput | { maxLicenseTokens: bigint })[];
-  licensorIpId: Address;
-  licenseTermsIds: bigint[];
 };
 
 export type ExtraData = {

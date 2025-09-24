@@ -185,3 +185,41 @@ export type SetMaxLicenseTokensRequest = GetLicensingConfigRequest &
     /** The total license token limit, 0 means no limit */
     maxLicenseTokens: TokenAmountInput;
   };
+
+export type SetMaxLicenseTokens = {
+  maxLicenseTokensData: (LicenseTermsDataInput | { maxLicenseTokens: bigint })[];
+  licensorIpId: Address;
+  licenseTermsIds: bigint[];
+};
+
+export type RegisterPilTermsAndAttachRequest = {
+  ipId: Address;
+  /** The data of the license and its configuration to be attached to the IP. */
+  licenseTermsData: LicenseTermsDataInput[];
+  /** The deadline for the signature in seconds.
+   * @default 1000
+   */
+  deadline?: bigint;
+  txOptions?: TxOptions;
+};
+
+export type RegisterPilTermsAndAttachResponse = {
+  txHash?: Hash;
+  encodedTxData?: EncodedTxData;
+  licenseTermsIds?: bigint[];
+  maxLicenseTokensTxHashes?: Hash[];
+};
+
+export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
+  /** Programmable IP License */
+  terms: T;
+  licensingConfig?: C;
+  /**
+   * The max number of license tokens that can be minted from this license term.
+   *
+   * - When not specified, there is no limit on license token minting
+   * - When specified, minting is capped at this value and the {@link https://github.com/storyprotocol/protocol-periphery-v1/blob/release/1.3/contracts/hooks/TotalLicenseTokenLimitHook.sol | TotalLicenseTokenLimitHook}
+   *   is automatically configured as the {@link LicensingConfigInput.licensingHook}
+   */
+  maxLicenseTokens?: TokenAmountInput;
+};

@@ -24,7 +24,6 @@ import {
   LicenseAttachmentWorkflowsClient,
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
   LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
-  LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest,
   LicenseRegistryReadOnlyClient,
   LicenseTokenReadOnlyClient,
   licensingModuleAbi,
@@ -100,10 +99,7 @@ import {
   RegisterIpAssetRequest,
   RegisterIpAssetResponse,
   RegisterIpResponse,
-  RegisterPilTermsAndAttachRequest,
-  RegisterPilTermsAndAttachResponse,
   RegisterRequest,
-  SetMaxLicenseTokens,
   TransformedIpRegistrationWorkflowRequest,
 } from "../types/resources/ipAsset";
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
@@ -134,6 +130,7 @@ import {
   transformRegistrationRequest,
 } from "../utils/registrationUtils/transformRegistrationRequest";
 import { getRevenueShare } from "../utils/royalty";
+import { setMaxLicenseTokens } from "../utils/setMaxLicenseTokens";
 import { validateAddress } from "../utils/utils";
 
 export class IPAssetClient {
@@ -158,6 +155,7 @@ export class IPAssetClient {
   private readonly wallet: SimpleWalletClient;
   private readonly chainId: ChainIds;
   private readonly walletAddress: Address;
+  private readonly licenseTemplateAddress: Address;
 
   constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, chainId: ChainIds) {
     this.licensingModuleClient = new LicensingModuleClient(rpcClient, wallet);
@@ -183,6 +181,7 @@ export class IPAssetClient {
     this.wallet = wallet;
     this.chainId = chainId;
     this.walletAddress = this.wallet.account!.address;
+    this.licenseTemplateAddress = this.licenseTemplateClient.address;
   }
 
   public generateCreatorMetadata(creator: IpCreator): IpCreator {
@@ -432,7 +431,7 @@ export class IPAssetClient {
             arg.childIpId,
             arg.parentIpIds,
             arg.licenseTermsIds.map((id) => BigInt(id)),
-            arg.licenseTemplate || this.licenseTemplateClient.address,
+            arg.licenseTemplate || this.licenseTemplateAddress,
             zeroAddress,
             BigInt(arg.maxMintingFee || 0),
             Number(arg.maxRts === undefined ? MAX_ROYALTY_TOKEN : arg.maxRts),
@@ -565,10 +564,12 @@ export class IPAssetClient {
       const computedLicenseTermsIds = await this.getLicenseTermsId(
         transformRequest.licenseTermsData.map((data) => data.terms),
       );
-      const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+      const maxLicenseTokensTxHashes = await setMaxLicenseTokens({
         maxLicenseTokensData: request.licenseTermsData,
         licensorIpId: rsp.ipId!,
         licenseTermsIds: computedLicenseTermsIds,
+        totalLicenseTokenLimitHookClient: this.totalLicenseTokenLimitHookClient,
+        templateAddress: this.licenseTemplateAddress,
       });
       return {
         ...rsp,
@@ -628,10 +629,12 @@ export class IPAssetClient {
         }
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
         results[j].licenseTermsIds = licenseTermsIds;
-        const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+        const maxLicenseTokensTxHashes = await setMaxLicenseTokens({
           maxLicenseTokensData: licenseTermsData,
           licensorIpId: results[j].ipId,
           licenseTermsIds,
+          totalLicenseTokenLimitHookClient: this.totalLicenseTokenLimitHookClient,
+          templateAddress: this.licenseTemplateAddress,
         });
         if (maxLicenseTokensTxHashes.length > 0) {
           results[j].maxLicenseTokensTxHashes = maxLicenseTokensTxHashes;
@@ -698,10 +701,12 @@ export class IPAssetClient {
         });
         const log = this.getIpIdAndTokenIdsFromEvent(txReceipt)[0];
         const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-        const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+        const maxLicenseTokensTxHashes = await setMaxLicenseTokens({
           maxLicenseTokensData: request.licenseTermsData,
           licensorIpId: log.ipId,
           licenseTermsIds,
+          totalLicenseTokenLimitHookClient: this.totalLicenseTokenLimitHookClient,
+          templateAddress: this.licenseTemplateAddress,
         });
         return {
           txHash,
@@ -1027,75 +1032,6 @@ export class IPAssetClient {
   }
 
   /**
-   * Register Programmable IP License Terms (if unregistered) and attach it to IP.
-   *
-   * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} event.
-   */
-  public async registerPilTermsAndAttach(
-    request: RegisterPilTermsAndAttachRequest,
-  ): Promise<RegisterPilTermsAndAttachResponse> {
-    try {
-      const { ipId } = request;
-      const isRegistered = await this.isRegistered(ipId);
-      if (!isRegistered) {
-        throw new Error(`The IP with id ${ipId} is not registered.`);
-      }
-      const { licenseTerms, licenseTermsData } = await validateLicenseTermsData(
-        request.licenseTermsData,
-        this.rpcClient,
-        this.chainId,
-      );
-      const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
-      const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, ipId);
-      const { result: state } = await ipAccount.state();
-      const signature = await generateOperationSignature({
-        ipIdAddress: ipId,
-        methodType: SignatureMethodType.REGISTER_PIL_TERMS_AND_ATTACH,
-        deadline: calculatedDeadline,
-        state,
-        wallet: this.wallet,
-        chainId: this.chainId,
-      });
-      const object: LicenseAttachmentWorkflowsRegisterPilTermsAndAttachRequest = {
-        ipId: ipId,
-        licenseTermsData,
-        sigAttachAndConfig: {
-          signer: validateAddress(this.walletAddress),
-          deadline: calculatedDeadline,
-          signature,
-        },
-      };
-      if (request.txOptions?.encodedTxDataOnly) {
-        return {
-          encodedTxData:
-            this.licenseAttachmentWorkflowsClient.registerPilTermsAndAttachEncode(object),
-        };
-      } else {
-        const txHash = await this.licenseAttachmentWorkflowsClient.registerPilTermsAndAttach(
-          object,
-        );
-        await this.rpcClient.waitForTransactionReceipt({
-          ...request.txOptions,
-          hash: txHash,
-        });
-        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-        const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
-          maxLicenseTokensData: request.licenseTermsData,
-          licensorIpId: ipId,
-          licenseTermsIds,
-        });
-        return {
-          txHash,
-          licenseTermsIds,
-          ...(maxLicenseTokensTxHashes.length > 0 && { maxLicenseTokensTxHashes }),
-        };
-      }
-    } catch (error) {
-      return handleError(error, "Failed to register PIL terms and attach");
-    }
-  }
-
-  /**
    * Mint an NFT from a collection and register it as a derivative IP using license tokens.
    * Requires caller to have the minter role or the SPG NFT to allow public minting. Caller must own the license tokens and have approved DerivativeWorkflows to transfer them.
    *
@@ -1281,10 +1217,12 @@ export class IPAssetClient {
         ...request.txOptions,
         hash: distributeRoyaltyTokensTxHash,
       });
-      const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+      const maxLicenseTokensTxHashes = await setMaxLicenseTokens({
         maxLicenseTokensData: request.licenseTermsData,
         licensorIpId: ipId,
         licenseTermsIds,
+        totalLicenseTokenLimitHookClient: this.totalLicenseTokenLimitHookClient,
+        templateAddress: this.licenseTemplateAddress,
       });
       return {
         registerIpAndAttachPilTermsAndDeployRoyaltyVaultTxHash,
@@ -1435,10 +1373,12 @@ export class IPAssetClient {
       const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
       const { ipRoyaltyVault } =
         this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt)[0];
-      const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+      const maxLicenseTokensTxHashes = await setMaxLicenseTokens({
         maxLicenseTokensData: request.licenseTermsData,
         licensorIpId: ipId!,
         licenseTermsIds,
+        totalLicenseTokenLimitHookClient: this.totalLicenseTokenLimitHookClient,
+        templateAddress: this.licenseTemplateAddress,
       });
       return {
         txHash,
@@ -2219,31 +2159,6 @@ export class IPAssetClient {
     };
   }
 
-  private async setMaxLicenseTokens({
-    maxLicenseTokensData,
-    licensorIpId,
-    licenseTermsIds,
-  }: SetMaxLicenseTokens): Promise<Hash[]> {
-    const licenseTermsMaxLimitTxHashes: Hash[] = [];
-    for (let i = 0; i < maxLicenseTokensData.length; i++) {
-      const maxLicenseTokens = maxLicenseTokensData[i].maxLicenseTokens;
-      if (maxLicenseTokens === undefined || maxLicenseTokens < 0n) {
-        continue;
-      }
-      const txHash = await this.totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
-        licensorIpId,
-        // The contract now directly writes the `licenseTemplate` address internally,
-        // so we no longer need to pass it as a parameter
-        licenseTemplate: this.licenseTemplateClient.address,
-        licenseTermsId: licenseTermsIds[i],
-        limit: BigInt(maxLicenseTokens),
-      });
-      if (txHash) {
-        licenseTermsMaxLimitTxHashes.push(txHash);
-      }
-    }
-    return licenseTermsMaxLimitTxHashes;
-  }
   /**
    * Process the `LicenseTermsIds` and `maxLicenseTokensTxHashes` for each IP asset.
    */
@@ -2300,10 +2215,12 @@ export class IPAssetClient {
       .map((maxLicenseToken) => ({
         maxLicenseTokens: maxLicenseToken,
       }));
-    const maxLicenseTokensTxHashes = await this.setMaxLicenseTokens({
+    const maxLicenseTokensTxHashes = await setMaxLicenseTokens({
       maxLicenseTokensData,
       licensorIpId: ipAsset.ipId,
       licenseTermsIds,
+      totalLicenseTokenLimitHookClient: this.totalLicenseTokenLimitHookClient,
+      templateAddress: this.licenseTemplateAddress,
     });
     if (maxLicenseTokensTxHashes?.length) {
       ipAsset.maxLicenseTokensTxHashes = maxLicenseTokensTxHashes;

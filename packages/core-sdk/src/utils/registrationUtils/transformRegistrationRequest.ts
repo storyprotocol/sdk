@@ -15,7 +15,6 @@ import {
   SpgnftImplReadOnlyClient,
 } from "../../abi/generated";
 import {
-  LicenseTermsDataInput,
   TransformedIpRegistrationWorkflowRequest,
   TransformIpRegistrationWorkflowRequest,
 } from "../../types/resources/ipAsset";
@@ -496,7 +495,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
   };
   if ("licenseTermsData" in request) {
     const { licenseTermsData, maxLicenseTokens } = await validateLicenseTermsData(
-      request.licenseTermsData as LicenseTermsDataInput[],
+      request.licenseTermsData,
       rpcClient,
       chainId,
     );
