@@ -26,8 +26,6 @@ export const setMaxLicenseTokens = async ({
     }
     const txHash = await totalLicenseTokenLimitHookClient.setTotalLicenseTokenLimit({
       licensorIpId,
-      // The contract now directly writes the `licenseTemplate` address internally,
-      // so we no longer need to pass it as a parameter
       licenseTemplate: templateAddress,
       licenseTermsId: licenseTermsIds[i],
       limit: BigInt(maxLicenseTokens),

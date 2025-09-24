@@ -23,7 +23,7 @@ import { ERC20Client } from "../../src/utils/token";
 
 use(chaiAsPromised);
 
-describe.only("License Functions", () => {
+describe("License Functions", () => {
   let client: StoryClient;
   let clientB: StoryClient;
   before(async () => {
@@ -228,118 +228,16 @@ describe.only("License Functions", () => {
         expect(result.txHash).to.be.a("string");
       });
     });
-
-    it("should register PIL terms and attach", async () => {
-      const result = await client.license.registerPilTermsAndAttach({
-        ipId: ipId,
-        licenseTermsData: [
-          {
-            terms: PILFlavor.commercialRemix({
-              defaultMintingFee: 0n,
-              commercialRevShare: 100,
-              royaltyPolicy: NativeRoyaltyPolicy.LAP,
-              currency: WIP_TOKEN_ADDRESS,
-            }),
-            licensingConfig: {
-              isSet: true,
-              mintingFee: 0n,
-              licensingHook: zeroAddress,
-              hookData: zeroAddress,
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: zeroAddress,
-            },
-          },
-          {
-            terms: PILFlavor.nonCommercialSocialRemixing(),
-          },
-        ],
-        deadline: 1000n,
-      });
-      expect(result.txHash).to.be.a("string");
-      expect(result.licenseTermsIds?.length).to.be.equal(2);
-      expect(result.maxLicenseTokensTxHashes).to.be.an("undefined");
-    });
-
-    it("should register PIL terms and attach with license terms max limit", async () => {
-      const result = await client.license.registerPilTermsAndAttach({
-        ipId: ipId,
-        licenseTermsData: [
-          {
-            terms: PILFlavor.commercialRemix({
-              defaultMintingFee: 0n,
-              commercialRevShare: 100,
-              royaltyPolicy: NativeRoyaltyPolicy.LAP,
-              currency: WIP_TOKEN_ADDRESS,
-            }),
-            licensingConfig: {
-              isSet: true,
-              mintingFee: 0n,
-              licensingHook: zeroAddress,
-              hookData: zeroAddress,
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: zeroAddress,
-            },
-            maxLicenseTokens: 100,
-          },
-          {
-            terms: PILFlavor.commercialRemix({
-              defaultMintingFee: 0n,
-              commercialRevShare: 100,
-              royaltyPolicy: NativeRoyaltyPolicy.LAP,
-              currency: WIP_TOKEN_ADDRESS,
-            }),
-            licensingConfig: {
-              isSet: true,
-              mintingFee: 0n,
-              licensingHook: zeroAddress,
-              hookData: zeroAddress,
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: zeroAddress,
-            },
-            maxLicenseTokens: 100,
-          },
-          {
-            terms: PILFlavor.commercialRemix({
-              defaultMintingFee: 0n,
-              commercialRevShare: 100,
-              royaltyPolicy: NativeRoyaltyPolicy.LAP,
-              currency: WIP_TOKEN_ADDRESS,
-            }),
-            licensingConfig: {
-              isSet: true,
-              mintingFee: 0n,
-              licensingHook: zeroAddress,
-              hookData: zeroAddress,
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: zeroAddress,
-            },
-          },
-        ],
-        deadline: 1000n,
-      });
-      expect(result.txHash).to.be.a("string");
-      expect(result.licenseTermsIds).to.be.an("array");
-      expect(result.maxLicenseTokensTxHashes).to.be.an("array");
-      expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
-    });
   });
 
   describe("register pil terms and attach", () => {
     let ipId: Address;
-    let tokenId: number | undefined;
+    let tokenId: number;
     before(async () => {
-      tokenId = await getTokenId();
+      tokenId = (await getTokenId())!;
       const registerResult = await client.ipAsset.register({
         nftContract: mockERC721,
-        tokenId: tokenId!,
+        tokenId,
       });
       ipId = registerResult.ipId!;
     });
