@@ -465,7 +465,7 @@ export class LicenseClient {
     try {
       const { ipId } = request;
       const isRegistered = await this.ipAssetRegistryClient.isRegistered({
-        id: validateAddress(ipId)
+        id: validateAddress(ipId),
       });
       if (!isRegistered) {
         throw new Error(`The IP with id ${ipId} is not registered.`);

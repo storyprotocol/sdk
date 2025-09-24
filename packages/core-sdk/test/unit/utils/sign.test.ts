@@ -96,7 +96,6 @@ describe("Sign", () => {
     });
   });
   describe("Get Deadline", () => {
-
     it("should throw invalid deadline value when call getDeadline given deadline is less than 0", () => {
       try {
         getDeadline(12n, -1);

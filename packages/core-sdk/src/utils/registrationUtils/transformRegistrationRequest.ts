@@ -46,7 +46,6 @@ import {
   validateDerivativeData,
   validateLicenseTermsData,
 } from "./registerValidation";
-import { LicenseTermsDataInput } from "../../types/resources/license";
 /**
  * Transforms the registration request to the appropriate format based on workflow type.
  *
