@@ -187,7 +187,10 @@ export class LicenseClient {
         receiver,
         royaltyContext: zeroAddress,
         maxMintingFee: BigInt(request.maxMintingFee || 0),
-        maxRevenueShare: getRevenueShare(request.maxRevenueShare, RevShareType.MAX_REVENUE_SHARE),
+        maxRevenueShare: getRevenueShare(
+          request.maxRevenueShare ?? 100,
+          RevShareType.MAX_REVENUE_SHARE,
+        ),
       } as const;
       if (req.maxMintingFee < 0) {
         throw new Error(`The maxMintingFee must be greater than 0.`);

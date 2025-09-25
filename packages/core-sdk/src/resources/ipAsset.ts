@@ -435,7 +435,7 @@ export class IPAssetClient {
             BigInt(arg.maxMintingFee || 0),
             validateMaxRts(arg.maxRts),
             getRevenueShare(
-              arg.maxRevenueShare === undefined ? 100 : arg.maxRevenueShare,
+              arg.maxRevenueShare??100,
               RevShareType.MAX_REVENUE_SHARE,
             ),
           ],

@@ -592,11 +592,14 @@ describe("Test IpAssetClient", () => {
         licenseTermsIds: [1n],
         licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         maxRevenueShare: 0,
+        maxRts: 0,
+        maxMintingFee: 0n,
       });
 
       expect(res.txHash).equal(txHash);
-      expect(registerDerivativeStub.args[0][0].maxRts).equal(MAX_ROYALTY_TOKEN);
+      expect(registerDerivativeStub.args[0][0].maxRts).equal(0);
       expect(registerDerivativeStub.args[0][0].maxMintingFee).equal(0n);
+      expect(registerDerivativeStub.args[0][0].maxRevenueShare).equal(0);
     });
 
     it("should return encoded tx data when registerDerivative given correct childIpId, parentIpId, licenseTermsIds and encodedTxDataOnly of true ", async () => {
@@ -627,7 +630,6 @@ describe("Test IpAssetClient", () => {
           encodedTxDataOnly: true,
         },
       });
-
       expect(res.encodedTxData!.data).to.be.a("string");
     });
 

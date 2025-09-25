@@ -685,13 +685,13 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.mintLicenseTokens({
         licensorIpId: zeroAddress,
         licenseTermsId: 1,
-        maxRevenueShare: 1,
         licenseTemplate: zeroAddress,
       });
 
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTokenIds).to.deep.equal([1n]);
       expect(mintLicenseTokensStub.args[0][0].maxMintingFee).to.equal(0n);
+      expect(mintLicenseTokensStub.args[0][0].maxRevenueShare).to.equal(100 * 10 ** 6);
     });
 
     it("should return txHash when call mintLicenseTokens given args is correct , amount of 5", async () => {
