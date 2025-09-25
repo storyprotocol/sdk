@@ -3129,7 +3129,7 @@ describe("Test IpAssetClient", () => {
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       );
 
-      stub(
+      const registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub = stub(
         ipAssetClient.royaltyTokenDistributionWorkflowsClient,
         "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
       ).resolves(txHash);
@@ -3170,9 +3170,6 @@ describe("Test IpAssetClient", () => {
           derivData: {
             parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
             licenseTermsIds: [1n],
-            maxMintingFee: 100,
-            maxRts: 100,
-            maxRevenueShare: 100,
           },
           royaltyShares: [
             { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
@@ -3187,6 +3184,15 @@ describe("Test IpAssetClient", () => {
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: 0n,
       });
+      expect(
+        registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0].derivData.maxMintingFee,
+      ).to.equal(0n);
+      expect(
+        registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0].derivData.maxRts,
+      ).to.equal(100 * 10 ** 6);
+      expect(
+        registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0].derivData.maxRevenueShare,
+      ).to.equal(100 * 10 ** 6);
     });
 
     it("should return txHash when registerDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args with waitForTransaction of true", async () => {
@@ -3241,9 +3247,9 @@ describe("Test IpAssetClient", () => {
           derivData: {
             parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
             licenseTermsIds: [1n],
-            maxMintingFee: 100,
-            maxRts: 100,
-            maxRevenueShare: 100,
+            maxMintingFee: 0,
+            maxRts: 0,
+            maxRevenueShare: 0,
           },
           royaltyShares: [
             { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
@@ -3264,8 +3270,15 @@ describe("Test IpAssetClient", () => {
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: 0n,
       });
-      console.log(registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0]);
-      // expect(registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0].maxMintingFee).to.equal(0n);
+      expect(
+        registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0].derivData.maxMintingFee,
+      ).to.equal(0n);
+      expect(
+        registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0].derivData.maxRts,
+      ).to.equal(0);
+      expect(
+        registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0].derivData.maxRevenueShare,
+      ).to.equal(0);
     });
   });
 

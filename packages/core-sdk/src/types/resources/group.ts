@@ -125,7 +125,7 @@ export type RegisterGroupAndAttachLicenseAndAddIpsRequest = {
   /**
    * The maximum reward share percentage that can be allocated to each member IP.
    * Must be between 0 and 100 (where 100% represents 100_000_000).
-   * 
+   *
    * @default 100
    */
   maxAllowedRewardShare?: RevShareInput;
