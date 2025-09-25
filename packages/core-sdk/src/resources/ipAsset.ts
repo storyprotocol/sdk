@@ -432,12 +432,9 @@ export class IPAssetClient {
             arg.licenseTermsIds.map((id) => BigInt(id)),
             arg.licenseTemplate || this.licenseTemplateAddress,
             zeroAddress,
-            BigInt(arg.maxMintingFee || 0),
+            BigInt(arg.maxMintingFee ?? 0),
             validateMaxRts(arg.maxRts),
-            getRevenueShare(
-              arg.maxRevenueShare??100,
-              RevShareType.MAX_REVENUE_SHARE,
-            ),
+            getRevenueShare(arg.maxRevenueShare ?? 100, RevShareType.MAX_REVENUE_SHARE),
           ],
         });
         const { result: state } = await ipAccount.state();
