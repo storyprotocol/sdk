@@ -18,7 +18,10 @@ export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): L
     };
   }
   const licenseConfig = {
-    expectMinimumGroupRewardShare: Number(licensingConfig.expectMinimumGroupRewardShare),
+    expectMinimumGroupRewardShare: getRevenueShare(
+      licensingConfig.expectMinimumGroupRewardShare,
+      RevShareType.EXPECT_MINIMUM_GROUP_REWARD_SHARE,
+    ),
     commercialRevShare: getRevenueShare(licensingConfig.commercialRevShare),
     mintingFee: BigInt(licensingConfig.mintingFee),
     expectGroupRewardPool: validateAddress(licensingConfig.expectGroupRewardPool),
@@ -27,18 +30,6 @@ export const validateLicenseConfig = (licensingConfig?: LicensingConfigInput): L
     isSet: licensingConfig.isSet,
     disabled: licensingConfig.disabled,
   };
-
-  if (
-    licenseConfig.expectMinimumGroupRewardShare < 0 ||
-    licenseConfig.expectMinimumGroupRewardShare > 100
-  ) {
-    throw new Error(`The expectMinimumGroupRewardShare must be greater than 0 and less than 100.`);
-  } else {
-    licenseConfig.expectMinimumGroupRewardShare = getRevenueShare(
-      licenseConfig.expectMinimumGroupRewardShare,
-      RevShareType.EXPECT_MINIMUM_GROUP_REWARD_SHARE,
-    );
-  }
 
   if (licenseConfig.mintingFee < 0) {
     throw new Error(`The mintingFee must be greater than 0.`);
