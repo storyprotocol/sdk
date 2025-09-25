@@ -121,8 +121,12 @@ export type MintLicenseTokensRequest = {
    * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
    */
   licenseTemplate?: Address;
-  /** The maximum minting fee that the caller is willing to pay. if set to 0 then no limit. */
-  maxMintingFee: FeeInput;
+  /** 
+   * The maximum minting fee that the caller is willing to pay.if set to 0 then no limit.
+   *
+   * @default 0
+   */
+  maxMintingFee?: FeeInput;
   /** The maximum revenue share percentage allowed for minting the License Tokens. Must be between 0 and 100,000,000 (where 100,000,000 represents 100%). */
   maxRevenueShare: RevShareInput;
   /**

@@ -186,7 +186,7 @@ export class LicenseClient {
         amount: BigInt(request.amount === undefined ? 1 : request.amount),
         receiver,
         royaltyContext: zeroAddress,
-        maxMintingFee: BigInt(request.maxMintingFee),
+        maxMintingFee: BigInt(request.maxMintingFee || 0),
         maxRevenueShare: getRevenueShare(request.maxRevenueShare, RevShareType.MAX_REVENUE_SHARE),
       } as const;
       if (req.maxMintingFee < 0) {

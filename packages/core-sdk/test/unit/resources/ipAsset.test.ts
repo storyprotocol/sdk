@@ -575,7 +575,10 @@ describe("Test IpAssetClient", () => {
         .resolves(true);
 
       stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
-      stub(ipAssetClient.licensingModuleClient, "registerDerivative").resolves(txHash);
+      const registerDerivativeStub = stub(
+        ipAssetClient.licensingModuleClient,
+        "registerDerivative",
+      ).resolves(txHash);
       stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
@@ -588,12 +591,12 @@ describe("Test IpAssetClient", () => {
         parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
         licenseTermsIds: [1n],
         licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxMintingFee: 0n,
-        maxRts: 0,
         maxRevenueShare: 0,
       });
 
       expect(res.txHash).equal(txHash);
+      expect(registerDerivativeStub.args[0][0].maxRts).equal(MAX_ROYALTY_TOKEN);
+      expect(registerDerivativeStub.args[0][0].maxMintingFee).equal(0n);
     });
 
     it("should return encoded tx data when registerDerivative given correct childIpId, parentIpId, licenseTermsIds and encodedTxDataOnly of true ", async () => {
@@ -3195,7 +3198,7 @@ describe("Test IpAssetClient", () => {
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       );
 
-      stub(
+      const registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub = stub(
         ipAssetClient.royaltyTokenDistributionWorkflowsClient,
         "registerIpAndMakeDerivativeAndDeployRoyaltyVault",
       ).resolves(txHash);
@@ -3259,6 +3262,8 @@ describe("Test IpAssetClient", () => {
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: 0n,
       });
+      console.log(registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0]);
+      // expect(registerIpAndMakeDerivativeAndDeployRoyaltyVaultStub.args[0][0].maxMintingFee).to.equal(0n);
     });
   });
 
