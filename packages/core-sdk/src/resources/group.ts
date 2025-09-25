@@ -163,7 +163,10 @@ export class GroupClient {
         spgNftContract: validateAddress(spgNftContract),
         recipient: validateAddress(recipient || this.wallet.account!.address),
         maxAllowedRewardShare: BigInt(
-          getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
+          getRevenueShare(
+            request.maxAllowedRewardShare ?? 100,
+            RevShareType.MAX_ALLOWED_REWARD_SHARE,
+          ),
         ),
         licensesData: this.getLicenseData(request.licenseData),
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
@@ -275,7 +278,10 @@ export class GroupClient {
         ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
         tokenId: BigInt(request.tokenId),
         maxAllowedRewardShare: BigInt(
-          getRevenueShare(request.maxAllowedRewardShare, RevShareType.MAX_ALLOWED_REWARD_SHARE),
+          getRevenueShare(
+            request.maxAllowedRewardShare ?? 100,
+            RevShareType.MAX_ALLOWED_REWARD_SHARE,
+          ),
         ),
         sigAddToGroup: {
           signer: validateAddress(this.wallet.account!.address),
@@ -491,7 +497,7 @@ export class GroupClient {
         ipIds: validateAddresses(ipIds),
         maxAllowedRewardShare: BigInt(
           getRevenueShare(
-            maxAllowedRewardSharePercentage === undefined ? 100 : maxAllowedRewardSharePercentage,
+            maxAllowedRewardSharePercentage ?? 100,
             RevShareType.MAX_ALLOWED_REWARD_SHARE_PERCENTAGE,
           ),
         ),
