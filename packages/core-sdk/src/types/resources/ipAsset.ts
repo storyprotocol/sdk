@@ -265,7 +265,8 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
 
 export type BatchRegisterDerivativeRequest = {
   args: RegisterDerivativeRequest[];
-  /** The deadline for the signature in seconds.
+  /** 
+   * The deadline for the signature in seconds.
    * @default 1000
    */
   deadline?: DeadlineInput;

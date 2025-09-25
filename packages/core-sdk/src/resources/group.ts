@@ -356,7 +356,12 @@ export class GroupClient {
         groupPool: validateAddress(request.groupPool),
         ipIds: request.ipIds,
         licenseData: this.getLicenseData(request.licenseData)[0],
-        maxAllowedRewardShare: BigInt(getRevenueShare(request.maxAllowedRewardShare)),
+        maxAllowedRewardShare: BigInt(
+          getRevenueShare(
+            request.maxAllowedRewardShare ?? 100,
+            RevShareType.MAX_ALLOWED_REWARD_SHARE,
+          ),
+        ),
       };
       for (let i = 0; i < request.ipIds.length; i++) {
         const isRegistered = await this.ipAssetRegistryClient.isRegistered({

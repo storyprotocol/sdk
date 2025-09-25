@@ -194,9 +194,10 @@ describe("Test IpAssetClient", () => {
     it("should return txHash when call registerGroupAndAttachLicenseAndAddIps given correct args ", async () => {
       stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
       stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps").resolves(
-        txHash,
-      );
+      const registerGroupAndAttachLicenseAndAddIpsStub = stub(
+        groupClient.groupingWorkflowsClient,
+        "registerGroupAndAttachLicenseAndAddIps",
+      ).resolves(txHash);
       stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
         {
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -205,10 +206,34 @@ describe("Test IpAssetClient", () => {
       ]);
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxAllowedRewardShare: 5,
+        maxAllowedRewardShare: 0,
         ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
         licenseData: mockLicenseData,
       });
+      expect(registerGroupAndAttachLicenseAndAddIpsStub.args[0][0].maxAllowedRewardShare).equal(0n);
+      expect(result.txHash).equal(txHash);
+    });
+    it("should call with default value of maxAllowedRewardShare when registerGroupAndAttachLicenseAndAddIps without maxAllowedRewardShare", async () => {
+      stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const registerGroupAndAttachLicenseAndAddIpsStub = stub(
+        groupClient.groupingWorkflowsClient,
+        "registerGroupAndAttachLicenseAndAddIps",
+      ).resolves(txHash);
+      stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
+        {
+          groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
+      ]);
+      const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
+        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+        licenseData: mockLicenseData,
+      });
+      expect(registerGroupAndAttachLicenseAndAddIpsStub.args[0][0].maxAllowedRewardShare).equal(
+        BigInt(100 * 10 ** 6),
+      );
       expect(result.txHash).equal(txHash);
     });
   });
