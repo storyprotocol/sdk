@@ -234,7 +234,6 @@ describe("IP Asset Functions", () => {
       const response = await client.ipAsset.registerDerivativeWithLicenseTokens({
         childIpId: ipId,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
-        maxRts: 5 * 10 ** 6,
       });
       expect(response.txHash).to.be.a("string");
     });
@@ -537,7 +536,6 @@ describe("IP Asset Functions", () => {
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
         spgNftContract: nftContract,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
-        maxRts: 5 * 10 ** 6,
         ipMetadata: {
           ipMetadataURI: "test-uri",
           ipMetadataHash: toHex("test-metadata-hash", { size: 32 }),
@@ -1116,7 +1114,7 @@ describe("IP Asset Functions", () => {
         await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
           spgNftContract: nftContractWithMintingFee,
           licenseTokenIds: licenseTokenIds!,
-          maxRts: MAX_ROYALTY_TOKEN,
+          maxRts: 0,
           ipMetadata: {
             ipMetadataURI: "test",
             ipMetadataHash: zeroHash,
@@ -1603,15 +1601,12 @@ describe("IP Asset Functions", () => {
             childIpId: childIpId,
             parentIpIds: [parentIpId],
             licenseTermsIds: [noCommercialLicenseTermsId],
-            maxMintingFee: 0,
-            maxRts: 5 * 10 ** 6,
-            maxRevenueShare: 0,
           },
           {
             childIpId: childIpId2,
             parentIpIds: [parentIpId],
             licenseTermsIds: [noCommercialLicenseTermsId],
-            maxMintingFee: 0,
+            maxMintingFee: 10000000,
             maxRts: 5 * 10 ** 6,
             maxRevenueShare: 0,
           },
@@ -1875,7 +1870,7 @@ describe("IP Asset Functions", () => {
             })
           ).ipId!,
           licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
-          maxRts: 5 * 10 ** 6,
+          maxRts: 0,
         });
 
         const tokenId2 = await getTokenId();
@@ -3568,9 +3563,6 @@ describe("IP Asset Functions", () => {
           derivData: {
             parentIpIds: [parentIpId!],
             licenseTermsIds: [commercialRemixLicenseTermsId],
-            maxMintingFee: 10000n,
-            maxRts: 100,
-            maxRevenueShare: 100,
           },
           royaltyShares: [
             {
@@ -3620,6 +3612,7 @@ describe("IP Asset Functions", () => {
           nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
           licenseTokenIds: licenseTokenIds!,
           maxRts: 100,
+          maxMintingFee: 10000n,
         });
 
         expect(result.ipId).to.be.a("string");

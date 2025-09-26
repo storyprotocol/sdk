@@ -109,8 +109,6 @@ describe("License Functions", () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipId,
-        maxMintingFee: 1,
-        maxRevenueShare: 100,
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTokenIds).to.be.a("array");
@@ -134,8 +132,8 @@ describe("License Functions", () => {
       const result = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
         licensorIpId: ipIdB,
-        maxMintingFee: 1,
-        maxRevenueShare: 100,
+        maxMintingFee: 10000000,
+        maxRevenueShare: 55.55555555,
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTokenIds).to.be.a("array");
