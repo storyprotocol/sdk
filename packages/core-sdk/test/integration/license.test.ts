@@ -133,7 +133,7 @@ describe("License Functions", () => {
         licenseTermsId: licenseId,
         licensorIpId: ipIdB,
         maxMintingFee: 10000000,
-        maxRevenueShare: 55.55555555,
+        maxRevenueShare: 55,
       });
       expect(result.txHash).to.be.a("string");
       expect(result.licenseTokenIds).to.be.a("array");
