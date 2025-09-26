@@ -2574,7 +2574,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
 
-      stub(
+      const registerIpAndAttachPilTermsAndDeployRoyaltyVaultStub = stub(
         ipAssetClient.royaltyTokenDistributionWorkflowsClient,
         "distributeRoyaltyTokens",
       ).resolves(txHash);
@@ -2611,6 +2611,14 @@ describe("Test IpAssetClient", () => {
         licenseTermsIds: [8n],
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
+      expect(
+        registerIpAndAttachPilTermsAndDeployRoyaltyVaultStub.firstCall.args[0].royaltyShares,
+      ).to.deep.equal([
+        {
+          recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          percentage: 100 * 10 ** 6,
+        },
+      ]);
     });
     it("should return txHash when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given correct args with license terms max limit", async () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
@@ -2635,7 +2643,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
 
-      stub(
+      const distributeRoyaltyTokensStub = stub(
         ipAssetClient.royaltyTokenDistributionWorkflowsClient,
         "distributeRoyaltyTokens",
       ).resolves(txHash);
@@ -2670,7 +2678,8 @@ describe("Test IpAssetClient", () => {
           },
         ],
         royaltyShares: [
-          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 10.00000001 },
+          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 8.00000001 },
         ],
       });
       expect(result).to.deep.equal({
@@ -2682,6 +2691,16 @@ describe("Test IpAssetClient", () => {
         ipRoyaltyVault: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         maxLicenseTokensTxHashes: [txHash],
       });
+      expect(distributeRoyaltyTokensStub.firstCall.args[0].royaltyShares).to.deep.equal([
+        {
+          recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          percentage: 10 * 10 ** 6,
+        },
+        {
+          recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+          percentage: 8 * 10 ** 6,
+        },
+      ]);
     });
 
     it("should throw error when registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens given IpAccount balance is not enough", async () => {

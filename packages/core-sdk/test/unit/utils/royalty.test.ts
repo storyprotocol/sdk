@@ -66,6 +66,14 @@ describe("getRevenueShare", () => {
     expect(getRevenueShare(10)).to.equal(10000000);
   });
 
+  it("should return correct value when call getRevenueShare given revShare is 10.000001", () => {
+    expect(getRevenueShare(10.000001)).to.equal(10000001);
+  });
+
+  it("should return correct value when call getRevenueShare given revShare is 10.00000001", () => {
+    expect(getRevenueShare(10.00000001)).to.equal(10000000);
+  });
+
   it("should return correct value when call getRevenueShare given revShare is 0", () => {
     expect(getRevenueShare(0, RevShareType.MAX_ALLOWED_REWARD_SHARE)).to.equal(0);
   });
