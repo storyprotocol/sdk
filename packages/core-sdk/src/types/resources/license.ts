@@ -223,3 +223,58 @@ export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInpu
    */
   maxLicenseTokens?: TokenAmountInput;
 };
+
+export type RegisterNonComSocialRemixingPILRequest = {
+  txOptions?: TxOptions;
+};
+export type RegisterCommercialUsePILRequest = {
+  /** The fee to be paid when minting a license. */
+  defaultMintingFee: string | number | bigint;
+  /** The ERC20 token to be used to pay the minting fee */
+  currency: Address;
+  /**
+   * The address of the royalty policy contract.
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   */
+  royaltyPolicyAddress?: Address;
+  txOptions?: TxOptions;
+};
+
+export type RegisterCommercialRemixPILRequest = {
+  /** The fee to be paid when minting a license. */
+  defaultMintingFee: string | number | bigint;
+  /**
+   * Percentage of revenue that must be shared with the licensor.
+   * Must be between 0 and 100 (where 100% represents 100_000_000).
+   */
+  commercialRevShare: number;
+  /** The ERC20 token to be used to pay the minting fee */
+  currency: Address;
+  /**
+   * The address of the royalty policy contract.
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   */
+  royaltyPolicyAddress?: Address;
+  txOptions?: TxOptions;
+};
+
+export type RegisterCreativeCommonsAttributionPILRequest = WithTxOptions & {
+  /** The ERC20 or WIP token to be used to pay the minting fee. */
+  currency: Address;
+  /**
+   * The address of the royalty policy contract.
+   * Defaults to {@link https://docs.story.foundation/docs/liquid-absolute-percentage | LAP} policy address if not provided.
+   */
+  royaltyPolicyAddress?: Address;
+};
+/**
+ * @deprecated Use `PILFlavor.nonCommercialSocialRemixing`, `PILFlavor.commercialUse`, `PILFlavor.commercialRemix`, or `PILFlavor.creativeCommonsAttribution` instead.
+ *
+ * The type of PIL.
+ */
+export enum PIL_TYPE {
+  NON_COMMERCIAL_REMIX,
+  COMMERCIAL_USE,
+  COMMERCIAL_REMIX,
+  CREATIVE_COMMONS_ATTRIBUTION,
+}
