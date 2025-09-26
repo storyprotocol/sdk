@@ -17,6 +17,7 @@ import {
   erc20Address,
   LicenseRegistryReadOnlyClient,
   licensingModuleAddress,
+  royaltyPolicyLapAddress,
 } from "../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../src/constants/common";
 import { ERC20Client } from "../../src/utils/token";
@@ -51,6 +52,35 @@ describe("License Functions", () => {
         expiration: 0,
         commercialRevCeiling: 0,
         derivativeRevCeiling: 0,
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should register license with non commercial social remixing PIL", async () => {
+      const result = await client.license.registerNonComSocialRemixingPIL();
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+    it("should register license with commercial use", async () => {
+      const result = await client.license.registerCommercialUsePIL({
+        defaultMintingFee: "1",
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should register license with commercial Remix use", async () => {
+      const result = await client.license.registerCommercialRemixPIL({
+        defaultMintingFee: "1",
+        commercialRevShare: 100,
+        currency: WIP_TOKEN_ADDRESS,
+      });
+      expect(result.licenseTermsId).to.be.a("bigint");
+    });
+
+    it("should register license with creative commons attribution PIL", async () => {
+      const result = await client.license.registerCreativeCommonsAttributionPIL({
+        currency: WIP_TOKEN_ADDRESS,
+        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
       });
       expect(result.licenseTermsId).to.be.a("bigint");
     });
@@ -341,6 +371,102 @@ describe("License Functions", () => {
       expect(result.licenseTermsIds).to.be.an("array");
       expect(result.maxLicenseTokensTxHashes).to.be.an("array");
       expect(result.maxLicenseTokensTxHashes?.length).to.be.equal(2);
+    });
+  });
+
+  describe("Creative Commons Attribution License Tests", () => {
+    let ipId: Hex;
+    let ccLicenseTermsId: bigint;
+    let tokenId: number | undefined;
+
+    before(async () => {
+      tokenId = await getTokenId();
+
+      // Register an IP asset
+      const registerResult = await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId!,
+      });
+      ipId = registerResult.ipId!;
+
+      // Create a Creative Commons Attribution license
+      const ccLicenseResult = await client.license.registerCreativeCommonsAttributionPIL({
+        currency: WIP_TOKEN_ADDRESS,
+        royaltyPolicyAddress: royaltyPolicyLapAddress[aeneid],
+      });
+      ccLicenseTermsId = ccLicenseResult.licenseTermsId!;
+    });
+
+    it("should verify the license terms match Creative Commons Attribution specifications", async () => {
+      const licenseTerms = await client.license.getLicenseTerms(ccLicenseTermsId);
+
+      expect(licenseTerms.terms.transferable).to.equal(true);
+      expect(licenseTerms.terms.commercialUse).to.equal(true);
+      expect(licenseTerms.terms.derivativesAllowed).to.equal(true);
+      expect(licenseTerms.terms.derivativesAttribution).to.equal(true);
+      expect(licenseTerms.terms.derivativesReciprocal).to.equal(true);
+      expect(licenseTerms.terms.derivativesApproval).to.equal(false);
+      expect(licenseTerms.terms.commercialAttribution).to.equal(true);
+      expect(licenseTerms.terms.commercialRevShare).to.equal(0);
+      expect(licenseTerms.terms.defaultMintingFee).to.equal(0n);
+
+      expect(licenseTerms.terms.royaltyPolicy).to.equal(royaltyPolicyLapAddress[aeneid]);
+      expect(licenseTerms.terms.expiration).to.equal(0n);
+    });
+
+    it("should attach Creative Commons Attribution license to an IP", async () => {
+      const attachResult = await client.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: ccLicenseTermsId,
+      });
+
+      expect(attachResult.txHash).to.be.a("string");
+      expect(attachResult.success).to.equal(true);
+
+      const licenseRegistryReadOnlyClient = new LicenseRegistryReadOnlyClient(publicClient);
+      const hasLicense = await licenseRegistryReadOnlyClient.hasIpAttachedLicenseTerms({
+        ipId: ipId,
+        licenseTemplate: client.ipAsset.licenseTemplateClient.address,
+        licenseTermsId: ccLicenseTermsId,
+      });
+      expect(hasLicense).to.equal(true);
+    });
+
+    it("should mint CC-BY license tokens with no minting fee", async () => {
+      // Get wallet balance before minting
+      const balanceBefore = await client.getWalletBalance();
+
+      // Predict the minting fee (should be zero for CC-BY)
+      const feePredict = await client.license.predictMintingLicenseFee({
+        licenseTermsId: ccLicenseTermsId,
+        licensorIpId: ipId,
+        amount: 1,
+      });
+
+      // CC-BY licenses should have zero minting fee
+      expect(feePredict.tokenAmount).to.equal(0n);
+
+      const mintResult = await client.license.mintLicenseTokens({
+        licenseTermsId: ccLicenseTermsId,
+        licensorIpId: ipId,
+        maxMintingFee: 0n,
+        maxRevenueShare: 0,
+      });
+
+      expect(mintResult.txHash).to.be.a("string");
+      expect(mintResult.licenseTokenIds).to.be.a("array");
+
+      const balanceAfter = await client.getWalletBalance();
+
+      // Verify no fee was charged just gas
+      // This checks that any difference is very small (just gas costs)
+      const balanceDiff = balanceBefore - balanceAfter;
+      const gasUsed = mintResult.receipt!.gasUsed;
+      const effectiveGasPrice = mintResult.receipt!.effectiveGasPrice;
+      const totalGas = gasUsed * effectiveGasPrice;
+
+      // Confirms the balance diff only reflects gas cost, since license fee is zero.
+      expect(balanceDiff).to.equal(totalGas); // Small amount for gas
     });
   });
 });
