@@ -151,7 +151,7 @@ describe("Group Functions", () => {
             },
           },
         ],
-        maxAllowedRewardShare: 5,
+        maxAllowedRewardShare: 100,
       });
 
       expect(result.txHash).to.be.a("string");
@@ -172,7 +172,6 @@ describe("Group Functions", () => {
         groupId,
         nftContract: spgNftContract,
         tokenId,
-        maxAllowedRewardShare: 5,
         licenseData: [
           {
             licenseTermsId,
@@ -197,7 +196,7 @@ describe("Group Functions", () => {
     it("should successfully register group with license and add multiple IPs", async () => {
       const result = await client.groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: groupPoolAddress,
-        maxAllowedRewardShare: 5,
+        maxAllowedRewardShare: 50,
         ipIds: [ipId],
         licenseData: {
           licenseTermsId,
@@ -264,7 +263,7 @@ describe("Group Functions", () => {
         const result = await client.groupClient.addIpsToGroup({
           groupIpId: groupId,
           ipIds: ipIds,
-          maxAllowedRewardSharePercentage: 5,
+          maxAllowedRewardSharePercentage: 55,
         });
         expect(result.txHash).to.be.a("string");
       });

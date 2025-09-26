@@ -134,12 +134,10 @@ export const validateDerivativeData = async ({
     licenseTermsIds: derivativeDataInput.licenseTermsIds.map((id) => BigInt(id)),
     licenseTemplate: validateAddress(derivativeDataInput.licenseTemplate || licenseTemplateAddress),
     royaltyContext: zeroAddress,
-    maxMintingFee: BigInt(derivativeDataInput.maxMintingFee || 0),
-    maxRts: Number(
-      derivativeDataInput.maxRts === undefined ? MAX_ROYALTY_TOKEN : derivativeDataInput.maxRts,
-    ),
+    maxMintingFee: BigInt(derivativeDataInput.maxMintingFee ?? 0),
+    maxRts: validateMaxRts(derivativeDataInput.maxRts),
     maxRevenueShare: getRevenueShare(
-      derivativeDataInput.maxRevenueShare === undefined ? 100 : derivativeDataInput.maxRevenueShare,
+      derivativeDataInput.maxRevenueShare ?? 100,
       RevShareType.MAX_REVENUE_SHARE,
     ),
   };
@@ -158,7 +156,7 @@ export const validateDerivativeData = async ({
   if (derivativeData.maxMintingFee < 0) {
     throw new Error(`The maxMintingFee must be greater than 0.`);
   }
-  validateMaxRts(derivativeData.maxRts);
+
   for (let i = 0; i < derivativeData.parentIpIds.length; i++) {
     const parentId = derivativeData.parentIpIds[i];
     const isParentIpRegistered = await ipAssetRegistryClient.isRegistered({
@@ -191,10 +189,13 @@ export const validateDerivativeData = async ({
   return derivativeData;
 };
 
-export const validateMaxRts = (maxRts: MaxRtsInput): void => {
-  if (maxRts < 0 || maxRts > MAX_ROYALTY_TOKEN) {
+export const validateMaxRts = (maxRts: MaxRtsInput | undefined): number => {
+  if (maxRts === undefined) {
+    return MAX_ROYALTY_TOKEN;
+  } else if (maxRts < 0 || maxRts > MAX_ROYALTY_TOKEN) {
     throw new Error(`The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`);
   }
+  return maxRts;
 };
 
 export const getIpIdAddress = async ({

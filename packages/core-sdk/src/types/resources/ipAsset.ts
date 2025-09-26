@@ -85,8 +85,11 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
   childIpId: Address;
   /** The IDs of the license tokens. */
   licenseTokenIds: LicenseTermsIdInput[];
-  /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: MaxRtsInput;
+  /**
+   * The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
+   * @default 100_000_000
+   */
+  maxRts?: MaxRtsInput;
   txOptions?: TxOptions;
 };
 
@@ -213,8 +216,11 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   licenseTokenIds: LicenseTermsIdInput[];
   /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
-  /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: MaxRtsInput;
+  /**
+   * The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
+   * @default 100_000_000
+   */
+  maxRts?: MaxRtsInput;
   /**
    * Set to true to allow minting an NFT with a duplicate metadata hash.
    * @default true
@@ -228,8 +234,11 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   tokenId: TokenIdInput;
   /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
   licenseTokenIds: LicenseTermsIdInput[];
-  /** The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000). */
-  maxRts: MaxRtsInput;
+  /**
+   * The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
+   * @default 100_000_000
+   */
+  maxRts?: MaxRtsInput;
   /**
    * The deadline for the signature in seconds.
    * @default 1000
@@ -256,7 +265,8 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
 
 export type BatchRegisterDerivativeRequest = {
   args: RegisterDerivativeRequest[];
-  /** The deadline for the signature in seconds.
+  /**
+   * The deadline for the signature in seconds.
    * @default 1000
    */
   deadline?: DeadlineInput;
@@ -773,12 +783,10 @@ export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = Wi
     derivData?: DerivativeDataInput;
     /**
      * The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
-     * Must be provided together with `licenseTokenIds`.
+     * @default 100_000_000
      */
     maxRts?: MaxRtsInput;
-    /** The IDs of the license tokens to be burned for linking the IP to parent IPs.
-     * Must be provided together with `maxRts`.
-     */
+    /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
     licenseTokenIds?: LicenseTermsIdInput[];
     /**
      * The deadline for the signature in seconds.

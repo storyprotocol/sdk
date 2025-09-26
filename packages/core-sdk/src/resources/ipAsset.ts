@@ -46,7 +46,6 @@ import {
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { MAX_ROYALTY_TOKEN } from "../constants/common";
 import { LicenseTermsIdInput, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
@@ -433,12 +432,9 @@ export class IPAssetClient {
             arg.licenseTermsIds.map((id) => BigInt(id)),
             arg.licenseTemplate || this.licenseTemplateAddress,
             zeroAddress,
-            BigInt(arg.maxMintingFee || 0),
-            Number(arg.maxRts === undefined ? MAX_ROYALTY_TOKEN : arg.maxRts),
-            getRevenueShare(
-              arg.maxRevenueShare === undefined ? 100 : arg.maxRevenueShare,
-              RevShareType.MAX_REVENUE_SHARE,
-            ),
+            BigInt(arg.maxMintingFee ?? 0),
+            validateMaxRts(arg.maxRts),
+            getRevenueShare(arg.maxRevenueShare ?? 100, RevShareType.MAX_REVENUE_SHARE),
           ],
         });
         const { result: state } = await ipAccount.state();
@@ -492,9 +488,8 @@ export class IPAssetClient {
         childIpId: validateAddress(request.childIpId),
         licenseTokenIds: request.licenseTokenIds.map((id) => BigInt(id)),
         royaltyContext: zeroAddress,
-        maxRts: Number(request.maxRts),
+        maxRts: validateMaxRts(request.maxRts),
       };
-      validateMaxRts(req.maxRts);
       const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
       if (!isChildIpIdRegistered) {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
@@ -1049,11 +1044,9 @@ export class IPAssetClient {
           ipMetadata: getIpMetadataForWorkflow(request.ipMetadata),
           licenseTokenIds: licenseTokenIds,
           royaltyContext: zeroAddress,
-          maxRts: Number(request.maxRts),
+          maxRts: validateMaxRts(request.maxRts),
           allowDuplicates: request.allowDuplicates || true,
         };
-      validateMaxRts(object.maxRts);
-
       const encodedTxData =
         this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokensEncode(
           object,
@@ -1130,9 +1123,8 @@ export class IPAssetClient {
           deadline: calculatedDeadline,
           signature,
         },
-        maxRts: Number(request.maxRts),
+        maxRts: validateMaxRts(request.maxRts),
       };
-      validateMaxRts(object.maxRts);
       if (request.txOptions?.encodedTxDataOnly) {
         return {
           encodedTxData:
@@ -1694,7 +1686,7 @@ export class IPAssetClient {
     }
   }
   /**
-   * Register a derivative IP asset, supporting both minted and mint-on-demand NFTs, with optional `derivData`, `royaltyShares` and `licenseTokenIds`, `maxRts`.
+   * Register a derivative IP asset, supporting both minted and mint-on-demand NFTs, with optional `derivData`, `royaltyShares` and `licenseTokenIds`.
    *
    * This method automatically selects and calls the appropriate workflow from 6 available methods based on your input parameters.
    * Here are three common usage patterns:
@@ -1707,7 +1699,6 @@ export class IPAssetClient {
    *     parentIpIds: ["0x..."],
    *     licenseTermsIds: [1n],
    *     maxMintingFee: 10000n,
-   *     maxRts: 100,
    *     maxRevenueShare: 100
    *   },
    *   royaltyShares: [
@@ -1724,18 +1715,16 @@ export class IPAssetClient {
    *     parentIpIds: ["0x..."],
    *     licenseTermsIds: [1n],
    *     maxMintingFee: 10000n,
-   *     maxRts: 100,
    *     maxRevenueShare: 100
    *   }
    * });
    * ```
    *
-   * **3. Mint NFT with License Token IDs and maxRts:**
+   * **3. Mint NFT with License Token IDs:**
    * ```typescript
    * const result = await client.ipAsset.registerDerivativeIpAsset({
    *   nft: { type: "mint", spgNftContract: "0x...", recipient: "0x...", allowDuplicates: false },
    *   licenseTokenIds: [1, 2, 3],
-   *   maxRts: 100
    * });
    * ```
    *
@@ -1752,37 +1741,25 @@ export class IPAssetClient {
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
    * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
    *
-   * @throws {Error} If `licenseTokenIds` and `maxRts` are not provided together.
    * @throws {Error} If `derivData` is not provided when `royaltyShares` are provided.
-   * @throws {Error} If neither `derivData` nor (`licenseTokenIds` and `maxRts`) are provided.
+   * @throws {Error} If neither `derivData` nor `licenseTokenIds` are provided.
    * @throws {Error} If the NFT type is invalid.
    */
   public async registerDerivativeIpAsset<
     T extends RegisterDerivativeIpAssetRequest<MintedNFT | MintNFT>,
   >(request: T): Promise<RegisterDerivativeIpAssetResponse<T>> {
     try {
-      const { nft, licenseTokenIds, maxRts, royaltyShares, derivData } = request;
-      if (
-        (licenseTokenIds && licenseTokenIds.length > 0 && maxRts === undefined) ||
-        (maxRts !== undefined && (!licenseTokenIds || licenseTokenIds.length === 0))
-      ) {
-        throw new Error("licenseTokenIds and maxRts must be provided together.");
-      }
-
+      const { nft, licenseTokenIds, royaltyShares, derivData } = request;
       if (royaltyShares && !derivData) {
         throw new Error("derivData must be provided when royaltyShares are provided.");
       }
 
       // Validate that at least one valid combination is provided
       const hasDerivData = !!derivData;
-      const hasLicenseTokens = !!(
-        licenseTokenIds &&
-        licenseTokenIds.length > 0 &&
-        maxRts !== undefined
-      );
+      const hasLicenseTokens = !!(licenseTokenIds && licenseTokenIds.length > 0);
 
       if (!hasDerivData && !hasLicenseTokens) {
-        throw new Error("Either derivData or (licenseTokenIds and maxRts) must be provided.");
+        throw new Error("Either derivData or licenseTokenIds must be provided.");
       }
 
       if (nft.type === "minted") {
@@ -1802,7 +1779,7 @@ export class IPAssetClient {
   }
 
   /**
-   * Handles derivative registration for already minted NFTs with optional `derivData`, `royaltyShares` and `licenseTokenIds`, `maxRts`.
+   * Handles derivative registration for already minted NFTs with optional `derivData`, `royaltyShares` and `licenseTokenIds`.
    *
    * Supports the following workflows:
    * - {@link registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens}
@@ -1849,12 +1826,12 @@ export class IPAssetClient {
     return this.registerIpAndMakeDerivativeWithLicenseTokens({
       ...baseParams,
       licenseTokenIds: licenseTokenIds!,
-      maxRts: maxRts!,
+      maxRts,
     });
   }
 
   /**
-   * Handles derivative registration for minted NFTs with optional `derivData`, `royaltyShares` and `licenseTokenIds`, `maxRts`.
+   * Handles derivative registration for minted NFTs with optional `derivData`, `royaltyShares` and `licenseTokenIds`.
    *
    * Supports the following workflows:
    * - {@link mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens}
@@ -1901,7 +1878,7 @@ export class IPAssetClient {
     return this.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
       ...baseParams,
       licenseTokenIds: licenseTokenIds!,
-      maxRts: maxRts!,
+      maxRts,
     });
   }
 
@@ -1916,7 +1893,6 @@ export class IPAssetClient {
    * ```typescript
    * const result = await client.ipAsset.linkDerivative({
    *   licenseTokenIds: [1, 2, 3],
-   *   maxRts: 100,
    *   childIpId: "0x...",
    * });
    * ```
@@ -1926,7 +1902,6 @@ export class IPAssetClient {
    * const result = await client.ipAsset.linkDerivative({
    *   parentIpIds: ["0x..."],
    *   licenseTermsIds: [1],
-   *   maxRts: 100,
    *   childIpId: "0x...",
    * });
    * ```

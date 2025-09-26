@@ -33,7 +33,7 @@ describe("validateLicenseConfig", () => {
       expectGroupRewardPool: zeroAddress,
     };
     expect(() => validateLicenseConfig(licensingConfig)).to.throw(
-      "The expectMinimumGroupRewardShare must be greater than 0 and less than 100.",
+      "expectMinimumGroupRewardShare must be between 0 and 100.",
     );
   });
   it("should throw error when expectMinimumGroupRewardShare is less than 0", () => {
@@ -48,7 +48,7 @@ describe("validateLicenseConfig", () => {
       expectGroupRewardPool: zeroAddress,
     };
     expect(() => validateLicenseConfig(licensingConfig)).to.throw(
-      "The expectMinimumGroupRewardShare must be greater than 0 and less than 100.",
+      "expectMinimumGroupRewardShare must be between 0 and 100.",
     );
   });
   it("should throw error when mintingFee is less than 0", () => {

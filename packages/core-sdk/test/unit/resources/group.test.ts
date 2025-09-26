@@ -194,9 +194,10 @@ describe("Test IpAssetClient", () => {
     it("should return txHash when call registerGroupAndAttachLicenseAndAddIps given correct args ", async () => {
       stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
       stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      stub(groupClient.groupingWorkflowsClient, "registerGroupAndAttachLicenseAndAddIps").resolves(
-        txHash,
-      );
+      const registerGroupAndAttachLicenseAndAddIpsStub = stub(
+        groupClient.groupingWorkflowsClient,
+        "registerGroupAndAttachLicenseAndAddIps",
+      ).resolves(txHash);
       stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
         {
           groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -205,10 +206,34 @@ describe("Test IpAssetClient", () => {
       ]);
       const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
         groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxAllowedRewardShare: 5,
+        maxAllowedRewardShare: 0,
         ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
         licenseData: mockLicenseData,
       });
+      expect(registerGroupAndAttachLicenseAndAddIpsStub.args[0][0].maxAllowedRewardShare).equal(0n);
+      expect(result.txHash).equal(txHash);
+    });
+    it("should call with default value of maxAllowedRewardShare when registerGroupAndAttachLicenseAndAddIps without maxAllowedRewardShare", async () => {
+      stub(groupClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const registerGroupAndAttachLicenseAndAddIpsStub = stub(
+        groupClient.groupingWorkflowsClient,
+        "registerGroupAndAttachLicenseAndAddIps",
+      ).resolves(txHash);
+      stub(groupClient.groupingModuleEventClient, "parseTxIpGroupRegisteredEvent").returns([
+        {
+          groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        },
+      ]);
+      const result = await groupClient.registerGroupAndAttachLicenseAndAddIps({
+        groupPool: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        ipIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+        licenseData: mockLicenseData,
+      });
+      expect(registerGroupAndAttachLicenseAndAddIpsStub.args[0][0].maxAllowedRewardShare).equal(
+        BigInt(100 * 10 ** 6),
+      );
       expect(result.txHash).equal(txHash);
     });
   });
@@ -234,7 +259,7 @@ describe("Test IpAssetClient", () => {
 
     it("should return txHash when call mintAndRegisterIpAndAttachLicenseAndAddToGroup given correct args ", async () => {
       stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      stub(
+      const mintAndRegisterIpAndAttachLicenseAndAddToGroupStub = stub(
         groupClient.groupingWorkflowsClient,
         "mintAndRegisterIpAndAttachLicenseAndAddToGroup",
       ).resolves(txHash);
@@ -252,10 +277,13 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxAllowedRewardShare: 5,
+        maxAllowedRewardShare: 0,
         licenseData: [mockLicenseData],
         allowDuplicates: true,
       });
+      expect(
+        mintAndRegisterIpAndAttachLicenseAndAddToGroupStub.args[0][0].maxAllowedRewardShare,
+      ).to.equal(0n);
       expect(result.txHash).equal(txHash);
       expect(result.ipId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
       expect(result.tokenId).equal(0n);
@@ -296,7 +324,7 @@ describe("Test IpAssetClient", () => {
       expect(result.encodedTxData!.data).to.be.a("string");
     });
 
-    it("should call with default values when mintAndRegisterIpAndAttachLicenseAndAddToGroup without providing allowDuplicates, ipMetadata, recipient", async () => {
+    it("should call with default values when mintAndRegisterIpAndAttachLicenseAndAddToGroup without default values", async () => {
       stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const mintAndRegisterIpAndAttachLicenseAndAddToGroupStub = stub(
         groupClient.groupingWorkflowsClient,
@@ -315,7 +343,6 @@ describe("Test IpAssetClient", () => {
       ]);
       await groupClient.mintAndRegisterIpAndAttachLicenseAndAddToGroup({
         groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        maxAllowedRewardShare: 5,
         spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         licenseData: [mockLicenseData],
       });
@@ -329,6 +356,7 @@ describe("Test IpAssetClient", () => {
         nftMetadataHash: zeroHash,
       });
       expect(args.recipient).to.equal(walletAddress);
+      expect(args.maxAllowedRewardShare).to.equal(BigInt(100 * 10 ** 6));
     });
   });
 
@@ -397,9 +425,10 @@ describe("Test IpAssetClient", () => {
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       );
       stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      stub(groupClient.groupingWorkflowsClient, "registerIpAndAttachLicenseAndAddToGroup").resolves(
-        txHash,
-      );
+      const registerIpAndAttachLicenseAndAddToGroupStub = stub(
+        groupClient.groupingWorkflowsClient,
+        "registerIpAndAttachLicenseAndAddToGroup",
+      ).resolves(txHash);
       stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
           ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
@@ -416,8 +445,43 @@ describe("Test IpAssetClient", () => {
         nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         tokenId: 100,
         licenseData: [mockLicenseData],
-        maxAllowedRewardShare: 5,
+        maxAllowedRewardShare: 0,
       });
+      expect(registerIpAndAttachLicenseAndAddToGroupStub.args[0][0].maxAllowedRewardShare).to.equal(
+        0n,
+      );
+      expect(result.txHash).equal(txHash);
+      expect(result.ipId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
+    });
+    it("should call with default value of maxAllowedRewardShare when registerIpAndAttachLicenseAndAddToGroup without maxAllowedRewardShare", async () => {
+      stub(groupClient.ipAssetRegistryClient, "ipId").resolves(
+        "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+      );
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const registerIpAndAttachLicenseAndAddToGroupStub = stub(
+        groupClient.groupingWorkflowsClient,
+        "registerIpAndAttachLicenseAndAddToGroup",
+      ).resolves(txHash);
+      stub(groupClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x",
+          tokenId: 0n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      const result = await groupClient.registerIpAndAttachLicenseAndAddToGroup({
+        groupId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        nftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        tokenId: 100,
+        licenseData: [mockLicenseData],
+      });
+      expect(registerIpAndAttachLicenseAndAddToGroupStub.args[0][0].maxAllowedRewardShare).to.equal(
+        BigInt(100 * 10 ** 6),
+      );
       expect(result.txHash).equal(txHash);
       expect(result.ipId).equal("0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c");
     });
@@ -621,9 +685,18 @@ describe("Test IpAssetClient", () => {
       const result = await groupClient.addIpsToGroup({
         groupIpId: mockAddress,
         ipIds: [mockAddress],
-        maxAllowedRewardSharePercentage: 5,
+        maxAllowedRewardSharePercentage: 0,
       });
-      expect(addIpStub.args[0][0].maxAllowedRewardShare).to.equal(5000000n);
+      expect(addIpStub.args[0][0].maxAllowedRewardShare).to.equal(0n);
+      expect(result.txHash).equal(txHash);
+    });
+    it("should call with default value of maxAllowedRewardSharePercentage when addIpsToGroup without maxAllowedRewardSharePercentage", async () => {
+      const addIpStub = stub(groupClient.groupingModuleClient, "addIp").resolves(txHash);
+      const result = await groupClient.addIpsToGroup({
+        groupIpId: mockAddress,
+        ipIds: [mockAddress],
+      });
+      expect(addIpStub.args[0][0].maxAllowedRewardShare).to.equal(BigInt(100 * 10 ** 6));
       expect(result.txHash).equal(txHash);
     });
 
