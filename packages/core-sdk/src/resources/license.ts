@@ -536,7 +536,7 @@ export class LicenseClient {
 
   /**
    * @deprecated Use {@link PILFlavor.nonCommercialSocialRemixing} with {@link LicenseClient.registerPILTerms} instead.
-   *  The method will be removed will soon.
+   *  This method will be removed soon.
    *
    * Convenient function to register a PIL non commercial social remix license to the registry
    *
@@ -557,7 +557,7 @@ export class LicenseClient {
 
   /**
    * @deprecated Use {@link PILFlavor.commercialUse} with {@link LicenseClient.registerPILTerms} instead.
-   *  The method will be removed will soon.
+   *  This method will be removed soon.
    *
    * Convenient function to register a PIL commercial use license to the registry.
    *
@@ -582,7 +582,7 @@ export class LicenseClient {
 
   /**
    * @deprecated Use {@link PILFlavor.commercialRemix} with {@link LicenseClient.registerPILTerms} instead.
-   *  The method will be removed will soon.
+   *  This method will be removed soon.
    *
    * Convenient function to register a PIL commercial Remix license to the registry.
    *
@@ -612,7 +612,7 @@ export class LicenseClient {
 
   /**
    * @deprecated Use {@link PILFlavor.creativeCommonsAttribution} with {@link LicenseClient.registerPILTerms} instead.
-   *  The method will be removed will soon.
+   *  This method will be removed soon.
    *
    * Convenient function to register a PIL creative commons attribution license to the registry.
    * Creates a Creative Commons Attribution (CC-BY) license terms flavor.
