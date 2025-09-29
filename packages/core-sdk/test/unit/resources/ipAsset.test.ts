@@ -2600,7 +2600,8 @@ describe("Test IpAssetClient", () => {
           },
         ],
         royaltyShares: [
-          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 100 },
+          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512", percentage: 8.000000001 },
+          { recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb514", percentage: 8.000001 },
         ],
       });
       expect(result).to.deep.equal({
@@ -2616,7 +2617,11 @@ describe("Test IpAssetClient", () => {
       ).to.deep.equal([
         {
           recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
-          percentage: 100 * 10 ** 6,
+          percentage: 8 * 10 ** 6,
+        },
+        {
+          recipient: "0x73fcb515cee99e4991465ef586cfe2b072ebb514",
+          percentage: 8 * 10 ** 6,
         },
       ]);
     });

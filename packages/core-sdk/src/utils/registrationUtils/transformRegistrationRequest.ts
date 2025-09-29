@@ -775,7 +775,6 @@ export const transferDistributeRoyaltyTokensRequest = async <
 }: HandleDistributeRoyaltyTokensRequestConfig): Promise<
   TransformedIpRegistrationWorkflowRequest<T>
 > => {
-  console.log("request", request);
   const { ipId, deadline, ipRoyaltyVault, totalAmount } = request;
   const calculatedDeadline = await getCalculatedDeadline(rpcClient, deadline);
   const ipRoyaltyVaultImpl = new IpRoyaltyVaultImplReadOnlyClient(rpcClient, ipRoyaltyVault);
