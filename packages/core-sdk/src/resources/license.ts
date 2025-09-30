@@ -426,7 +426,10 @@ export class LicenseClient {
           licensingConfig: {
             ...licensingConfig,
             licensingHook: this.totalLicenseTokenLimitHookClient.address,
-            expectMinimumGroupRewardShare: licensingConfig.expectMinimumGroupRewardShare / 1000000,
+            // use Math.trunc to avoid precision issues
+            expectMinimumGroupRewardShare: Math.trunc(
+              licensingConfig.expectMinimumGroupRewardShare / 1000000,
+            ),
           },
         });
       }
