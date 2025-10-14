@@ -27,12 +27,12 @@ export const royaltyPolicyInputToAddress = (
 };
 
 export const getRevenueShare = (
-  revShare: RevShareInput,
+  revShareNumber: RevShareInput,
   type: RevShareType = RevShareType.COMMERCIAL_REVENUE_SHARE,
 ): number => {
-  const revShareNumber = Number(revShare);
   if (revShareNumber < 0 || revShareNumber > 100) {
     throw new Error(`${type} must be between 0 and 100.`);
   }
-  return revShareNumber * 10 ** 6;
+  // use Math.trunc to avoid precision issues
+  return Math.trunc(revShareNumber * 10 ** 6);
 };

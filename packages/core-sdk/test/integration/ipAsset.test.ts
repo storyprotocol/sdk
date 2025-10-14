@@ -121,7 +121,7 @@ describe("IP Asset Functions", () => {
         licenseTermsIds: [noCommercialLicenseTermsId],
         maxMintingFee: 0,
         maxRts: 5 * 10 ** 6,
-        maxRevenueShare: 0,
+        maxRevenueShare: 0.32423,
       });
       expect(response.txHash).to.be.a("string");
     });
@@ -158,7 +158,7 @@ describe("IP Asset Functions", () => {
         licenseTermsIds: [licenseResponse.licenseTermsId!],
         maxMintingFee: 100,
         maxRts: 5 * 10 ** 6,
-        maxRevenueShare: 100,
+        maxRevenueShare: 10,
       });
       expect(response.txHash).to.be.a("string");
     });
@@ -209,7 +209,7 @@ describe("IP Asset Functions", () => {
         licenseTermsIds: [noCommercialLicenseTermsId, noCommercialLicenseTermsId],
         maxMintingFee: 0,
         maxRts: 5 * 10 ** 6,
-        maxRevenueShare: 0,
+        maxRevenueShare: 0.9999999999,
       });
 
       expect(response.txHash).to.be.a("string");
@@ -633,7 +633,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 1,
+              percentage: 0.00020302,
             },
           ],
         },
@@ -756,7 +756,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 1,
+              percentage: 12.232131,
             },
           ],
         },
@@ -816,19 +816,19 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 43,
+              percentage: 43.000301,
             },
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 17,
+              percentage: 17.0003011,
             },
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 2,
+              percentage: 2.000301,
             },
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 38,
+              percentage: 32.0003012,
             },
           ],
         },
@@ -900,7 +900,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 10,
+              percentage: 10.2,
             },
           ],
         });
@@ -988,7 +988,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 10,
+              percentage: 10.434,
             },
           ],
         });
@@ -1167,7 +1167,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 4.000301,
             },
           ],
         });
@@ -1201,7 +1201,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 0.34343234234,
             },
           ],
         },
@@ -1475,7 +1475,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 10,
+              percentage: 10.434,
             },
           ],
         });
@@ -1538,7 +1538,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 10.434,
             },
           ],
         },
@@ -2162,7 +2162,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 3.000301,
             },
           ],
         },
@@ -2183,7 +2183,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 10.434,
             },
           ],
         },
@@ -2236,7 +2236,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 10,
+              percentage: 1.211,
             },
           ],
         },
@@ -2261,7 +2261,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 10,
+              percentage: 1.231,
             },
           ],
         },
@@ -2520,19 +2520,19 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 43,
+              percentage: 43.000301,
             },
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 17,
+              percentage: 17.0003011,
             },
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 2,
+              percentage: 2.000301,
             },
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 38,
+              percentage: 30.0003012,
             },
           ],
         },
@@ -2587,7 +2587,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 10,
+              percentage: 10.434,
             },
           ],
         },
@@ -2691,7 +2691,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 10.434,
             },
           ],
         },
@@ -2712,7 +2712,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 10.4341111111,
             },
           ],
         },
@@ -2750,7 +2750,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 10,
+              percentage: 10.2312332,
             },
           ],
         },
@@ -2806,19 +2806,19 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 43,
+              percentage: 43.000301,
             },
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 17,
+              percentage: 17.0003011,
             },
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 2,
+              percentage: 2.000301,
             },
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 38,
+              percentage: 30.0003012,
             },
           ],
         },
@@ -3137,7 +3137,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 10.4341212321,
             },
           ],
         },
@@ -3160,7 +3160,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 3.000301,
             },
           ],
         },
@@ -3373,7 +3373,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 2.000000001,
             },
           ],
           deadline: 1000n,
@@ -3476,7 +3476,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 10,
+              percentage: 0.000001,
             },
           ],
         });
@@ -3567,7 +3567,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 10.232132,
             },
           ],
         });
@@ -3650,7 +3650,7 @@ describe("IP Asset Functions", () => {
           royaltyShares: [
             {
               recipient: TEST_WALLET_ADDRESS,
-              percentage: 100,
+              percentage: 1.23,
             },
           ],
         });
