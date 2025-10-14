@@ -8,7 +8,7 @@ import {
   SpgnftImplReadOnlyClient,
   totalLicenseTokenLimitHookAddress,
 } from "../../abi/generated";
-import { MAX_ROYALTY_TOKEN, royaltySharesTotalSupply } from "../../constants/common";
+import { MAX_ROYALTY_TOKEN } from "../../constants/common";
 import { DeadlineInput, RevShareType } from "../../types/common";
 import { ChainIds } from "../../types/config";
 import {
@@ -113,11 +113,13 @@ export const getRoyaltyShares = (
     if (sum > 100) {
       throw new Error("The sum of the royalty shares cannot exceeds 100.");
     }
-    const value = (share.percentage / 100) * royaltySharesTotalSupply;
+    // use Math.trunc to avoid precision issues
+    const value = Math.trunc(share.percentage * 10 ** 6);
     actualTotal += value;
     return { ...share, percentage: value };
   });
-  return { royaltyShares: shares, totalAmount: actualTotal };
+  // use Math.trunc to avoid precision issues
+  return { royaltyShares: shares, totalAmount: Math.trunc(actualTotal) };
 };
 
 export const validateDerivativeData = async ({
