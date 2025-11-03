@@ -350,6 +350,26 @@ export class IPAssetClient {
    * The license terms must be attached to the parent IP before calling this function.
    * All IPs attached default license terms by default.
    * The derivative IP owner must be the caller or an authorized operator.
+   *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link linkDerivative} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.registerDerivative({
+   *   childIpId: '0x...',
+   *   parentIpIds: ['0x...'],
+   *   licenseTermsIds: [1n]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.linkDerivative({
+   *   childIpId: '0x...',
+   *   parentIpIds: ['0x...'],
+   *   licenseTermsIds: [1n]
+   * });
+   * ```
    */
   public async registerDerivative(
     request: RegisterDerivativeRequest,
@@ -479,6 +499,24 @@ export class IPAssetClient {
    * Registers a derivative with license tokens. The derivative IP is registered with license tokens minted from the parent IP's license terms.
    * The license terms of the parent IPs issued with license tokens are attached to the derivative IP.
    * The caller must be the derivative IP owner or an authorized operator.
+   *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link linkDerivative} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.registerDerivativeWithLicenseTokens({
+   *   childIpId: '0x...',
+   *   licenseTokenIds: [1n, 2n, 3n]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.linkDerivative({
+   *   childIpId: '0x...',
+   *   licenseTokenIds: [1n, 2n, 3n]
+   * });
+   * ```
    */
   public async registerDerivativeWithLicenseTokens(
     request: RegisterDerivativeWithLicenseTokensRequest,
@@ -518,6 +556,24 @@ export class IPAssetClient {
   }
   /**
    * Mint an NFT from a collection and register it as an IP.
+   *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
+   *   spgNftContract: '0x...',
+   *   licenseTermsData: [{ terms: PILFlavor.commercialRemix({...}) }]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerIpAsset({
+   *   nft: { type: 'mint', spgNftContract: '0x...' },
+   *   licenseTermsData: [{ terms: PILFlavor.commercialRemix({...}) }]
+   * });
+   * ```
    *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} events.
    */
@@ -647,6 +703,25 @@ export class IPAssetClient {
   /**
    * Register a given NFT as an IP and attach Programmable IP License Terms.
    *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.registerIpAndAttachPilTerms({
+   *   nftContract: '0x...',
+   *   tokenId: 123n,
+   *   licenseTermsData: [{ terms: PILFlavor.nonCommercialSocialRemixing() }]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerIpAsset({
+   *   nft: { type: 'minted', nftContract: '0x...', tokenId: 123n },
+   *   licenseTermsData: [{ terms: PILFlavor.nonCommercialSocialRemixing() }]
+   * });
+   * ```
+   *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} events.
    */
   public async registerIpAndAttachPilTerms(
@@ -718,6 +793,25 @@ export class IPAssetClient {
   /**
    * Register the given NFT as a derivative IP with metadata without using license tokens.
    *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.registerDerivativeIp({
+   *   nftContract: '0x...',
+   *   tokenId: 123n,
+   *   derivData: { parentIpIds: ['0x...'], licenseTermsIds: [1n] }
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerDerivativeIpAsset({
+   *   nft: { type: 'minted', nftContract: '0x...', tokenId: 123n },
+   *   derivData: { parentIpIds: ['0x...'], licenseTermsIds: [1n] }
+   * });
+   * ```
+   *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async registerDerivativeIp(
@@ -771,6 +865,24 @@ export class IPAssetClient {
 
   /**
    * Mint an NFT from a collection and register it as a derivative IP without license tokens.
+   *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.mintAndRegisterIpAndMakeDerivative({
+   *   spgNftContract: '0x...',
+   *   derivData: { parentIpIds: ['0x...'], licenseTermsIds: [1n] }
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerDerivativeIpAsset({
+   *   nft: { type: 'mint', spgNftContract: '0x...' },
+   *   derivData: { parentIpIds: ['0x...'], licenseTermsIds: [1n] }
+   * });
+   * ```
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
@@ -853,6 +965,23 @@ export class IPAssetClient {
 
   /**
    * Mint an NFT from a SPGNFT collection and register it with metadata as an IP.
+   *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.mintAndRegisterIp({
+   *   spgNftContract: '0x...',
+   *   recipient: '0x...'
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerIpAsset({
+   *   nft: { type: 'mint', spgNftContract: '0x...', recipient: '0x...' }
+   * });
+   * ```
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
@@ -1030,6 +1159,24 @@ export class IPAssetClient {
    * Mint an NFT from a collection and register it as a derivative IP using license tokens.
    * Requires caller to have the minter role or the SPG NFT to allow public minting. Caller must own the license tokens and have approved DerivativeWorkflows to transfer them.
    *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
+   *   spgNftContract: '0x...',
+   *   licenseTokenIds: [1n, 2n, 3n]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerDerivativeIpAsset({
+   *   nft: { type: 'mint', spgNftContract: '0x...' },
+   *   licenseTokenIds: [1n, 2n, 3n]
+   * });
+   * ```
+   *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
   public async mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
@@ -1084,6 +1231,25 @@ export class IPAssetClient {
 
   /**
    * Register the given NFT as a derivative IP using license tokens.
+   *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.registerIpAndMakeDerivativeWithLicenseTokens({
+   *   nftContract: '0x...',
+   *   tokenId: 123n,
+   *   licenseTokenIds: [1n, 2n, 3n]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerDerivativeIpAsset({
+   *   nft: { type: 'minted', nftContract: '0x...', tokenId: 123n },
+   *   licenseTokenIds: [1n, 2n, 3n]
+   * });
+   * ```
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
@@ -1151,6 +1317,27 @@ export class IPAssetClient {
    * Register the given NFT and attach license terms and distribute royalty
    * tokens. In order to successfully distribute royalty tokens, the first
    * license terms attached to the IP must be a commercial license.
+   *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.registerIPAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+   *   nftContract: '0x...',
+   *   tokenId: 123n,
+   *   licenseTermsData: [{ terms: PILFlavor.commercialRemix({...}) }],
+   *   royaltyShares: [{ recipient: '0x...', percentage: 100 }]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerIpAsset({
+   *   nft: { type: 'minted', nftContract: '0x...', tokenId: 123n },
+   *   licenseTermsData: [{ terms: PILFlavor.commercialRemix({...}) }],
+   *   royaltyShares: [{ recipient: '0x...', percentage: 100 }]
+   * });
+   * ```
    *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88 | `IpRoyaltyVaultDeployed`} events.
    */
@@ -1235,6 +1422,27 @@ export class IPAssetClient {
   /**
    * Register the given NFT as a derivative IP and attach license terms and distribute royalty tokens.  In order to successfully distribute royalty tokens, the license terms attached to the IP must be
    * a commercial license.
+   *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.registerDerivativeIpAndAttachLicenseTermsAndDistributeRoyaltyTokens({
+   *   nftContract: '0x...',
+   *   tokenId: 123n,
+   *   derivData: { parentIpIds: ['0x...'], licenseTermsIds: [1n] },
+   *   royaltyShares: [{ recipient: '0x...', percentage: 100 }]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerDerivativeIpAsset({
+   *   nft: { type: 'minted', nftContract: '0x...', tokenId: 123n },
+   *   derivData: { parentIpIds: ['0x...'], licenseTermsIds: [1n] },
+   *   royaltyShares: [{ recipient: '0x...', percentage: 100 }]
+   * });
+   * ```
    *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| `IpRoyaltyVaultDeployed`} events.
    */
@@ -1321,6 +1529,26 @@ export class IPAssetClient {
   /**
    * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
    *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens({
+   *   spgNftContract: '0x...',
+   *   licenseTermsData: [{ terms: PILFlavor.commercialRemix({...}) }],
+   *   royaltyShares: [{ recipient: '0x...', percentage: 100 }]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerIpAsset({
+   *   nft: { type: 'mint', spgNftContract: '0x...' },
+   *   licenseTermsData: [{ terms: PILFlavor.commercialRemix({...}) }],
+   *   royaltyShares: [{ recipient: '0x...', percentage: 100 }]
+   * });
+   * ```
+   *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/royalty/IRoyaltyModule.sol#L88| `IpRoyaltyVaultDeployed`} events.
    */
   public async mintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokens(
@@ -1390,6 +1618,26 @@ export class IPAssetClient {
 
   /**
    * Mint an NFT and register the IP, make a derivative, and distribute royalty tokens.
+   *
+   * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
+   * This method will be made internal in v1.5.0.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens({
+   *   spgNftContract: '0x...',
+   *   derivData: { parentIpIds: ['0x...'], licenseTermsIds: [1n] },
+   *   royaltyShares: [{ recipient: '0x...', percentage: 100 }]
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.registerDerivativeIpAsset({
+   *   nft: { type: 'mint', spgNftContract: '0x...' },
+   *   derivData: { parentIpIds: ['0x...'], licenseTermsIds: [1n] },
+   *   royaltyShares: [{ recipient: '0x...', percentage: 100 }]
+   * });
+   * ```
    *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
