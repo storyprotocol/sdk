@@ -352,7 +352,7 @@ export class IPAssetClient {
    * The derivative IP owner must be the caller or an authorized operator.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link linkDerivative} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -501,7 +501,7 @@ export class IPAssetClient {
    * The caller must be the derivative IP owner or an authorized operator.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link linkDerivative} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -558,7 +558,7 @@ export class IPAssetClient {
    * Mint an NFT from a collection and register it as an IP.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -704,7 +704,7 @@ export class IPAssetClient {
    * Register a given NFT as an IP and attach Programmable IP License Terms.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -794,7 +794,7 @@ export class IPAssetClient {
    * Register the given NFT as a derivative IP with metadata without using license tokens.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -867,7 +867,7 @@ export class IPAssetClient {
    * Mint an NFT from a collection and register it as a derivative IP without license tokens.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -967,7 +967,7 @@ export class IPAssetClient {
    * Mint an NFT from a SPGNFT collection and register it with metadata as an IP.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -1160,7 +1160,7 @@ export class IPAssetClient {
    * Requires caller to have the minter role or the SPG NFT to allow public minting. Caller must own the license tokens and have approved DerivativeWorkflows to transfer them.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -1233,7 +1233,7 @@ export class IPAssetClient {
    * Register the given NFT as a derivative IP using license tokens.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -1319,7 +1319,7 @@ export class IPAssetClient {
    * license terms attached to the IP must be a commercial license.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -1424,7 +1424,7 @@ export class IPAssetClient {
    * a commercial license.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -1530,7 +1530,7 @@ export class IPAssetClient {
    * Mint an NFT and register the IP, attach PIL terms, and distribute royalty tokens.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
@@ -1620,7 +1620,7 @@ export class IPAssetClient {
    * Mint an NFT and register the IP, make a derivative, and distribute royalty tokens.
    *
    * @deprecated This method is deprecated. Please use the unified entry point {@link registerDerivativeIpAsset} instead.
-   * This method will be made internal in v1.5.0.
+   * This method will become internal soon.
    *
    * @example Migration Example
    * ```typescript
