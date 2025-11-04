@@ -20,7 +20,6 @@ import {
   createMockWalletClient,
   createMockWithAddress,
   generateRandomAddress,
-  generateRandomHash,
 } from "../testUtils";
 
 use(chaiAsPromised);
@@ -46,8 +45,7 @@ describe("Erc20 Token Fee Utilities", () => {
   });
 
   const getDefaultParams = (overrides: Partial<ContractCallWithFees>): ContractCallWithFees => {
-    const hash = generateRandomHash();
-    contractCallMock = stub().resolves(hash);
+    contractCallMock = stub().resolves(txHash);
     return {
       rpcClient: rpcMock,
       wallet: walletMock,
@@ -414,7 +412,17 @@ describe("Erc20 Token Fee Utilities", () => {
       allowanceMock = stub(ERC20Client.prototype, "allowance").resolves(0n);
       stub(ERC20Client.prototype, "balanceOf").resolves(100n);
     });
-
+    it("should skip approvals if no fees", async () => {
+      const params = getDefaultParams({
+        totalFees: 0n,
+        token: erc20Address[aeneid],
+      });
+      const txResponse = await contractCallWithFees(params);
+      const { txHash: result } = txResponse;
+      expect(contractCallMock.callCount).equals(1);
+      expect(approveMock.callCount).equals(0);
+      expect(result).equals(txHash);
+    });
     it("should not call approval if disabled via enableAutoApprove and enough erc20 token", async () => {
       const params = getDefaultParams({
         totalFees: 100n,
@@ -427,7 +435,7 @@ describe("Erc20 Token Fee Utilities", () => {
       const { txHash: result } = txResponse;
       expect(contractCallMock.callCount).equals(1);
       expect(approveMock.callCount).equals(0);
-      expect(result).to.be.a("string");
+      expect(result).equals(txHash);
     });
 
     it("should skip approvals if all spenders have sufficient allowance and enough erc20 token", async () => {
@@ -460,7 +468,7 @@ describe("Erc20 Token Fee Utilities", () => {
       ]);
       expect(contractCallMock.callCount).equals(1);
       expect(approveMock.callCount).equals(0);
-      expect(result).to.be.a("string");
+      expect(result).equals(txHash);
     });
 
     it("should call separate approvals for each spender address if not enough allowance and enough erc20 token", async () => {
@@ -489,7 +497,7 @@ describe("Erc20 Token Fee Utilities", () => {
       expect(approveMock.callCount).equals(2);
       expect(approveMock.firstCall.args).to.deep.eq([royaltyModuleAddress[aeneid], maxUint256]);
       expect(rpcWaitForTxMock.callCount).equals(3); // 2 approval + 1 contract call
-      expect(result).to.be.a("string");
+      expect(result).equals(txHash);
     });
 
     it("should throw not enough erc20 token when call contractCallWithFees given erc20 token is not enough", async () => {
