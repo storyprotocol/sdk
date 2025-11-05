@@ -14,6 +14,7 @@ import {
   RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest,
   SpgnftImplReadOnlyClient,
 } from "../../abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../../constants/common";
 import {
   TransformedIpRegistrationWorkflowRequest,
   TransformIpRegistrationWorkflowRequest,
@@ -239,7 +240,14 @@ const transferRegisterDerivativeIpRequest = async <
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
-    spenders: [{ address: derivativeWorkflowsClient.address, amount: totalFees }],
+    spenders: [
+      {
+        address: derivativeWorkflowsClient.address,
+        amount: totalFees,
+        //TODO: Need to confirm the token address
+        token: WIP_TOKEN_ADDRESS,
+      },
+    ],
     totalFees,
     contractCall: (): Promise<Hash> => {
       return derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
@@ -423,7 +431,14 @@ const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
-    spenders: [{ address: royaltyTokenDistributionWorkflowsClient.address, amount: totalFees }],
+    spenders: [
+      {
+        address: royaltyTokenDistributionWorkflowsClient.address,
+        amount: totalFees,
+        //TODO: Need to confirm the token address
+        token: WIP_TOKEN_ADDRESS,
+      },
+    ],
     totalFees,
     contractCall: (): Promise<Hash> => {
       return royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
@@ -591,7 +606,14 @@ const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensReque
         transformRequest,
       );
     },
-    spenders: [{ address: transformRequest.spgNftContract, amount: nftMintFee }],
+    spenders: [
+      {
+        address: transformRequest.spgNftContract,
+        amount: nftMintFee,
+        //TODO: Need to confirm the token address
+        token: WIP_TOKEN_ADDRESS,
+      },
+    ],
     totalFees: nftMintFee,
     encodedTxData: {
       to: royaltyTokenDistributionWorkflowsClient.address,
@@ -632,7 +654,14 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: request as T,
     isUseMulticall3: isPublicMinting,
-    spenders: [{ address: request.spgNftContract, amount: nftMintFee }],
+    spenders: [
+      {
+        address: request.spgNftContract,
+        amount: nftMintFee,
+        //TODO: Need to confirm the token address
+        token: WIP_TOKEN_ADDRESS,
+      },
+    ],
     totalFees: nftMintFee,
     encodedTxData: {
       to: licenseAttachmentWorkflowsClient.address,
@@ -689,8 +718,15 @@ const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensReques
       {
         address: royaltyTokenDistributionWorkflowsClient.address,
         amount: totalDerivativeMintingFee,
+        //TODO: Need to confirm the token address
+        token: WIP_TOKEN_ADDRESS,
       },
-      { address: request.spgNftContract, amount: nftMintFee },
+      {
+        address: request.spgNftContract,
+        amount: nftMintFee,
+        //TODO: Need to confirm the token address
+        token: WIP_TOKEN_ADDRESS,
+      },
     ],
     totalFees: totalDerivativeMintingFee + nftMintFee,
     encodedTxData: {
@@ -737,8 +773,15 @@ const transferMintAndRegisterIpAndMakeDerivativeRequest = <
       {
         address: derivativeWorkflowsClient.address,
         amount: totalDerivativeMintingFee,
+        //TODO: Need to confirm the token address
+        token: WIP_TOKEN_ADDRESS,
       },
-      { address: request.spgNftContract, amount: nftMintFee },
+      {
+        address: request.spgNftContract,
+        amount: nftMintFee,
+        //TODO: Need to confirm the token address
+        token: WIP_TOKEN_ADDRESS,
+      },
     ],
     totalFees: totalDerivativeMintingFee + nftMintFee,
     encodedTxData: {

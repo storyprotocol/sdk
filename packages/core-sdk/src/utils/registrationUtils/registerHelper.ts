@@ -46,6 +46,7 @@ const aggregateTransformIpRegistrationWorkflow = (
     if (!aggregateRegistrationRequest[targetAddress]) {
       aggregateRegistrationRequest[targetAddress] = {
         spenders: [],
+        //TODO: Need to consider the total fees
         totalFees: 0n,
         encodedTxData: [],
         contractCall: [],
@@ -89,7 +90,7 @@ export const handleMulticall = async ({
   );
   const txResponses: TransactionResponse[] = [];
   for (const key in aggregateRegistrationRequest) {
-    const { spenders, totalFees, encodedTxData, contractCall } = aggregateRegistrationRequest[key];
+    const { spenders, encodedTxData, contractCall } = aggregateRegistrationRequest[key];
     const contractCalls = async (): Promise<Hash[]> => {
       const txHashes: Hex[] = [];
       for (const call of contractCall) {
@@ -100,7 +101,6 @@ export const handleMulticall = async ({
     };
     const useMulticallWhenPossible = key === multicall3Address ? true : false;
     const txResponse = await contractCallWithFees({
-      totalFees,
       options: {
         wipOptions: {
           ...wipOptions,

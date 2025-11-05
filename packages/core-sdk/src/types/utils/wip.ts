@@ -11,17 +11,21 @@ import { ERC20Options, TransactionResponse, TxOptions, WipOptions } from "../opt
 
 export type Multicall3ValueCall = Multicall3Aggregate3Request["calls"][0] & { value: bigint };
 
-export type Erc20Spender = {
+export type TokenSpender = {
   address: Address;
   /**
-   * Amount that the address will spend in erc20 token.
+   * Amount that the address will spend in token.
    * If not provided, then unlimited amount is assumed.
    */
   amount?: bigint;
+  /**
+   * The token address that the address will spend.
+   */
+  token: Address;
 };
 
 export type ApprovalCall = {
-  spenders: Erc20Spender[];
+  spenders: TokenSpender[];
   client: TokenClient;
   rpcClient: PublicClient;
   /** owner is the address calling the approval */
@@ -32,7 +36,7 @@ export type ApprovalCall = {
 };
 
 export type TokenApprovalCall = {
-  spenders: Erc20Spender[];
+  spenders: TokenSpender[];
   client: Erc20Client;
   multicallAddress: Address;
   rpcClient: PublicClient;
@@ -43,10 +47,9 @@ export type TokenApprovalCall = {
 };
 
 export type ContractCallWithFees<T extends Hash | Hash[] = Hash> = {
-  totalFees: bigint;
   multicall3Address: Address;
-  /** all possible spenders of the erc20 token */
-  tokenSpenders: Erc20Spender[];
+  /** all possible spenders of the tokens */
+  tokenSpenders: TokenSpender[];
   contractCall: () => Promise<T>;
   encodedTxs: EncodedTxData[];
   rpcClient: PublicClient;
@@ -56,7 +59,6 @@ export type ContractCallWithFees<T extends Hash | Hash[] = Hash> = {
     wipOptions?: WipOptions;
     erc20Options?: ERC20Options;
   };
-  token?: Address;
   txOptions?: TxOptions;
 };
 
@@ -64,7 +66,7 @@ export type MulticallWithWrapIp = {
   calls: Multicall3ValueCall[];
   ipAmountToWrap: bigint;
   contractCall: () => Promise<Hash | Hash[]>;
-  wipSpenders: Erc20Spender[];
+  wipSpenders: TokenSpender[];
   multicall3Address: Address;
   wipClient: WipTokenClient;
   rpcClient: PublicClient;

@@ -19,7 +19,7 @@ import {
 import { TokenIdInput } from "../common";
 import { ChainIds } from "../config";
 import { TransactionResponse, WipOptions } from "../options";
-import { Erc20Spender } from "./wip";
+import { TokenSpender } from "./wip";
 import {
   DerivativeData,
   DerivativeDataInput,
@@ -105,7 +105,7 @@ export type RoyaltyDistributionRequest = {
 export type AggregateRegistrationRequest = Record<
   string,
   {
-    spenders: Erc20Spender[];
+    spenders: TokenSpender[];
     totalFees: bigint;
     encodedTxData: EncodedTxData[];
     contractCall: Array<() => Promise<Hash>>;

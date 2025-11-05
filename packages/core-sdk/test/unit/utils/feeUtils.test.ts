@@ -14,7 +14,7 @@ import { ContractCallWithFees } from "../../../src/types/utils/wip";
 import { contractCallWithFees } from "../../../src/utils/feeUtils";
 import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
 import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
-import { aeneid, txHash } from "../mockData";
+import { aeneid, mockAddress, txHash } from "../mockData";
 import {
   createMockPublicClient,
   createMockWalletClient,
@@ -24,7 +24,7 @@ import {
 
 use(chaiAsPromised);
 
-describe("Erc20 Token Fee Utilities", () => {
+describe.only("Token Fee Utilities", () => {
   let rpcMock: PublicClient;
   let walletMock: WalletClient;
   let contractCallMock: SinonStub;
@@ -50,7 +50,6 @@ describe("Erc20 Token Fee Utilities", () => {
       rpcClient: rpcMock,
       wallet: walletMock,
       multicall3Address: multicall3Address[aeneid],
-      totalFees: 0n,
       tokenSpenders: [],
       contractCall: contractCallMock,
       encodedTxs: [
@@ -68,7 +67,9 @@ describe("Erc20 Token Fee Utilities", () => {
   };
   describe("No Fees", () => {
     it("should call contract directly if no fees", async () => {
-      const params = getDefaultParams({ totalFees: 0n });
+      const params = getDefaultParams({
+        tokenSpenders: [{ address: mockAddress, amount: 0n, token: WIP_TOKEN_ADDRESS }],
+      });
       const txResponse = await contractCallWithFees(params);
       const { txHash: result } = txResponse;
       expect(contractCallMock.callCount).equals(1);
@@ -77,7 +78,10 @@ describe("Erc20 Token Fee Utilities", () => {
 
     it("should support wait for tx", async () => {
       const params = getDefaultParams({
-        totalFees: 0n,
+        tokenSpenders: [
+          { address: mockAddress, amount: 0n, token: WIP_TOKEN_ADDRESS },
+          { address: mockAddress, amount: 0n, token: WIP_TOKEN_ADDRESS },
+        ],
       });
       const txResponse = await contractCallWithFees(params);
       const { txHash: result } = txResponse;
@@ -100,7 +104,7 @@ describe("Erc20 Token Fee Utilities", () => {
       });
       it("should not call approval if disabled via enableAutoApprove", async () => {
         const params = getDefaultParams({
-          totalFees: 100n,
+          tokenSpenders: [{ address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS }],
           options: { erc20Options: { enableAutoApprove: false } },
         });
         const txResponse = await contractCallWithFees(params);
@@ -112,15 +116,16 @@ describe("Erc20 Token Fee Utilities", () => {
 
       it("should skip approvals if all spenders have enough allowance", async () => {
         const params = getDefaultParams({
-          totalFees: 100n,
           tokenSpenders: [
             {
               address: royaltyModuleAddress[aeneid],
               amount: 50n,
+              token: WIP_TOKEN_ADDRESS,
             },
             {
               address: derivativeWorkflowsAddress[aeneid],
               amount: 50n,
+              token: WIP_TOKEN_ADDRESS,
             },
           ],
         });
@@ -144,15 +149,16 @@ describe("Erc20 Token Fee Utilities", () => {
 
       it("should call separate approvals for each spender address if not enough allowance", async () => {
         const params = getDefaultParams({
-          totalFees: 100n,
           tokenSpenders: [
             {
               address: royaltyModuleAddress[aeneid],
               amount: 10n,
+              token: WIP_TOKEN_ADDRESS,
             },
             {
               address: derivativeWorkflowsAddress[aeneid],
               amount: 90n,
+              token: WIP_TOKEN_ADDRESS,
             },
           ],
         });
@@ -181,15 +187,16 @@ describe("Erc20 Token Fee Utilities", () => {
         rpcMock.simulateContract = simulateContractMock;
 
         params = getDefaultParams({
-          totalFees: 100n,
           tokenSpenders: [
             {
               address: royaltyModuleAddress[aeneid],
               amount: 20n,
+              token: WIP_TOKEN_ADDRESS,
             },
             {
               address: derivativeWorkflowsAddress[aeneid],
               amount: 80n,
+              token: WIP_TOKEN_ADDRESS,
             },
           ],
         });
@@ -265,10 +272,12 @@ describe("Erc20 Token Fee Utilities", () => {
               {
                 address: royaltyModuleAddress[aeneid],
                 amount: 20n,
+                token: WIP_TOKEN_ADDRESS,
               },
               {
                 address: derivativeWorkflowsAddress[aeneid],
                 amount: 10n,
+                token: WIP_TOKEN_ADDRESS,
               },
             ],
             options: {
@@ -365,10 +374,12 @@ describe("Erc20 Token Fee Utilities", () => {
               {
                 address: royaltyModuleAddress[aeneid],
                 amount: 20n,
+                token: WIP_TOKEN_ADDRESS,
               },
               {
                 address: derivativeWorkflowsAddress[aeneid],
                 amount: 10n,
+                token: WIP_TOKEN_ADDRESS,
               },
             ],
           });
@@ -387,15 +398,17 @@ describe("Erc20 Token Fee Utilities", () => {
     });
 
     describe("Not enough IP or WIP", () => {
-      const totalFees = parseEther("1");
-
       beforeEach(() => {
         walletBalanceMock.resolves(parseEther("0.1"));
         stub(WipTokenClient.prototype, "balanceOf").resolves(0n);
       });
 
       it("should throw error indicating not enough wip funds to complete given token is wip", async () => {
-        const params = getDefaultParams({ totalFees });
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: parseEther("1"), token: WIP_TOKEN_ADDRESS },
+          ],
+        });
         await expect(contractCallWithFees(params)).to.be.rejectedWith(
           "Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: 1IP, balance: 0.1IP",
         );
@@ -414,8 +427,10 @@ describe("Erc20 Token Fee Utilities", () => {
     });
     it("should skip approvals if no fees", async () => {
       const params = getDefaultParams({
-        totalFees: 0n,
-        token: erc20Address[aeneid],
+        tokenSpenders: [
+          { address: mockAddress, amount: 0n, token: erc20Address[aeneid] },
+          { address: mockAddress, amount: 0n, token: erc20Address[aeneid] },
+        ],
       });
       const txResponse = await contractCallWithFees(params);
       const { txHash: result } = txResponse;
@@ -425,8 +440,7 @@ describe("Erc20 Token Fee Utilities", () => {
     });
     it("should not call approval if disabled via enableAutoApprove and enough erc20 token", async () => {
       const params = getDefaultParams({
-        totalFees: 100n,
-        token: erc20Address[aeneid],
+        tokenSpenders: [{ address: mockAddress, amount: 100n, token: erc20Address[aeneid] }],
         options: {
           erc20Options: { enableAutoApprove: false },
         },
@@ -440,16 +454,16 @@ describe("Erc20 Token Fee Utilities", () => {
 
     it("should skip approvals if all spenders have sufficient allowance and enough erc20 token", async () => {
       const params = getDefaultParams({
-        totalFees: 100n,
-        token: erc20Address[aeneid],
         tokenSpenders: [
           {
             address: royaltyModuleAddress[aeneid],
             amount: 50n,
+            token: erc20Address[aeneid],
           },
           {
             address: derivativeWorkflowsAddress[aeneid],
             amount: 50n,
+            token: erc20Address[aeneid],
           },
         ],
       });
@@ -473,20 +487,21 @@ describe("Erc20 Token Fee Utilities", () => {
 
     it("should call separate approvals for each spender address if not enough allowance and enough erc20 token", async () => {
       const params = getDefaultParams({
-        totalFees: 100n,
-        token: erc20Address[aeneid],
         tokenSpenders: [
           {
             address: royaltyModuleAddress[aeneid],
             amount: 20n,
+            token: erc20Address[aeneid],
           },
           {
             address: royaltyModuleAddress[aeneid],
             amount: 22n,
+            token: erc20Address[aeneid],
           },
           {
             address: multicall3Address[aeneid],
             amount: 22n,
+            token: erc20Address[aeneid],
           },
         ],
       });
@@ -502,8 +517,9 @@ describe("Erc20 Token Fee Utilities", () => {
 
     it("should throw not enough erc20 token when call contractCallWithFees given erc20 token is not enough", async () => {
       const params = getDefaultParams({
-        totalFees: 101n,
-        token: erc20Address[aeneid],
+        tokenSpenders: [
+          { address: erc20Address[aeneid], amount: 101n, token: erc20Address[aeneid] },
+        ],
       });
       await expect(contractCallWithFees(params)).to.be.rejectedWith(
         "Wallet does not have enough erc20 token to pay for fees. Total fees:  0.000000000000000101IP, balance: 0.0000000000000001IP.",

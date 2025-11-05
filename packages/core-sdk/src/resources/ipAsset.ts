@@ -46,6 +46,7 @@ import {
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { LicenseTermsIdInput, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
@@ -104,7 +105,7 @@ import {
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
 import { LicenseTerms } from "../types/resources/license";
 import { AggregateRegistrationRequest, SignatureMethodType } from "../types/utils/registerHelper";
-import { Erc20Spender } from "../types/utils/wip";
+import { TokenSpender } from "../types/utils/wip";
 import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
@@ -1038,11 +1039,9 @@ export class IPAssetClient {
   ): Promise<BatchMintAndRegisterIpResponse> {
     try {
       const publicMintEncodedTxs: EncodedTxData[] = [];
-      let publicMintSpenders: Erc20Spender[] = [];
+      let publicMintSpenders: TokenSpender[] = [];
       const privateMintEncodedTxs: EncodedTxData[] = [];
-      let privateMintSpenders: Erc20Spender[] = [];
-      let publicMintFeesTotal = 0n;
-      let privateMintFeesTotal = 0n;
+      let privateMintSpenders: TokenSpender[] = [];
       for (const req of request.requests) {
         const registrationRequest: RegistrationWorkflowsMintAndRegisterIpRequest = {
           spgNftContract: validateAddress(req.spgNftContract),
@@ -1068,11 +1067,12 @@ export class IPAssetClient {
           }),
         };
         if (isPublicMinting) {
-          publicMintFeesTotal += nftMintFee;
           publicMintSpenders = mergeSpenders(publicMintSpenders, [
             {
               address: registrationRequest.spgNftContract,
               amount: nftMintFee,
+              //TODO: Need to confirm the token address
+              token: WIP_TOKEN_ADDRESS,
             },
           ]);
           publicMintEncodedTxs.push(encodeTx);
@@ -1087,11 +1087,12 @@ export class IPAssetClient {
               `Caller ${this.walletAddress} does not have the minter role for ${registrationRequest.spgNftContract}`,
             );
           }
-          privateMintFeesTotal += nftMintFee;
           privateMintSpenders = mergeSpenders(privateMintSpenders, [
             {
               address: registrationRequest.spgNftContract,
               amount: nftMintFee,
+              //TODO: Need to confirm the token address
+              token: WIP_TOKEN_ADDRESS,
             },
           ]);
           privateMintEncodedTxs.push(encodeTx);
@@ -1100,7 +1101,6 @@ export class IPAssetClient {
 
       const handlePublicMintTransactions = async (): Promise<TransactionResponse> => {
         return await contractCallWithFees({
-          totalFees: publicMintFeesTotal,
           options: { wipOptions: request.wipOptions },
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
@@ -1118,7 +1118,6 @@ export class IPAssetClient {
 
       const handlePrivateMintTransactions = async (): Promise<TransactionResponse> => {
         return await contractCallWithFees({
-          totalFees: privateMintFeesTotal,
           options: { wipOptions: { ...request.wipOptions, useMulticallWhenPossible: false } },
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
@@ -2308,7 +2307,7 @@ export class IPAssetClient {
     contractCall,
   }: CommonRegistrationParams): Promise<CommonRegistrationTxResponse> {
     let totalFees = 0n;
-    const wipSpenders: Erc20Spender[] = [];
+    const wipSpenders: TokenSpender[] = [];
     let useMulticallWhenPossible = wipOptions?.useMulticallWhenPossible ?? true;
 
     // get spg minting fee
@@ -2332,6 +2331,8 @@ export class IPAssetClient {
       wipSpenders.push({
         address: spgNftContract,
         amount: nftMintFee,
+        //TODO: Need to confirm the token address
+        token: WIP_TOKEN_ADDRESS,
       });
     }
 
@@ -2349,6 +2350,8 @@ export class IPAssetClient {
         wipSpenders.push({
           address: spgSpenderAddress,
           amount: totalDerivativeMintingFee,
+          //TODO: Need to confirm the token address
+          token: WIP_TOKEN_ADDRESS,
         });
       }
     }
@@ -2360,7 +2363,6 @@ export class IPAssetClient {
     }
 
     const { txHash, receipt } = await contractCallWithFees({
-      totalFees,
       options: { wipOptions: { ...wipOptions, useMulticallWhenPossible } },
       multicall3Address: this.multicall3Client.address,
       rpcClient: this.rpcClient,

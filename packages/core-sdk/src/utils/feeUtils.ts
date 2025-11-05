@@ -5,14 +5,15 @@ import { ERC20Client, WipTokenClient } from "./token";
 import { waitForTxReceipt, waitForTxReceipts } from "./txOptions";
 import { getTokenAmountDisplay } from "./utils";
 import { multicall3Abi, wrappedIpAbi } from "../abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { TxOptions } from "../types/options";
 import {
   ApprovalCall,
   ContractCallWithFees,
   ContractCallWithFeesResponse,
-  Erc20Spender,
   Multicall3ValueCall,
   MulticallWithWrapIp,
+  TokenSpender,
 } from "../types/utils/wip";
 
 /**
@@ -149,7 +150,7 @@ const multiCallWrapIp = async ({
 /**
  * Calculate the total amount needed from spenders.
  */
-const calculateTotalAmount = (spenders: Erc20Spender[]): bigint =>
+const calculateTotalAmount = (spenders: TokenSpender[]): bigint =>
   spenders.reduce((acc, spender) => acc + (spender.amount || 0n), 0n);
 
 /**
@@ -171,7 +172,7 @@ const handleErc20Payment = async <T extends Hash | Hash[] = Hash>({
 
   if (balance < totalFees) {
     throw new Error(
-      `Wallet does not have enough erc20 token to pay for fees. Total fees: ${getTokenAmountDisplay(
+      `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
         totalFees,
       )}, balance: ${getTokenAmountDisplay(balance)}.`,
     );
@@ -181,7 +182,7 @@ const handleErc20Payment = async <T extends Hash | Hash[] = Hash>({
   if (autoApprove) {
     // ERC20 token is not supported multicall, because approve method is called by the multicall contract,
     // the owner is the multicall contract, not the sender. When transfer from the sender to the multicall contract,
-    // the owner is the sender, not the multicall contract. So we need to call approval sequentially in this case.
+    // the owner is the sender, not the multicall contract. We cannot use multicall in this case.
     await approvalAllSpenders({
       spenders: tokenSpenders,
       client: tokenClient,
@@ -329,8 +330,17 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
   }
 
-  const wipSpenders = tokenSpenders.filter((spender) => spender.isWip === true);
-  const erc20Spenders = tokenSpenders.filter((spender) => spender.isWip === undefined);
+  const wipTokenAddress = WIP_TOKEN_ADDRESS.toLowerCase();
+  const wipSpenders: TokenSpender[] = [];
+  const erc20Spenders: TokenSpender[] = [];
+
+  for (const spender of tokenSpenders) {
+    if (spender.token.toLowerCase() === wipTokenAddress) {
+      wipSpenders.push(spender);
+    } else {
+      erc20Spenders.push(spender);
+    }
+  }
 
   if (erc20Spenders.length > 0) {
     return handleErc20Payment({

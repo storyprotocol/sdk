@@ -22,7 +22,7 @@ import {
   GetIpIdAddressConfig,
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
-import { Erc20Spender } from "../../types/utils/wip";
+import { TokenSpender } from "../../types/utils/wip";
 import { PILFlavor } from "../pilFlavor";
 import { getRevenueShare } from "../royalty";
 import { getDeadline } from "../sign";
@@ -225,9 +225,9 @@ export const getCalculatedDeadline = async (
 };
 
 export const mergeSpenders = (
-  previousSpenders: Erc20Spender[],
-  newSpenders: Erc20Spender[],
-): Erc20Spender[] => {
+  previousSpenders: TokenSpender[],
+  newSpenders: TokenSpender[],
+): TokenSpender[] => {
   if (!newSpenders || newSpenders.length === 0) {
     return previousSpenders;
   }

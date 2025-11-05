@@ -27,7 +27,7 @@ import {
 } from "../common";
 import { TxOptions, WipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsDataInput } from "./license";
-import { Erc20Spender } from "../utils/wip";
+import { TokenSpender } from "../utils/wip";
 
 export type MaxRtsInput = number;
 export type DerivativeDataInput = {
@@ -456,7 +456,7 @@ export type TransformedIpRegistrationWorkflowRequest<
     | DerivativeWorkflowsClient
     | LicenseAttachmentWorkflowsClient
     | RoyaltyTokenDistributionWorkflowsClient;
-  spenders?: Erc20Spender[];
+  spenders?: TokenSpender[];
   totalFees?: bigint;
   extraData?: ExtraData;
 };
