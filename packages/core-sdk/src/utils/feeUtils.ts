@@ -168,30 +168,17 @@ const calculateTotalAmount = (spenders: TokenSpender[]): bigint =>
 /**
  * Handle ERC20 token payment with approval and balance check.
  */
-const handleErc20Payment = async <T extends Hash | Hash[] = Hash>(
-  {
-    tokenSpenders,
-    sender,
-    options,
-    multicall3Address,
-    rpcClient,
-    wallet,
-    contractCall,
-    txOptions,
-  }: ContractCallWithFees<T>,
-  isFinalStep: boolean = true,
-): Promise<ContractCallWithFeesResponse<T> | undefined> => {
-  const tokenClient = new ERC20Client(rpcClient, wallet, tokenSpenders[0].address);
-  const balance = await tokenClient.balanceOf(sender);
-  const totalFees = calculateTotalAmount(tokenSpenders);
-  if (balance < totalFees) {
-    throw new Error(
-      `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
-        totalFees,
-      )}, balance: ${getTokenAmountDisplay(balance)}.`,
-    );
-  }
-
+const handleErc20Payment = async <T extends Hash | Hash[] = Hash>({
+  tokenSpenders,
+  sender,
+  options,
+  multicall3Address,
+  rpcClient,
+  wallet,
+  contractCall,
+  txOptions,
+}: ContractCallWithFees<T>): Promise<ContractCallWithFeesResponse<T>> => {
+  const tokenClient = new ERC20Client(rpcClient, wallet, tokenSpenders[0].token);
   const autoApprove = options?.erc20Options?.enableAutoApprove !== false;
   if (autoApprove) {
     // ERC20 token is not supported multicall, because approve method is called by the multicall contract,
@@ -206,10 +193,7 @@ const handleErc20Payment = async <T extends Hash | Hash[] = Hash>(
       useMultiCall: false,
     });
   }
-
-  if (isFinalStep) {
-    return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
-  }
+  return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
 };
 
 /**
@@ -346,17 +330,7 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
   }
 
-  const wipTokenAddress = WIP_TOKEN_ADDRESS.toLowerCase();
-  const wipSpenders: TokenSpender[] = [];
-  const erc20Spenders: TokenSpender[] = [];
-
-  for (const spender of tokenSpenders) {
-    if (spender.token.toLowerCase() === wipTokenAddress) {
-      mergeSpenderByAddress(wipSpenders, spender);
-    } else {
-      mergeSpenderByAddress(erc20Spenders, spender);
-    }
-  }
+  const { wipSpenders, erc20Spenders } = groupTokenSpenders(tokenSpenders);
   const baseContractCallArgs = {
     sender,
     options,
@@ -367,14 +341,46 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     txOptions,
     wallet,
   };
+  const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
+  const erc20Balance = await erc20Client.balanceOf(sender);
+  const erc20TotalFees = calculateTotalAmount(erc20Spenders);
+  //If the wallet does not have enough erc20 token to pay for fees, throw an error.
+  if (erc20Balance < erc20TotalFees) {
+    throw new Error(
+      `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
+        erc20TotalFees,
+      )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
+    );
+  }
+
   if (wipSpenders.length > 0 && erc20Spenders.length > 0) {
-    await handleErc20Payment({ ...baseContractCallArgs, tokenSpenders: erc20Spenders }, false);
-    return handleWipPayment({ ...baseContractCallArgs, tokenSpenders: wipSpenders });
+    const autoApprove = options?.erc20Options?.enableAutoApprove !== false;
+    if (autoApprove) {
+      await approvalAllSpenders({
+        spenders: erc20Spenders,
+        client: erc20Client,
+        owner: sender,
+        multicallAddress: multicall3Address,
+        rpcClient,
+        useMultiCall: false,
+      });
+    }
+    return handleWipPayment({
+      ...baseContractCallArgs,
+      tokenSpenders: wipSpenders,
+      options: {
+        wipOptions: {
+          ...options?.wipOptions,
+          // Need to pay erc20 fees with the wallet, cannot use multicall when handling erc20 payment.
+          useMulticallWhenPossible: false,
+        },
+      },
+    });
   } else if (erc20Spenders.length > 0) {
     return handleErc20Payment({
       ...baseContractCallArgs,
       tokenSpenders: erc20Spenders,
-    }) as unknown as Promise<ContractCallWithFeesResponse<T>>;
+    });
   } else {
     return handleWipPayment({ ...baseContractCallArgs, tokenSpenders: wipSpenders });
   }
@@ -398,4 +404,23 @@ export const handleTransactionResponse = async <T extends Hash | Hash[] = Hash>(
     txOptions,
     txHash,
   }) as unknown as Promise<ContractCallWithFeesResponse<T>>;
+};
+
+/**
+ * Group token spenders into wip and erc20 spenders.
+ */
+const groupTokenSpenders = (
+  tokenSpenders: TokenSpender[],
+): { wipSpenders: TokenSpender[]; erc20Spenders: TokenSpender[] } => {
+  const wipSpenders: TokenSpender[] = [];
+  const erc20Spenders: TokenSpender[] = [];
+
+  for (const spender of tokenSpenders) {
+    if (spender.token.toLowerCase() === WIP_TOKEN_ADDRESS.toLowerCase()) {
+      mergeSpenderByAddress(wipSpenders, spender);
+    } else {
+      mergeSpenderByAddress(erc20Spenders, spender);
+    }
+  }
+  return { wipSpenders, erc20Spenders };
 };
