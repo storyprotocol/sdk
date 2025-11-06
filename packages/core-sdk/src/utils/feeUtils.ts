@@ -305,13 +305,15 @@ const handleIpWrapping = async <T extends Hash | Hash[] = Hash>({
  * Handle contract calls that require token fees.
  * - For fees in `WIP`, it automatically wraps `IP` to `WIP` when insufficient `WIP` balance.
  * - For fees in `ERC20` tokens, it automatically approves if sufficient balance is available.
- *
+ * - For fees in `WIP` and `ERC20` tokens, it will first check if the wallet has enough `ERC20` token to pay for fees, if not, it will throw an error.
+ * 
  * @remarks
  * This function will automatically handle the following logic:
  * - If token is `WIP` and the user does not have enough `WIP` balance, it will wrap `IP` to `WIP`, unless
  * disabled via `disableAutoWrappingIp`.
  * - If the user have enough token, it will check for if approvals are needed
  * for each spender address and approve it, unless disabled via `disableAutoApprove`.
+ * - If the fees are in `WIP` and `ERC20` tokens, it will not use disable `useMulticallWhenPossible` to pay for fees.
  */
 export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   options,
