@@ -7,12 +7,14 @@ import { WIP_TOKEN_ADDRESS } from "../../../src";
 import {
   derivativeWorkflowsAddress,
   erc20Address,
+  licensingModuleAddress,
   multicall3Address,
   royaltyModuleAddress,
 } from "../../../src/abi/generated";
 import { ContractCallWithFees } from "../../../src/types/utils/wip";
 import { contractCallWithFees } from "../../../src/utils/feeUtils";
 import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
+import { getTokenAmountDisplay } from "../../../src/utils/utils";
 import { TEST_WALLET_ADDRESS } from "../../integration/utils/util";
 import { aeneid, mockAddress, txHash } from "../mockData";
 import {
@@ -65,7 +67,13 @@ describe.only("Token Fee Utilities", () => {
       ...overrides,
     };
   };
-  describe("No Fees", () => {
+  describe("contractCallWithFees with wip", () => {
+    let approveMock: SinonStub;
+
+    beforeEach(() => {
+      approveMock = stub(WipTokenClient.prototype, "approve").resolves(txHash);
+    });
+
     it("should call contract directly if no fees", async () => {
       const params = getDefaultParams({
         tokenSpenders: [{ address: mockAddress, amount: 0n, token: WIP_TOKEN_ADDRESS }],
@@ -73,29 +81,8 @@ describe.only("Token Fee Utilities", () => {
       const txResponse = await contractCallWithFees(params);
       const { txHash: result } = txResponse;
       expect(contractCallMock.callCount).equals(1);
-      expect(result).to.be.a("string");
-    });
-
-    it("should support wait for tx", async () => {
-      const params = getDefaultParams({
-        tokenSpenders: [
-          { address: mockAddress, amount: 0n, token: WIP_TOKEN_ADDRESS },
-          { address: mockAddress, amount: 0n, token: WIP_TOKEN_ADDRESS },
-        ],
-      });
-      const txResponse = await contractCallWithFees(params);
-      const { txHash: result } = txResponse;
-      expect(contractCallMock.callCount).equals(1);
       expect(rpcWaitForTxMock.callCount).equals(1);
-      expect(result).to.be.a("string");
-    });
-  });
-
-  describe("contractCallWithFees with wip", () => {
-    let approveMock: SinonStub;
-
-    beforeEach(() => {
-      approveMock = stub(WipTokenClient.prototype, "approve").resolves(txHash);
+      expect(result).equals(txHash);
     });
 
     describe("Enough WIP", () => {
@@ -436,6 +423,7 @@ describe.only("Token Fee Utilities", () => {
       const { txHash: result } = txResponse;
       expect(contractCallMock.callCount).equals(1);
       expect(approveMock.callCount).equals(0);
+      expect(rpcWaitForTxMock.callCount).equals(1);
       expect(result).equals(txHash);
     });
     it("should not call approval if disabled via enableAutoApprove and enough erc20 token", async () => {
@@ -494,12 +482,7 @@ describe.only("Token Fee Utilities", () => {
             token: erc20Address[aeneid],
           },
           {
-            address: royaltyModuleAddress[aeneid],
-            amount: 22n,
-            token: erc20Address[aeneid],
-          },
-          {
-            address: multicall3Address[aeneid],
+            address: mockAddress,
             amount: 22n,
             token: erc20Address[aeneid],
           },
@@ -524,6 +507,265 @@ describe.only("Token Fee Utilities", () => {
       await expect(contractCallWithFees(params)).to.be.rejectedWith(
         "Wallet does not have enough erc20 token to pay for fees. Total fees:  0.000000000000000101IP, balance: 0.0000000000000001IP.",
       );
+    });
+  });
+
+  describe("contractCallWithFees with wip and erc20 token", () => {
+    let approveMockForErc20: SinonStub;
+    let allowanceMockForErc20: SinonStub;
+    let balanceOfMockForErc20: SinonStub;
+    let approveMockForWip: SinonStub;
+    let allowanceMockForWip: SinonStub;
+    let balanceOfMockForWip: SinonStub;
+    beforeEach(() => {
+      approveMockForErc20 = stub(ERC20Client.prototype, "approve").resolves(txHash);
+      allowanceMockForErc20 = stub(ERC20Client.prototype, "allowance").resolves(0n);
+      balanceOfMockForErc20 = stub(ERC20Client.prototype, "balanceOf").resolves(100n);
+      approveMockForWip = stub(WipTokenClient.prototype, "approve").resolves(txHash);
+      allowanceMockForWip = stub(WipTokenClient.prototype, "allowance").resolves(0n);
+      balanceOfMockForWip = stub(WipTokenClient.prototype, "balanceOf").resolves(100n);
+    });
+    describe("enough balance", () => {
+      it("should call contract directly if no fees", async () => {
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 0n, token: WIP_TOKEN_ADDRESS },
+            { address: mockAddress, amount: 0n, token: erc20Address[aeneid] },
+          ],
+        });
+        const { txHash: result } = await contractCallWithFees(params);
+        expect(contractCallMock.callCount).equals(1);
+        expect(rpcWaitForTxMock.callCount).equals(1);
+        expect(approveMockForErc20.callCount).equals(0);
+        expect(approveMockForWip.callCount).equals(0);
+        expect(result).to.equal(txHash);
+      });
+      it("should call approve for erc20 token and wip token separately if not enough allowance and enough balance", async () => {
+        // Mock the insufficient allowance and enough balance for the erc20 and wip token
+        allowanceMockForErc20.resolves(15n);
+        allowanceMockForWip.resolves(15n);
+        balanceOfMockForErc20.resolves(100n);
+        balanceOfMockForWip.resolves(100n);
+
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
+            { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
+          ],
+        });
+        const { txHash: result } = await contractCallWithFees(params);
+
+        expect(allowanceMockForErc20.callCount).equals(1);
+        expect(allowanceMockForErc20.firstCall.args).to.deep.eq([TEST_WALLET_ADDRESS, mockAddress]);
+        expect(approveMockForErc20.callCount).equals(1);
+        expect(approveMockForErc20.firstCall.args).to.deep.eq([mockAddress, maxUint256]);
+
+        expect(allowanceMockForWip.callCount).equals(1);
+        expect(allowanceMockForWip.firstCall.args).to.deep.eq([TEST_WALLET_ADDRESS, mockAddress]);
+        expect(approveMockForWip.callCount).equals(1);
+        expect(approveMockForWip.firstCall.args).to.deep.eq([mockAddress, maxUint256]);
+
+        expect(contractCallMock.callCount).equals(1);
+        expect(rpcWaitForTxMock.callCount).equals(3); // 1 contract call + 2 approvals
+        expect(result).to.equal(txHash);
+      });
+
+      it("should only call approve for wip token if not enough allowance with wip and enough balance", async () => {
+        allowanceMockForErc20.resolves(100n);
+        allowanceMockForWip.resolves(0n);
+        balanceOfMockForErc20.resolves(100n);
+        balanceOfMockForWip.resolves(100n);
+
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
+            { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
+          ],
+        });
+        const { txHash: result } = await contractCallWithFees(params);
+
+        expect(allowanceMockForWip.callCount).equals(1);
+        expect(approveMockForWip.callCount).equals(1);
+
+        expect(allowanceMockForErc20.callCount).equals(1);
+        expect(approveMockForErc20.callCount).equals(0);
+        expect(rpcWaitForTxMock.callCount).equals(2); // 1 contract call + 1 wip approval
+        expect(result).to.equal(txHash);
+      });
+      it("should call approve for erc20 token if not enough allowance with erc20 and enough balance", async () => {
+        allowanceMockForErc20.resolves(0n);
+        allowanceMockForWip.resolves(100n);
+        balanceOfMockForErc20.resolves(100n);
+        balanceOfMockForWip.resolves(100n);
+
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
+            { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
+          ],
+        });
+        const { txHash: result } = await contractCallWithFees(params);
+
+        expect(allowanceMockForErc20.callCount).equals(1);
+        expect(approveMockForErc20.callCount).equals(1);
+
+        expect(allowanceMockForWip.callCount).equals(1);
+        expect(approveMockForWip.callCount).equals(0);
+        expect(rpcWaitForTxMock.callCount).equals(2); // 1 contract call + 1 erc20 approval
+        expect(result).to.equal(txHash);
+      });
+      it("should call multicall approves for both erc20 and wip token if enough balance", async () => {
+        allowanceMockForErc20.resolves(10n);
+        allowanceMockForWip.resolves(10n);
+        balanceOfMockForErc20.resolves(200n);
+        balanceOfMockForWip.resolves(200n);
+
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
+            { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
+            { address: erc20Address[aeneid], amount: 100n, token: WIP_TOKEN_ADDRESS },
+            { address: erc20Address[aeneid], amount: 100n, token: erc20Address[aeneid] },
+          ],
+        });
+        const { txHash: result } = await contractCallWithFees(params);
+
+        expect(allowanceMockForErc20.callCount).equals(2);
+        expect(approveMockForErc20.callCount).equals(2); //cannot use multicall for erc20 approval
+
+        expect(allowanceMockForWip.callCount).equals(2);
+        expect(approveMockForWip.callCount).equals(2); // cannot use multicall for wip approval
+
+        expect(rpcWaitForTxMock.callCount).equals(5); // 1 contract call + 2 erc20 approvals + 2 wip approvals
+        expect(result).to.equal(txHash);
+      });
+
+      it("should merge same token and address to approve given enough balance", async () => {
+        allowanceMockForErc20.resolves(10n);
+        allowanceMockForWip.resolves(10n);
+        balanceOfMockForErc20.resolves(300n);
+        balanceOfMockForWip.resolves(300n);
+
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
+            { address: royaltyModuleAddress[aeneid], amount: 100n, token: erc20Address[aeneid] },
+            { address: royaltyModuleAddress[aeneid], amount: 100n, token: erc20Address[aeneid] },
+            { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
+            { address: licensingModuleAddress[aeneid], amount: 100n, token: WIP_TOKEN_ADDRESS },
+            { address: licensingModuleAddress[aeneid], amount: 100n, token: WIP_TOKEN_ADDRESS },
+          ],
+        });
+        const { txHash: result } = await contractCallWithFees(params);
+        expect(allowanceMockForErc20.callCount).equals(2);
+        expect(approveMockForErc20.callCount).equals(2); //two royaltyModuleAddress approvals merge into one call + one mockAddress approval
+        expect(approveMockForErc20.firstCall.args).to.deep.eq([mockAddress, maxUint256]);
+        expect(approveMockForErc20.secondCall.args).to.deep.eq([
+          royaltyModuleAddress[aeneid],
+          maxUint256,
+        ]);
+
+        expect(allowanceMockForWip.callCount).equals(2);
+        expect(approveMockForWip.callCount).equals(2); // two licensingModuleAddress approvals merge into one call + one mockAddress approval
+        expect(approveMockForWip.firstCall.args).to.deep.eq([mockAddress, maxUint256]);
+        expect(approveMockForWip.secondCall.args).to.deep.eq([
+          licensingModuleAddress[aeneid],
+          maxUint256,
+        ]);
+        expect(rpcWaitForTxMock.callCount).equals(5); // 1 contract call + 2 erc20 approvals + 2 wip approvals
+        expect(result).to.equal(txHash);
+      });
+
+      it("should not approve given token is multicall address and enough balance", async () => {
+        allowanceMockForErc20.resolves(10n);
+        allowanceMockForWip.resolves(10n);
+        balanceOfMockForErc20.resolves(200n);
+        balanceOfMockForWip.resolves(200n);
+
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
+            { address: multicall3Address[aeneid], amount: 100n, token: erc20Address[aeneid] },
+            { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
+            { address: multicall3Address[aeneid], amount: 100n, token: WIP_TOKEN_ADDRESS },
+          ],
+        });
+        const { txHash: result } = await contractCallWithFees(params);
+        expect(allowanceMockForErc20.callCount).equals(1);
+        expect(approveMockForErc20.callCount).equals(1);
+
+        expect(allowanceMockForWip.callCount).equals(1);
+        expect(approveMockForWip.callCount).equals(1);
+
+        expect(rpcWaitForTxMock.callCount).equals(3); // 1 contract call + 2 approvals
+        expect(result).to.equal(txHash);
+      });
+
+      it("should skip approval if enough allowance and balance", async () => {
+        allowanceMockForErc20.resolves(100n);
+        allowanceMockForWip.resolves(100n);
+        balanceOfMockForErc20.resolves(200n);
+        balanceOfMockForWip.resolves(200n);
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
+            { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
+          ],
+        });
+        const { txHash: result } = await contractCallWithFees(params);
+        expect(allowanceMockForErc20.callCount).equals(1);
+        expect(approveMockForErc20.callCount).equals(0);
+
+        expect(allowanceMockForWip.callCount).equals(1);
+        expect(approveMockForWip.callCount).equals(0);
+        expect(contractCallMock.callCount).equals(1);
+        expect(rpcWaitForTxMock.callCount).equals(1); // 1 contract call
+        expect(result).to.equal(txHash);
+      });
+
+      it("should skip approval and allowance check if enough balance and disable auto approve", async () => {
+        allowanceMockForErc20.resolves(10n);
+        allowanceMockForWip.resolves(10n);
+        balanceOfMockForErc20.resolves(200n);
+        balanceOfMockForWip.resolves(200n);
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
+            { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
+          ],
+          options: {
+            erc20Options: { enableAutoApprove: false },
+            wipOptions: { enableAutoApprove: false },
+          },
+        });
+        const { txHash: result } = await contractCallWithFees(params);
+        expect(allowanceMockForErc20.callCount).equals(0);
+        expect(approveMockForErc20.callCount).equals(0);
+
+        expect(allowanceMockForWip.callCount).equals(0);
+        expect(approveMockForWip.callCount).equals(0);
+
+        expect(contractCallMock.callCount).equals(1);
+        expect(rpcWaitForTxMock.callCount).equals(1); // 1 contract call
+        expect(result).to.equal(txHash);
+      });
+    });
+    describe("not enough balance", () => {
+      it("should throw error if not enough balance for erc20 token", async () => {
+        balanceOfMockForErc20.resolves(0n);
+        balanceOfMockForWip.resolves(100n);
+        const params = getDefaultParams({
+          tokenSpenders: [
+            { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
+            { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
+          ],
+        });
+        await expect(contractCallWithFees(params)).to.be.rejectedWith(
+          `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
+            100n,
+          )}, balance: ${getTokenAmountDisplay(0n)}.`,
+        );
+      });
     });
   });
 });

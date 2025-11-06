@@ -17,6 +17,18 @@ import {
 } from "../types/utils/wip";
 
 /**
+ * Merges spenders with the same address by summing their amounts.
+ */
+const mergeSpenderByAddress = (spenders: TokenSpender[], newSpender: TokenSpender): void => {
+  const existingSpender = spenders.find((s) => s.address === newSpender.address);
+  if (existingSpender) {
+    existingSpender.amount = (newSpender.amount || 0n) + (existingSpender.amount || 0n);
+  } else {
+    spenders.push({ ...newSpender, amount: newSpender.amount || 0n });
+  }
+};
+
+/**
  * check the allowance of all spenders and call approval if any spender
  * allowance is lower than the amount they are expected to spend.
  * Supports using multicall to return all approve calls in a multicall array.
@@ -156,20 +168,22 @@ const calculateTotalAmount = (spenders: TokenSpender[]): bigint =>
 /**
  * Handle ERC20 token payment with approval and balance check.
  */
-const handleErc20Payment = async <T extends Hash | Hash[] = Hash>({
-  tokenSpenders,
-  sender,
-  options,
-  multicall3Address,
-  rpcClient,
-  wallet,
-  contractCall,
-  txOptions,
-}: ContractCallWithFees<T>): Promise<ContractCallWithFeesResponse<T>> => {
+const handleErc20Payment = async <T extends Hash | Hash[] = Hash>(
+  {
+    tokenSpenders,
+    sender,
+    options,
+    multicall3Address,
+    rpcClient,
+    wallet,
+    contractCall,
+    txOptions,
+  }: ContractCallWithFees<T>,
+  isFinalStep: boolean = true,
+): Promise<ContractCallWithFeesResponse<T> | undefined> => {
   const tokenClient = new ERC20Client(rpcClient, wallet, tokenSpenders[0].address);
   const balance = await tokenClient.balanceOf(sender);
   const totalFees = calculateTotalAmount(tokenSpenders);
-
   if (balance < totalFees) {
     throw new Error(
       `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
@@ -193,7 +207,9 @@ const handleErc20Payment = async <T extends Hash | Hash[] = Hash>({
     });
   }
 
-  return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
+  if (isFinalStep) {
+    return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
+  }
 };
 
 /**
@@ -336,36 +352,31 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
 
   for (const spender of tokenSpenders) {
     if (spender.token.toLowerCase() === wipTokenAddress) {
-      wipSpenders.push(spender);
+      mergeSpenderByAddress(wipSpenders, spender);
     } else {
-      erc20Spenders.push(spender);
+      mergeSpenderByAddress(erc20Spenders, spender);
     }
   }
-
-  if (erc20Spenders.length > 0) {
+  const baseContractCallArgs = {
+    sender,
+    options,
+    multicall3Address,
+    rpcClient,
+    contractCall,
+    encodedTxs,
+    txOptions,
+    wallet,
+  };
+  if (wipSpenders.length > 0 && erc20Spenders.length > 0) {
+    await handleErc20Payment({ ...baseContractCallArgs, tokenSpenders: erc20Spenders }, false);
+    return handleWipPayment({ ...baseContractCallArgs, tokenSpenders: wipSpenders });
+  } else if (erc20Spenders.length > 0) {
     return handleErc20Payment({
+      ...baseContractCallArgs,
       tokenSpenders: erc20Spenders,
-      sender,
-      options,
-      multicall3Address,
-      rpcClient,
-      wallet,
-      contractCall,
-      encodedTxs,
-      txOptions,
-    });
+    }) as unknown as Promise<ContractCallWithFeesResponse<T>>;
   } else {
-    return handleWipPayment<T>({
-      tokenSpenders: wipSpenders,
-      sender,
-      options,
-      multicall3Address,
-      rpcClient,
-      contractCall,
-      encodedTxs,
-      txOptions,
-      wallet,
-    });
+    return handleWipPayment({ ...baseContractCallArgs, tokenSpenders: wipSpenders });
   }
 };
 
