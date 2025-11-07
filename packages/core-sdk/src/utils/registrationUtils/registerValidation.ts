@@ -238,7 +238,9 @@ export const mergeSpenders = (
         return acc;
       }
 
-      const existingSpender = acc.find((s) => s.address === spender.address);
+      const existingSpender = acc.find(
+        (s) => s.address === spender.address && s.token === spender.token,
+      );
       if (!existingSpender) {
         acc.push({ ...spender, amount: spender.amount || 0n });
       } else {

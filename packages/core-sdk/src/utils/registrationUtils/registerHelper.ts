@@ -36,7 +36,7 @@ const aggregateTransformIpRegistrationWorkflow = (
 ): AggregateRegistrationRequest => {
   const aggregateRegistrationRequest: AggregateRegistrationRequest = {};
   for (const res of transferWorkflowRequests) {
-    const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3, extraData } = res;
+    const { spenders, encodedTxData, workflowClient, isUseMulticall3, extraData } = res;
     let shouldUseMulticall = isUseMulticall3;
     if (disableMulticallWhenPossible) {
       shouldUseMulticall = false;
@@ -46,8 +46,6 @@ const aggregateTransformIpRegistrationWorkflow = (
     if (!aggregateRegistrationRequest[targetAddress]) {
       aggregateRegistrationRequest[targetAddress] = {
         spenders: [],
-        //TODO: Need to consider the total fees
-        totalFees: 0n,
         encodedTxData: [],
         contractCall: [],
         extraData: [],
@@ -56,7 +54,6 @@ const aggregateTransformIpRegistrationWorkflow = (
 
     const currentRequest = aggregateRegistrationRequest[targetAddress];
     currentRequest.spenders = mergeSpenders(currentRequest.spenders, spenders || []);
-    currentRequest.totalFees += totalFees || 0n;
     currentRequest.encodedTxData = currentRequest.encodedTxData.concat(encodedTxData);
     currentRequest.extraData = currentRequest.extraData?.concat(extraData || undefined);
     if (isUseMulticall3 || disableMulticallWhenPossible) {

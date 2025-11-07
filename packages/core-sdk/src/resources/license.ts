@@ -49,7 +49,7 @@ import {
 } from "../types/resources/license";
 import { SignatureMethodType } from "../types/utils/registerHelper";
 import { TokenSpender } from "../types/utils/wip";
-import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
+import { calculateLicenseMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
@@ -233,7 +233,7 @@ export class LicenseClient {
       }
 
       // get license token minting fee
-      const licenseMintingFee = await calculateLicenseWipMintFee({
+      const licenseMintingFee = await calculateLicenseMintFee({
         predictMintingFeeRequest: req,
         rpcClient: this.rpcClient,
         chainId: this.chainId,
@@ -241,12 +241,10 @@ export class LicenseClient {
       });
 
       const wipSpenders: TokenSpender[] = [];
-      if (licenseMintingFee > 0n) {
+      if (licenseMintingFee.amount > 0n) {
         wipSpenders.push({
           address: royaltyModuleAddress[this.chainId],
-          amount: licenseMintingFee,
-          //TODO: Need to confirm the token address
-          token: WIP_TOKEN_ADDRESS,
+          ...licenseMintingFee,
         });
       }
       const { txHash, receipt } = await contractCallWithFees({

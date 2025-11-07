@@ -20,7 +20,9 @@ import {
  * Merges spenders with the same address by summing their amounts.
  */
 const mergeSpenderByAddress = (spenders: TokenSpender[], newSpender: TokenSpender): void => {
-  const existingSpender = spenders.find((s) => s.address === newSpender.address);
+  const existingSpender = spenders.find(
+    (s) => s.address === newSpender.address && s.token === newSpender.token,
+  );
   if (existingSpender) {
     existingSpender.amount = (newSpender.amount || 0n) + (existingSpender.amount || 0n);
   } else {
@@ -306,7 +308,7 @@ const handleIpWrapping = async <T extends Hash | Hash[] = Hash>({
  * - For fees in `WIP`, it automatically wraps `IP` to `WIP` when insufficient `WIP` balance.
  * - For fees in `ERC20` tokens, it automatically approves if sufficient balance is available.
  * - For fees in `WIP` and `ERC20` tokens, it will first check if the wallet has enough `ERC20` token to pay for fees, if not, it will throw an error.
- * 
+ *
  * @remarks
  * This function will automatically handle the following logic:
  * - If token is `WIP` and the user does not have enough `WIP` balance, it will wrap `IP` to `WIP`, unless
@@ -343,20 +345,23 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     txOptions,
     wallet,
   };
-  const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
-  const erc20Balance = await erc20Client.balanceOf(sender);
-  const erc20TotalFees = calculateTotalAmount(erc20Spenders);
-  //If the wallet does not have enough erc20 token to pay for fees, throw an error.
-  if (erc20Balance < erc20TotalFees) {
-    throw new Error(
-      `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
-        erc20TotalFees,
-      )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
-    );
+  if (erc20Spenders.length > 0) {
+    const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
+    const erc20Balance = await erc20Client.balanceOf(sender);
+    const erc20TotalFees = calculateTotalAmount(erc20Spenders);
+    //If the wallet does not have enough erc20 token to pay for fees, throw an error.
+    if (erc20Balance < erc20TotalFees) {
+      throw new Error(
+        `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
+          erc20TotalFees,
+        )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
+      );
+    }
   }
 
   if (wipSpenders.length > 0 && erc20Spenders.length > 0) {
     const autoApprove = options?.erc20Options?.enableAutoApprove !== false;
+    const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
     if (autoApprove) {
       await approvalAllSpenders({
         spenders: erc20Spenders,

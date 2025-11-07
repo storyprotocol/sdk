@@ -7,7 +7,6 @@ import {
   LicensingModulePredictMintingLicenseFeeResponse,
   SpgnftImplReadOnlyClient,
 } from "../abi/generated";
-import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { ChainIds } from "../types/config";
 import { CalculateDerivativeMintingFeeConfig } from "../types/utils/registerHelper";
 
@@ -16,6 +15,11 @@ export type PredictMintingLicenseFeeParams = {
   rpcClient: PublicClient;
   chainId: ChainIds;
   walletAddress: Address;
+};
+
+export type Fee = {
+  token: Address;
+  amount: bigint;
 };
 /**
  * Predict the minting license fee.
@@ -56,11 +60,11 @@ export const calculateDerivativeMintingFee = async ({
   chainId,
   wallet,
   sender,
-}: CalculateDerivativeMintingFeeConfig): Promise<bigint> => {
+}: CalculateDerivativeMintingFeeConfig): Promise<Fee[]> => {
   const walletAddress = sender || wallet.account!.address;
-  let totalDerivativeMintingFee = 0n;
+  const mintFees: Fee[] = [];
   for (let i = 0; i < derivData.parentIpIds.length; i++) {
-    const derivativeMintingFee = await calculateLicenseWipMintFee({
+    const mintFee = await calculateLicenseMintFee({
       predictMintingFeeRequest: {
         licensorIpId: derivData.parentIpIds[i],
         licenseTemplate: derivData.licenseTemplate,
@@ -73,35 +77,38 @@ export const calculateDerivativeMintingFee = async ({
       chainId,
       walletAddress,
     });
-    totalDerivativeMintingFee += derivativeMintingFee;
+    if (mintFee.amount > 0n) {
+      mintFees.push(mintFee);
+    }
   }
-  return totalDerivativeMintingFee;
+  return mintFees;
 };
 
-export const calculateLicenseWipMintFee = async ({
+export const calculateLicenseMintFee = async ({
   predictMintingFeeRequest,
   rpcClient,
   chainId,
   walletAddress,
-}: PredictMintingLicenseFeeParams): Promise<bigint> => {
-  const fee = await predictMintingLicenseFee({
+}: PredictMintingLicenseFeeParams): Promise<Fee> => {
+  const { currencyToken, tokenAmount } = await predictMintingLicenseFee({
     predictMintingFeeRequest,
     rpcClient,
     chainId,
     walletAddress,
   });
-  if (fee.currencyToken !== WIP_TOKEN_ADDRESS) {
-    return 0n;
-  }
-  return fee.tokenAmount;
+  return {
+    token: currencyToken,
+    amount: tokenAmount,
+  };
 };
 
-export const calculateSPGWipMintFee = async (
-  spgNftClient: SpgnftImplReadOnlyClient,
-): Promise<bigint> => {
+export const calculateSPGMintFee = async (spgNftClient: SpgnftImplReadOnlyClient): Promise<Fee|undefined> => {
   const token = await spgNftClient.mintFeeToken();
-  if (token !== WIP_TOKEN_ADDRESS) {
-    return 0n;
+  const amount = await spgNftClient.mintFee();
+  if (amount > 0n) {
+    return {
+      token,
+      amount,
+    };
   }
-  return await spgNftClient.mintFee();
 };

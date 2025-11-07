@@ -457,7 +457,6 @@ export type TransformedIpRegistrationWorkflowRequest<
     | LicenseAttachmentWorkflowsClient
     | RoyaltyTokenDistributionWorkflowsClient;
   spenders?: TokenSpender[];
-  totalFees?: bigint;
   extraData?: ExtraData;
 };
 

@@ -46,7 +46,6 @@ import {
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { LicenseTermsIdInput, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
@@ -106,7 +105,7 @@ import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
 import { LicenseTerms } from "../types/resources/license";
 import { AggregateRegistrationRequest, SignatureMethodType } from "../types/utils/registerHelper";
 import { TokenSpender } from "../types/utils/wip";
-import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../utils/calculateMintFee";
+import { calculateDerivativeMintingFee, calculateSPGMintFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
@@ -1050,7 +1049,7 @@ export class IPAssetClient {
           allowDuplicates: req.allowDuplicates || true,
         };
         const isPublicMinting = await getPublicMinting(req.spgNftContract, this.rpcClient);
-        const nftMintFee = await calculateSPGWipMintFee(
+        const nftMintFee = await calculateSPGMintFee(
           new SpgnftImplReadOnlyClient(this.rpcClient, registrationRequest.spgNftContract),
         );
         const encodeTx = {
@@ -1067,14 +1066,10 @@ export class IPAssetClient {
           }),
         };
         if (isPublicMinting) {
-          publicMintSpenders = mergeSpenders(publicMintSpenders, [
-            {
-              address: registrationRequest.spgNftContract,
-              amount: nftMintFee,
-              //TODO: Need to confirm the token address
-              token: WIP_TOKEN_ADDRESS,
-            },
-          ]);
+          publicMintSpenders = mergeSpenders(
+            publicMintSpenders,
+            nftMintFee ? [{ address: registrationRequest.spgNftContract, ...nftMintFee }] : [],
+          );
           publicMintEncodedTxs.push(encodeTx);
         } else {
           const isMinterRole = await hasMinterRole(
@@ -1087,14 +1082,10 @@ export class IPAssetClient {
               `Caller ${this.walletAddress} does not have the minter role for ${registrationRequest.spgNftContract}`,
             );
           }
-          privateMintSpenders = mergeSpenders(privateMintSpenders, [
-            {
-              address: registrationRequest.spgNftContract,
-              amount: nftMintFee,
-              //TODO: Need to confirm the token address
-              token: WIP_TOKEN_ADDRESS,
-            },
-          ]);
+          privateMintSpenders = mergeSpenders(
+            privateMintSpenders,
+            nftMintFee ? [{ address: registrationRequest.spgNftContract, ...nftMintFee }] : [],
+          );
           privateMintEncodedTxs.push(encodeTx);
         }
       }
@@ -2306,13 +2297,12 @@ export class IPAssetClient {
     encodedTxs,
     contractCall,
   }: CommonRegistrationParams): Promise<CommonRegistrationTxResponse> {
-    let totalFees = 0n;
-    const wipSpenders: TokenSpender[] = [];
+    const tokenSpenders: TokenSpender[] = [];
     let useMulticallWhenPossible = wipOptions?.useMulticallWhenPossible ?? true;
 
     // get spg minting fee
     if (spgNftContract) {
-      const nftMintFee = await calculateSPGWipMintFee(
+      const nftMintFee = await calculateSPGMintFee(
         new SpgnftImplReadOnlyClient(this.rpcClient, spgNftContract),
       );
       const publicMinting = await getPublicMinting(spgNftContract, this.rpcClient);
@@ -2327,46 +2317,31 @@ export class IPAssetClient {
       if (!publicMinting) {
         useMulticallWhenPossible = false;
       }
-      totalFees += nftMintFee;
-      wipSpenders.push({
-        address: spgNftContract,
-        amount: nftMintFee,
-        //TODO: Need to confirm the token address
-        token: WIP_TOKEN_ADDRESS,
-      });
+      tokenSpenders.push(...(nftMintFee ? [{ address: spgNftContract, ...nftMintFee }] : []));
     }
 
     // get derivative minting fee
     if (derivData) {
-      const totalDerivativeMintingFee = await calculateDerivativeMintingFee({
+      const mintFees = await calculateDerivativeMintingFee({
         derivData,
         rpcClient: this.rpcClient,
         wallet: this.wallet,
         chainId: this.chainId,
         sender,
       });
-      totalFees += totalDerivativeMintingFee;
-      if (totalDerivativeMintingFee > 0) {
-        wipSpenders.push({
+      for (const mintFee of mintFees) {
+        tokenSpenders.push({
           address: spgSpenderAddress,
-          amount: totalDerivativeMintingFee,
-          //TODO: Need to confirm the token address
-          token: WIP_TOKEN_ADDRESS,
+          ...mintFee,
         });
       }
-    }
-
-    if (totalFees < 0) {
-      throw new Error(
-        `Total fees for registering derivative should never be negative: ${totalFees}`,
-      );
     }
 
     const { txHash, receipt } = await contractCallWithFees({
       options: { wipOptions: { ...wipOptions, useMulticallWhenPossible } },
       multicall3Address: this.multicall3Client.address,
       rpcClient: this.rpcClient,
-      tokenSpenders: wipSpenders,
+      tokenSpenders: tokenSpenders,
       contractCall,
       sender,
       wallet: this.wallet,

@@ -16,6 +16,7 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
 } from "../../abi/generated";
+import { Fee } from "../../utils/calculateMintFee";
 import { TokenIdInput } from "../common";
 import { ChainIds } from "../config";
 import { TransactionResponse, WipOptions } from "../options";
@@ -106,7 +107,6 @@ export type AggregateRegistrationRequest = Record<
   string,
   {
     spenders: TokenSpender[];
-    totalFees: bigint;
     encodedTxData: EncodedTxData[];
     contractCall: Array<() => Promise<Hash>>;
     extraData: (ExtraData | undefined)[];
@@ -159,7 +159,7 @@ export type TransferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequestConfi
   wallet: SimpleWalletClient;
   chainId: ChainIds;
   royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
-  totalFees: bigint;
+  derivativeMintingFee: Fee[];
   royaltyShares: RoyaltyShare[];
 };
 export type TransferRegisterDerivativeIpRequestConfig = {
@@ -169,28 +169,28 @@ export type TransferRegisterDerivativeIpRequestConfig = {
   wallet: SimpleWalletClient;
   chainId: ChainIds;
   derivativeWorkflowsClient: DerivativeWorkflowsClient;
-  totalFees: bigint;
+  derivativeMintingFee: Fee[];
 };
 
 export type TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig = {
   request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest;
-  nftMintFee: bigint;
+  nftMintFee: Fee | undefined;
   isPublicMinting: boolean;
-  totalDerivativeMintingFee: bigint;
+  derivativeMintingFee: Fee[];
   royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
 };
 
 export type TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest = {
   request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest;
   royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
-  nftMintFee: bigint;
+  nftMintFee: Fee | undefined;
   maxLicenseTokens: bigint[];
 };
 
 export type TransferMintAndRegisterIpAssetWithPilTermsConfig = {
   request: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest;
   licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
-  nftMintFee: bigint;
+  nftMintFee: Fee | undefined;
   isPublicMinting: boolean;
   maxLicenseTokens: bigint[];
 };
@@ -198,7 +198,7 @@ export type TransferMintAndRegisterIpAssetWithPilTermsConfig = {
 export type TransferMintAndRegisterIpAndMakeDerivativeRequestConfig = {
   request: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest;
   derivativeWorkflowsClient: DerivativeWorkflowsClient;
-  nftMintFee: bigint;
+  nftMintFee: Fee | undefined;
   isPublicMinting: boolean;
-  totalDerivativeMintingFee: bigint;
+  derivativeMintingFee: Fee[];
 };

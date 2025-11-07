@@ -14,7 +14,6 @@ import {
   RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest,
   SpgnftImplReadOnlyClient,
 } from "../../abi/generated";
-import { WIP_TOKEN_ADDRESS } from "../../constants/common";
 import {
   TransformedIpRegistrationWorkflowRequest,
   TransformIpRegistrationWorkflowRequest,
@@ -35,7 +34,7 @@ import {
   TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest,
   TransformRegistrationRequestConfig,
 } from "../../types/utils/registerHelper";
-import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../calculateMintFee";
+import { calculateDerivativeMintingFee, calculateSPGMintFee } from "../calculateMintFee";
 import { generateOperationSignature } from "../generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../getIpMetadataForWorkflow";
 import { validateAddress } from "../utils";
@@ -166,7 +165,7 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
       chainId,
       wallet,
     });
-    const totalFees = await calculateDerivativeMintingFee({
+    const derivativeMintingFee = await calculateDerivativeMintingFee({
       derivData,
       rpcClient,
       chainId,
@@ -183,7 +182,7 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
         wallet,
         chainId,
         royaltyTokenDistributionWorkflowsClient,
-        totalFees,
+        derivativeMintingFee,
         royaltyShares: request.royaltyShares,
       });
     }
@@ -198,7 +197,7 @@ const handleRegisterRequest = async <T extends TransformIpRegistrationWorkflowRe
       wallet,
       chainId,
       derivativeWorkflowsClient,
-      totalFees,
+      derivativeMintingFee,
     });
   }
 
@@ -217,7 +216,7 @@ const transferRegisterDerivativeIpRequest = async <
   wallet,
   chainId,
   derivativeWorkflowsClient,
-  totalFees,
+  derivativeMintingFee,
 }: TransferRegisterDerivativeIpRequestConfig): Promise<
   TransformedIpRegistrationWorkflowRequest<T>
 > => {
@@ -236,19 +235,15 @@ const transferRegisterDerivativeIpRequest = async <
       signature,
     },
   };
+  const spenders = derivativeMintingFee.map((fee) => ({
+    address: derivativeWorkflowsClient.address,
+    ...fee,
+  }));
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
-    spenders: [
-      {
-        address: derivativeWorkflowsClient.address,
-        amount: totalFees,
-        //TODO: Need to confirm the token address
-        token: WIP_TOKEN_ADDRESS,
-      },
-    ],
-    totalFees,
+    spenders,
     contractCall: (): Promise<Hash> => {
       return derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
     },
@@ -407,7 +402,7 @@ const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
   wallet,
   chainId,
   royaltyTokenDistributionWorkflowsClient,
-  totalFees,
+  derivativeMintingFee,
   royaltyShares,
 }: TransferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequestConfig): Promise<
   TransformedIpRegistrationWorkflowRequest<T>
@@ -427,19 +422,15 @@ const transferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequest = async <
       signature,
     },
   };
+  const spenders = derivativeMintingFee.map((fee) => ({
+    address: royaltyTokenDistributionWorkflowsClient.address,
+    ...fee,
+  }));
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: transformRequest as T,
     isUseMulticall3: false,
-    spenders: [
-      {
-        address: royaltyTokenDistributionWorkflowsClient.address,
-        amount: totalFees,
-        //TODO: Need to confirm the token address
-        token: WIP_TOKEN_ADDRESS,
-      },
-    ],
-    totalFees,
+    spenders,
     contractCall: (): Promise<Hash> => {
       return royaltyTokenDistributionWorkflowsClient.registerIpAndMakeDerivativeAndDeployRoyaltyVault(
         transformRequest,
@@ -499,7 +490,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
   const licenseAttachmentWorkflowsClient = new LicenseAttachmentWorkflowsClient(rpcClient, wallet);
   const derivativeWorkflowsClient = new DerivativeWorkflowsClient(rpcClient, wallet);
   const isPublicMinting = await getPublicMinting(request.spgNftContract, rpcClient);
-  const nftMintFee = await calculateSPGWipMintFee(
+  const nftMintFee = await calculateSPGMintFee(
     new SpgnftImplReadOnlyClient(rpcClient, request.spgNftContract),
   );
   const baseRequest = {
@@ -546,7 +537,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
       wallet,
       chainId,
     });
-    const totalDerivativeMintingFee = await calculateDerivativeMintingFee({
+    const derivativeMintingFee = await calculateDerivativeMintingFee({
       derivData,
       rpcClient,
       chainId,
@@ -562,7 +553,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
         },
         nftMintFee,
         isPublicMinting,
-        totalDerivativeMintingFee,
+        derivativeMintingFee,
         royaltyTokenDistributionWorkflowsClient,
       });
     }
@@ -574,7 +565,7 @@ const handleMintAndRegisterRequest = async <T extends TransformIpRegistrationWor
       derivativeWorkflowsClient,
       nftMintFee,
       isPublicMinting,
-      totalDerivativeMintingFee,
+      derivativeMintingFee,
     });
   }
   throw new Error("Invalid mint and register request type");
@@ -607,14 +598,8 @@ const transformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensReque
       );
     },
     spenders: [
-      {
-        address: transformRequest.spgNftContract,
-        amount: nftMintFee,
-        //TODO: Need to confirm the token address
-        token: WIP_TOKEN_ADDRESS,
-      },
+      ...(nftMintFee ? [{ address: transformRequest.spgNftContract, ...nftMintFee }] : []),
     ],
-    totalFees: nftMintFee,
     encodedTxData: {
       to: royaltyTokenDistributionWorkflowsClient.address,
       data: encodeFunctionData({
@@ -650,19 +635,12 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
   isPublicMinting,
   maxLicenseTokens,
 }: TransferMintAndRegisterIpAssetWithPilTermsConfig): TransformedIpRegistrationWorkflowRequest<T> => {
+  const spenders = nftMintFee ? [{ address: request.spgNftContract, ...nftMintFee }] : [];
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: request as T,
     isUseMulticall3: isPublicMinting,
-    spenders: [
-      {
-        address: request.spgNftContract,
-        amount: nftMintFee,
-        //TODO: Need to confirm the token address
-        token: WIP_TOKEN_ADDRESS,
-      },
-    ],
-    totalFees: nftMintFee,
+    spenders,
     encodedTxData: {
       to: licenseAttachmentWorkflowsClient.address,
       data: encodeFunctionData({
@@ -697,7 +675,7 @@ const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensReques
   request,
   nftMintFee,
   isPublicMinting,
-  totalDerivativeMintingFee,
+  derivativeMintingFee,
   royaltyTokenDistributionWorkflowsClient,
 }: TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig): TransformedIpRegistrationWorkflowRequest<T> => {
   const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
@@ -710,25 +688,18 @@ const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensReques
     ...request,
     royaltyShares,
   };
+  const spenders = derivativeMintingFee.map((fee) => ({
+    address: royaltyTokenDistributionWorkflowsClient.address,
+    ...fee,
+  }));
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: transformRequest as T,
     isUseMulticall3: isPublicMinting,
     spenders: [
-      {
-        address: royaltyTokenDistributionWorkflowsClient.address,
-        amount: totalDerivativeMintingFee,
-        //TODO: Need to confirm the token address
-        token: WIP_TOKEN_ADDRESS,
-      },
-      {
-        address: request.spgNftContract,
-        amount: nftMintFee,
-        //TODO: Need to confirm the token address
-        token: WIP_TOKEN_ADDRESS,
-      },
+      ...spenders,
+      ...(nftMintFee ? [{ address: request.spgNftContract, ...nftMintFee }] : []),
     ],
-    totalFees: totalDerivativeMintingFee + nftMintFee,
     encodedTxData: {
       to: royaltyTokenDistributionWorkflowsClient.address,
       data: encodeFunctionData({
@@ -763,27 +734,20 @@ const transferMintAndRegisterIpAndMakeDerivativeRequest = <
   derivativeWorkflowsClient,
   nftMintFee,
   isPublicMinting,
-  totalDerivativeMintingFee,
+  derivativeMintingFee,
 }: TransferMintAndRegisterIpAndMakeDerivativeRequestConfig): TransformedIpRegistrationWorkflowRequest<T> => {
+  const spenders = derivativeMintingFee.map((fee) => ({
+    address: derivativeWorkflowsClient.address,
+    ...fee,
+  }));
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: request as T,
     isUseMulticall3: isPublicMinting,
     spenders: [
-      {
-        address: derivativeWorkflowsClient.address,
-        amount: totalDerivativeMintingFee,
-        //TODO: Need to confirm the token address
-        token: WIP_TOKEN_ADDRESS,
-      },
-      {
-        address: request.spgNftContract,
-        amount: nftMintFee,
-        //TODO: Need to confirm the token address
-        token: WIP_TOKEN_ADDRESS,
-      },
+      ...spenders,
+      ...(nftMintFee ? [{ address: request.spgNftContract, ...nftMintFee }] : []),
     ],
-    totalFees: totalDerivativeMintingFee + nftMintFee,
     encodedTxData: {
       to: derivativeWorkflowsClient.address,
       data: encodeFunctionData({
