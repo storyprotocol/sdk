@@ -1480,8 +1480,8 @@ export class IPAssetClient {
         );
       };
       const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
-       options: {
-        wipOptions: {
+        options: {
+          wipOptions: {
             ...request.options?.wipOptions,
             useMulticallWhenPossible: false,
           },
