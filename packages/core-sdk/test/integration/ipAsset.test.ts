@@ -3270,7 +3270,7 @@ describe("IP Asset Functions", () => {
         contractURI: "test-uri",
         mintFeeRecipient: TEST_WALLET_ADDRESS,
         mintFee: 20n,
-        mintFeeToken: WIP_TOKEN_ADDRESS,
+        mintFeeToken: erc20Address[aeneid],
       });
       spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
 
@@ -3966,7 +3966,6 @@ describe("IP Asset Functions", () => {
               percentage: 10,
             },
           ],
-          txOptions: {},
         });
         expect(result.txHash).to.be.a("string");
         expect(result.ipId).to.be.a("string");

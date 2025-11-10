@@ -1035,7 +1035,7 @@ export class IPAssetClient {
    * For private minting, verifies the `caller` has the `minter role` and avoids `multicall3` batching to ensure correct `msg.sender`.
    *
    * Automatically manages minting fees, including wrapping IP tokens into WIP tokens if balances are insufficient, and checks or sets allowances for all spenders as needed.
-   * The `multicall` and token handling behavior can be configured via `wipOptions`.
+   * The `multicall` and token handling behavior can be configured via `wipOptions` and `erc20Options`.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
@@ -1731,7 +1731,7 @@ export class IPAssetClient {
    * The method supports automatic token handling for minting fees:
    * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
-   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   * - These automatic processes can be configured through the `options` parameter to control behavior like multicall usage and approval settings.
    *
    * @remark Multicall selection logic:
    *
@@ -1903,7 +1903,7 @@ export class IPAssetClient {
    * **Automatic Token Handling:**
    * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
-   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   * - These automatic processes can be configured through the `options` parameter to control behavior like multicall usage and approval settings.
    *
    * @throws {Error} If the NFT type is invalid.
    * @throws {Error} If `licenseTermsData` is not provided when `royaltyShares` are specified.
@@ -1989,7 +1989,7 @@ export class IPAssetClient {
    * **Automatic Token Handling:**
    * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
-   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   * - These automatic processes can be configured through the `options` parameter to control behavior like multicall usage and approval settings.
    *
    * @throws {Error} If `derivData` is not provided when `royaltyShares` are provided.
    * @throws {Error} If neither `derivData` nor `licenseTokenIds` are provided.
@@ -2159,7 +2159,7 @@ export class IPAssetClient {
    * **Automatic Token Handling:**
    * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
-   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   * - These automatic processes can be configured through the `options` parameter to control behavior like multicall usage and approval settings.
    */
   public async linkDerivative(
     request: RegisterDerivativeWithLicenseTokensRequest | RegisterDerivativeRequest,
