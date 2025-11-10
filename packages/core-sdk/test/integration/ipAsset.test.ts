@@ -3763,4 +3763,184 @@ describe("IP Asset Functions", () => {
       expect(result.txHash).to.be.a("string");
     });
   });
+
+  describe("with fee", () => {
+    let licenseTermsIdFor100WIP: bigint;
+    let licenseTermsIdFor10ERC20: bigint;
+    let spgContractWith100WIP: Address;
+    let spgContractWith10ERC20: Address;
+    let parentIpIdForWIP: Address;
+    let parentIpIdForERC20: Address;
+    before(async () => {
+      spgContractWith100WIP = (
+        await client.nftClient.createNFTCollection({
+          name: "100 WIP",
+          symbol: "100WIP",
+          isPublicMinting: true,
+          mintOpen: true,
+          mintFeeRecipient: TEST_WALLET_ADDRESS,
+          mintFee: 100n,
+          mintFeeToken: WIP_TOKEN_ADDRESS,
+          contractURI: "",
+        })
+      ).spgNftContract!;
+      spgContractWith10ERC20 = (
+        await client.nftClient.createNFTCollection({
+          name: "10 ERC20",
+          symbol: "10ERC20",
+          isPublicMinting: true,
+          mintOpen: true,
+          mintFeeRecipient: TEST_WALLET_ADDRESS,
+          mintFee: 100n,
+          mintFeeToken: erc20Address[aeneid],
+          contractURI: "",
+        })
+      ).spgNftContract!;
+      const result1 = await client.ipAsset.registerIpAsset({
+        nft: { type: "mint", spgNftContract: spgContractWith100WIP },
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 100n,
+              commercialRevShare: 10,
+              currency: WIP_TOKEN_ADDRESS,
+            }),
+          },
+        ],
+      });
+      parentIpIdForWIP = result1.ipId!;
+      licenseTermsIdFor100WIP = result1.licenseTermsIds![0];
+      const result2 = await client.ipAsset.registerIpAsset({
+        nft: { type: "mint", spgNftContract: spgContractWith10ERC20 },
+        licenseTermsData: [
+          {
+            terms: PILFlavor.commercialRemix({
+              defaultMintingFee: 10n,
+              commercialRevShare: 10,
+              currency: erc20Address[aeneid],
+            }),
+          },
+        ],
+      });
+      parentIpIdForERC20 = result2.ipId!;
+      licenseTermsIdFor10ERC20 = result2.licenseTermsIds![0];
+    });
+    describe.only("SpgNftContract with ERC20 token", () => {
+      it("should successfully when register ip with license terms data and royalty shares for ERC20", async () => {
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "mint", spgNftContract: spgContractWith10ERC20 },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.commercialRemix({
+                defaultMintingFee: 100n,
+                commercialRevShare: 10,
+                currency: WIP_TOKEN_ADDRESS,
+              }),
+            },
+          ],
+          royaltyShares: [
+            {
+              recipient: TEST_WALLET_ADDRESS,
+              percentage: 10.232132,
+            },
+          ],
+        });
+        expect(result.txHash).to.be.a("string");
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+      it("should successfully when register ip with license terms data", async () => {
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "mint", spgNftContract: spgContractWith10ERC20 },
+          licenseTermsData: [
+            {
+              terms: PILFlavor.commercialRemix({
+                defaultMintingFee: 100n,
+                commercialRevShare: 10,
+                currency: erc20Address[aeneid],
+              }),
+            },
+          ],
+        });
+        expect(result.txHash).to.be.a("string");
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+      it("should successfully when register ip with spgNftContract", async () => {
+        const result = await client.ipAsset.registerIpAsset({
+          nft: { type: "mint", spgNftContract: spgContractWith10ERC20 },
+        });
+        expect(result.txHash).to.be.a("string");
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+      it("should successfully when register derivative ip with derivData and royalty shares for ERC20", async () => {
+        const result = await client.ipAsset.registerDerivativeIpAsset({
+          nft: { type: "mint", spgNftContract: spgContractWith10ERC20 },
+          derivData: {
+            parentIpIds: [parentIpIdForERC20],
+            licenseTermsIds: [licenseTermsIdFor10ERC20],
+            maxMintingFee: 10000n,
+            maxRts: 100,
+            maxRevenueShare: 100,
+          },
+          royaltyShares: [
+            {
+              recipient: TEST_WALLET_ADDRESS,
+              percentage: 10.232132,
+            },
+          ],
+        });
+        expect(result.txHash).to.be.a("string");
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+      it("should successfully when register derivative ip with license token ids and derivData", async () => {
+        const { licenseTokenIds } = await client.license.mintLicenseTokens({
+          licenseTermsId: licenseTermsIdFor10ERC20,
+          licensorIpId: parentIpIdForERC20,
+          maxMintingFee: 0,
+          maxRevenueShare: 100,
+        });
+        const result = await client.ipAsset.registerDerivativeIpAsset({
+          nft: { type: "mint", spgNftContract: spgContractWith10ERC20 },
+          derivData: {
+            parentIpIds: [parentIpIdForERC20],
+            licenseTermsIds: [licenseTermsIdFor10ERC20],
+          },
+          licenseTokenIds: licenseTokenIds,
+        });
+        expect(result.txHash).to.be.a("string");
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+      it("should successfully when register derivative ip with derivData", async () => {
+        const result = await client.ipAsset.registerDerivativeIpAsset({
+          nft: { type: "mint", spgNftContract: spgContractWith10ERC20 },
+          derivData: {
+            parentIpIds: [parentIpIdForERC20],
+            licenseTermsIds: [licenseTermsIdFor10ERC20],
+          },
+        });
+        expect(result.txHash).to.be.a("string");
+        expect(result.ipId).to.be.a("string");
+        expect(result.tokenId).to.be.a("bigint");
+      });
+      it("should successfully when link derivative ip given childIpId and license token ids", async () => {
+        const tokenId = await getTokenId();
+        const childIpId = (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId!,
+          })
+        ).ipId!;
+        const result = await client.ipAsset.linkDerivative({
+          childIpId: childIpId,
+          parentIpIds: [parentIpIdForERC20],
+          licenseTermsIds: [licenseTermsIdFor10ERC20],
+        });
+        expect(result.txHash).to.be.a("string");
+      });
+    });
+  });
 });

@@ -635,7 +635,7 @@ export type MintedNFT = {
  * };
  * ```
  */
-export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptions &
+export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithErc20AndWipOptions &
   WithIpMetadata & {
     /** The NFT to be registered as an IP asset. */
     nft: T;
@@ -762,7 +762,7 @@ export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT |
  * };
  * ```
  */
-export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = WithWipOptions &
+export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = WithErc20AndWipOptions &
   WithIpMetadata & {
     nft: T;
     /**

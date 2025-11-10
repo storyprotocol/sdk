@@ -333,7 +333,6 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   if (zeroFees) {
     return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
   }
-
   const { wipSpenders, erc20Spenders } = groupTokenSpenders(tokenSpenders);
   const baseContractCallArgs = {
     sender,
@@ -346,6 +345,7 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     wallet,
   };
   if (erc20Spenders.length > 0) {
+    //TODO: need to consider multicall erc20 situation
     const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
     const erc20Balance = await erc20Client.balanceOf(sender);
     const erc20TotalFees = calculateTotalAmount(erc20Spenders);
@@ -360,9 +360,9 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   }
 
   if (wipSpenders.length > 0 && erc20Spenders.length > 0) {
-    const autoApprove = options?.erc20Options?.enableAutoApprove !== false;
+    const autoApproveForErc20 = options?.erc20Options?.enableAutoApprove !== false;
     const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
-    if (autoApprove) {
+    if (autoApproveForErc20) {
       await approvalAllSpenders({
         spenders: erc20Spenders,
         client: erc20Client,
