@@ -25,7 +25,7 @@ import {
   RevShareInput,
   TokenIdInput,
 } from "../common";
-import { TxOptions, WipOptions, WithWipOptions } from "../options";
+import { TxOptions, WipOptions, WithErc20AndWipOptions, WithWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsDataInput } from "./license";
 import { TokenSpender } from "../utils/wip";
 
@@ -93,7 +93,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
   txOptions?: TxOptions;
 };
 
-export type RegisterDerivativeRequest = WithWipOptions &
+export type RegisterDerivativeRequest = WithErc20AndWipOptions &
   DerivativeDataInput & {
     txOptions?: TxOptions;
     childIpId: Address;
@@ -141,7 +141,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
   /** The derivative data to be used for register derivative. */
   derivData: DerivativeDataInput;
 } & IpMetadataAndTxOptions &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type RegisterIpAndMakeDerivativeResponse = {
   txHash?: Hash;
@@ -199,7 +199,7 @@ export type WithIpMetadata = {
 };
 
 export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
-  WithWipOptions & {
+  WithErc20AndWipOptions & {
     spgNftContract: Address;
     /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
     recipient?: Address;
@@ -227,7 +227,7 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
    */
   allowDuplicates?: boolean;
 } & IpMetadataAndTxOptions &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
@@ -351,7 +351,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & WithWipOptions &
+} & WithErc20AndWipOptions &
   WithIpMetadata;
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
@@ -377,7 +377,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & WithIpMetadata &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse = {
   txHash: Hash;
@@ -403,7 +403,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & WithIpMetadata &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse = {
   txHash: Hash;
@@ -411,7 +411,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse
   tokenId?: bigint;
 };
 
-export type CommonRegistrationParams = {
+export type CommonRegistrationParams = WithErc20AndWipOptions & {
   contractCall: () => Promise<Hash>;
   encodedTxs: EncodedTxData[];
   spgNftContract?: Address;
@@ -420,7 +420,6 @@ export type CommonRegistrationParams = {
   derivData?: DerivativeData;
   sender: Address;
   txOptions?: TxOptions;
-  wipOptions?: WipOptions;
 };
 
 export type RegistrationResponse = {
