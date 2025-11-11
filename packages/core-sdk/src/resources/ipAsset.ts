@@ -104,7 +104,7 @@ import {
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
 import { LicenseTerms } from "../types/resources/license";
 import { AggregateRegistrationRequest, SignatureMethodType } from "../types/utils/registerHelper";
-import { TokenSpender } from "../types/utils/wip";
+import { TokenSpender } from "../types/utils/token";
 import { calculateDerivativeMintingFee, calculateSPGMintFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";

@@ -14,7 +14,7 @@ import {
   Multicall3ValueCall,
   MulticallWithWrapIp,
   TokenSpender,
-} from "../types/utils/wip";
+} from "../types/utils/token";
 
 /**
  * Merges spenders with the same address by summing their amounts.

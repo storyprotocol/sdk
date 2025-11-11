@@ -9,6 +9,7 @@ import {
 } from "../abi/generated";
 import { ChainIds } from "../types/config";
 import { CalculateDerivativeMintingFeeConfig } from "../types/utils/registerHelper";
+import { Fee } from "../types/utils/token";
 
 export type PredictMintingLicenseFeeParams = {
   predictMintingFeeRequest: LicensingModulePredictMintingLicenseFeeRequest;
@@ -17,10 +18,6 @@ export type PredictMintingLicenseFeeParams = {
   walletAddress: Address;
 };
 
-export type Fee = {
-  token: Address;
-  amount: bigint;
-};
 /**
  * Predict the minting license fee.
  *
@@ -102,7 +99,9 @@ export const calculateLicenseMintFee = async ({
   };
 };
 
-export const calculateSPGMintFee = async (spgNftClient: SpgnftImplReadOnlyClient): Promise<Fee|undefined> => {
+export const calculateSPGMintFee = async (
+  spgNftClient: SpgnftImplReadOnlyClient,
+): Promise<Fee | undefined> => {
   const token = await spgNftClient.mintFeeToken();
   const amount = await spgNftClient.mintFee();
   if (amount > 0n) {

@@ -11,6 +11,10 @@ import { ERC20Options, TransactionResponse, TxOptions, WipOptions } from "../opt
 
 export type Multicall3ValueCall = Multicall3Aggregate3Request["calls"][0] & { value: bigint };
 
+export type Fee = {
+  token: Address;
+  amount: bigint;
+};
 export type TokenSpender = {
   address: Address;
   /**
@@ -55,7 +59,7 @@ export type ContractCallWithFees<T extends Hash | Hash[] = Hash> = {
   rpcClient: PublicClient;
   wallet: SimpleWalletClient;
   sender: Address;
-  options: {
+  options?: {
     wipOptions?: WipOptions;
     erc20Options?: ERC20Options;
   };

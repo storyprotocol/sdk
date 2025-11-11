@@ -16,11 +16,10 @@ import {
   RoyaltyTokenDistributionWorkflowsRegisterIpAndAttachPilTermsAndDeployRoyaltyVaultRequest,
   SimpleWalletClient,
 } from "../../abi/generated";
-import { Fee } from "../../utils/calculateMintFee";
 import { TokenIdInput } from "../common";
 import { ChainIds } from "../config";
 import { TransactionResponse, WipOptions } from "../options";
-import { TokenSpender } from "./wip";
+import { Fee, TokenSpender } from "./token";
 import {
   DerivativeData,
   DerivativeDataInput,

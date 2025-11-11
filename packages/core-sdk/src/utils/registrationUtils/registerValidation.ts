@@ -22,7 +22,7 @@ import {
   GetIpIdAddressConfig,
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
-import { TokenSpender } from "../../types/utils/wip";
+import { TokenSpender } from "../../types/utils/token";
 import { PILFlavor } from "../pilFlavor";
 import { getRevenueShare } from "../royalty";
 import { getDeadline } from "../sign";

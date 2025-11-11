@@ -25,14 +25,9 @@ import {
   RevShareInput,
   TokenIdInput,
 } from "../common";
-import {
-  ERC20Options,
-  TxOptions,
-  WipOptions,
-  WithErc20AndWipOptions,
-} from "../options";
+import { ERC20Options, TxOptions, WipOptions, WithErc20AndWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsDataInput } from "./license";
-import { TokenSpender } from "../utils/wip";
+import { TokenSpender } from "../utils/token";
 
 export type MaxRtsInput = number;
 export type DerivativeDataInput = {

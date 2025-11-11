@@ -113,7 +113,7 @@ describe("License Functions", () => {
         PILFlavor.commercialRemix({
           defaultMintingFee: 100n,
           commercialRevShare: 10,
-          currency: WIP_TOKEN_ADDRESS,
+          currency: erc20Address[aeneid],
         }),
       );
       paidLicenseId = paidLicenseResult.licenseTermsId!;

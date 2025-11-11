@@ -48,7 +48,7 @@ import {
   SetMaxLicenseTokensRequest,
 } from "../types/resources/license";
 import { SignatureMethodType } from "../types/utils/registerHelper";
-import { TokenSpender } from "../types/utils/wip";
+import { TokenSpender } from "../types/utils/token";
 import { calculateLicenseMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
@@ -248,7 +248,7 @@ export class LicenseClient {
         });
       }
       const { txHash, receipt } = await contractCallWithFees({
-        options: { wipOptions: request.options?.wipOptions },
+        options: request.options,
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
         tokenSpenders: wipSpenders,

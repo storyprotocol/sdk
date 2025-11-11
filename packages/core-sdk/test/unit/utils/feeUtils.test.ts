@@ -11,7 +11,7 @@ import {
   multicall3Address,
   royaltyModuleAddress,
 } from "../../../src/abi/generated";
-import { ContractCallWithFees } from "../../../src/types/utils/wip";
+import { ContractCallWithFees } from "../../../src/types/utils/token";
 import { contractCallWithFees } from "../../../src/utils/feeUtils";
 import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
 import { getTokenAmountDisplay } from "../../../src/utils/utils";
