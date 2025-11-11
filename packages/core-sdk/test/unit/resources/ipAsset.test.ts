@@ -37,6 +37,7 @@ import {
   DerivativeDataInput,
   IpRegistrationWorkflowRequest,
 } from "../../../src/types/resources/ipAsset";
+import { WipTokenClient } from "../../../src/utils/token";
 import { mockERC721 } from "../../integration/utils/util";
 import { aeneid, ipId, mockAddress, txHash, walletAddress } from "../mockData";
 import {
@@ -4838,10 +4839,11 @@ describe("Test IpAssetClient", () => {
       ).to.be.rejectedWith("does not have the minter role");
     });
 
-    it("should should not use spg multicall3 when spgNftContract has public minting enabled", async () => {
+    it("should not use spg multicall3 when spgNftContract has public minting enabled", async () => {
       stub(SpgnftImplReadOnlyClient.prototype, "publicMinting").resolves(true);
       stub(SpgnftImplReadOnlyClient.prototype, "mintFee").resolves(1n);
       stub(SpgnftImplReadOnlyClient.prototype, "hasRole").resolves(true);
+      stub(WipTokenClient.prototype, "balanceOf").resolves(0n);
       const spgMulticallStub = stub(
         ipAssetClient.registrationWorkflowsClient,
         "multicall",
@@ -4880,7 +4882,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
     });
-    it("should should use spg multicall3 when spgNftContract has public minting enabled and mint fee is 0", async () => {
+    it("should use spg multicall3 when spgNftContract has public minting enabled and mint fee is 0", async () => {
       stub(SpgnftImplReadOnlyClient.prototype, "publicMinting").resolves(true);
       stub(SpgnftImplReadOnlyClient.prototype, "mintFee").resolves(0n);
       stub(SpgnftImplReadOnlyClient.prototype, "hasRole").resolves(true);
@@ -4964,7 +4966,7 @@ describe("Test IpAssetClient", () => {
         },
       ]);
     });
-    it("should both called with spg multicall when spgNftContract has private and public minting enabled", async () => {
+    it("should both called with spg multicall when spgNftContract has private and public minting enabled,and useMulticallWhenPossible is false", async () => {
       stub(SpgnftImplReadOnlyClient.prototype, "publicMinting")
         .onFirstCall()
         .resolves(false)
@@ -4978,6 +4980,7 @@ describe("Test IpAssetClient", () => {
         ipAssetClient.registrationWorkflowsClient,
         "multicall",
       ).resolves(txHash);
+      stub(WipTokenClient.prototype, "balanceOf").resolves(0n);
       stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
         {
           ipId: ipId,
@@ -5001,8 +5004,11 @@ describe("Test IpAssetClient", () => {
             allowDuplicates: false,
           },
         ],
+        wipOptions: {
+          useMulticallWhenPossible: false,
+        },
       });
-      expect(spgMulticallStub.callCount).to.equal(1);
+      expect(spgMulticallStub.callCount).to.equal(2);
       expect(result.registrationResults.length).to.equal(2);
       expect(result.registrationResults[0].txHash).to.equal(txHash);
       expect(result.registrationResults[0].ipIdsAndTokenIds).to.deep.equal([

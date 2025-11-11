@@ -1098,7 +1098,7 @@ export class IPAssetClient {
 
       const handlePublicMintTransactions = async (): Promise<TransactionResponse> => {
         return await contractCallWithFees({
-          options: { wipOptions: request.wipOptions },
+          options: { wipOptions: request.wipOptions, erc20Options: request.erc20Options },
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
           tokenSpenders: publicMintSpenders,
@@ -1115,7 +1115,7 @@ export class IPAssetClient {
 
       const handlePrivateMintTransactions = async (): Promise<TransactionResponse> => {
         return await contractCallWithFees({
-          options: { wipOptions: { ...request.wipOptions, useMulticallWhenPossible: false } },
+          options: { wipOptions: { ...request.wipOptions, useMulticallWhenPossible: false }, erc20Options: request.erc20Options },
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
           tokenSpenders: privateMintSpenders,
