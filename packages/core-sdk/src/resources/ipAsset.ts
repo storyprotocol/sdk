@@ -404,11 +404,11 @@ export class IPAssetClient {
           encodedTxs: [encodedTxData],
           spgSpenderAddress: this.royaltyModuleEventClient.address,
           options: {
+            ...request.options,
             wipOptions: {
               ...request.options?.wipOptions,
               useMulticallWhenPossible: false,
             },
-            erc20Options: request.options?.erc20Options,
           },
         });
       }
@@ -851,8 +851,11 @@ export class IPAssetClient {
       };
       return this.handleRegistrationWithFees({
         options: {
-          wipOptions: { ...request.options?.wipOptions, useMulticallWhenPossible: false },
-          erc20Options: request.options?.erc20Options,
+          ...request.options,
+          wipOptions: {
+            ...request.options?.wipOptions,
+            useMulticallWhenPossible: false,
+          },
         },
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
@@ -1012,11 +1015,11 @@ export class IPAssetClient {
         spgNftContract: object.spgNftContract,
         txOptions: request.txOptions,
         options: {
+          ...request.options,
           wipOptions: {
             ...request.options?.wipOptions,
             useMulticallWhenPossible: false,
           },
-          erc20Options: request.options?.erc20Options,
         },
       });
     } catch (error) {
@@ -1035,7 +1038,7 @@ export class IPAssetClient {
    * For private minting, verifies the `caller` has the `minter role` and avoids `multicall3` batching to ensure correct `msg.sender`.
    *
    * Automatically manages minting fees, including wrapping IP tokens into WIP tokens if balances are insufficient, and checks or sets allowances for all spenders as needed.
-   * The `multicall` and token handling behavior can be configured via `wipOptions` and `erc20Options`.
+   * The `multicall` and token handling behavior can be configured via `wipOptions`.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
@@ -1115,7 +1118,10 @@ export class IPAssetClient {
 
       const handlePrivateMintTransactions = async (): Promise<TransactionResponse> => {
         return await contractCallWithFees({
-          options: { wipOptions: { ...request.wipOptions, useMulticallWhenPossible: false }, erc20Options: request.erc20Options },
+          options: {
+            wipOptions: { ...request.wipOptions, useMulticallWhenPossible: false },
+            erc20Options: request.erc20Options,
+          },
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
           tokenSpenders: privateMintSpenders,
@@ -1205,13 +1211,13 @@ export class IPAssetClient {
       };
       return this.handleRegistrationWithFees({
         options: {
+          ...request.options,
           wipOptions: {
             ...request.options?.wipOptions,
             // need to disable multicall to avoid needing to transfer the license
             // token to the multicall contract.
             useMulticallWhenPossible: false,
           },
-          erc20Options: request.options?.erc20Options,
         },
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
@@ -1481,11 +1487,11 @@ export class IPAssetClient {
       };
       const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
         options: {
+          ...request.options,
           wipOptions: {
             ...request.options?.wipOptions,
             useMulticallWhenPossible: false,
           },
-          erc20Options: request.options?.erc20Options,
         },
         sender: this.walletAddress,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -2352,8 +2358,8 @@ export class IPAssetClient {
 
     const { txHash, receipt } = await contractCallWithFees({
       options: {
+        ...options,
         wipOptions: { ...wipOptions, useMulticallWhenPossible },
-        erc20Options: options?.erc20Options,
       },
       multicall3Address: this.multicall3Client.address,
       rpcClient: this.rpcClient,

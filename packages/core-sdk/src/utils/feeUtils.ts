@@ -284,7 +284,7 @@ const handleIpWrapping = async <T extends Hash | Hash[] = Hash>({
   const { txHash } = await multiCallWrapIp({
     ipAmountToWrap: totalFees,
     multicall3Address,
-    wipClient: wipClient,
+    wipClient,
     wipOptions: options?.wipOptions,
     contractCall,
     wipSpenders: tokenSpenders,

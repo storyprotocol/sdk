@@ -113,7 +113,6 @@ export class DisputeClient {
             {
               address: this.arbitrationPolicyUmaClient.address,
               amount: bonds,
-              //TODO: Need to confirm the token address
               token: WIP_TOKEN_ADDRESS,
             },
           ],
@@ -336,7 +335,6 @@ export class DisputeClient {
           {
             address: this.arbitrationPolicyUmaClient.address,
             amount: bond,
-            //TODO: Need to confirm the token address
             token: WIP_TOKEN_ADDRESS,
           },
         ],
