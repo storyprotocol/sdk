@@ -1918,7 +1918,7 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe.only("Batch Register IP Assets With Optimized Workflows", () => {
+  describe("Batch Register IP Assets With Optimized Workflows", () => {
     let spgNftContractWithPublicMintingFor10WIP: Address;
     let spgNftContractWithPrivateMintingFor10Erc20: Address;
     let spgNftContractWithPublicMintForAnother10Erc20: Address;
