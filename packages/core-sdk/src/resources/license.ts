@@ -22,7 +22,6 @@ import {
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { LicenseTermsIdInput, LicensingConfig, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse, TxOptions } from "../types/options";
