@@ -56,6 +56,7 @@ const aggregateTransformIpRegistrationWorkflow = (
     currentRequest.spenders = mergeSpenders(currentRequest.spenders, spenders || []);
     currentRequest.encodedTxData = currentRequest.encodedTxData.concat(encodedTxData);
     currentRequest.extraData = currentRequest.extraData?.concat(extraData || undefined);
+    //TODO:This condition have some issue
     if (isUseMulticall3 || disableMulticallWhenPossible) {
       currentRequest.contractCall = currentRequest.contractCall.concat(res.contractCall);
     } else {
@@ -75,7 +76,7 @@ const aggregateTransformIpRegistrationWorkflow = (
 export const handleMulticall = async ({
   transferWorkflowRequests,
   multicall3Address,
-  wipOptions,
+  options,
   rpcClient,
   wallet,
   walletAddress,
@@ -83,7 +84,7 @@ export const handleMulticall = async ({
   const aggregateRegistrationRequest = aggregateTransformIpRegistrationWorkflow(
     transferWorkflowRequests,
     multicall3Address,
-    wipOptions?.useMulticallWhenPossible === false,
+    options?.wipOptions?.useMulticallWhenPossible === false,
   );
   const txResponses: TransactionResponse[] = [];
   for (const key in aggregateRegistrationRequest) {
@@ -99,8 +100,9 @@ export const handleMulticall = async ({
     const useMulticallWhenPossible = key === multicall3Address ? true : false;
     const txResponse = await contractCallWithFees({
       options: {
+        ...options?.erc20Options,
         wipOptions: {
-          ...wipOptions,
+          ...options?.wipOptions,
           useMulticallWhenPossible,
         },
       },

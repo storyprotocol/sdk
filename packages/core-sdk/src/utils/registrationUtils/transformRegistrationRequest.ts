@@ -46,6 +46,8 @@ import {
   validateDerivativeData,
   validateLicenseTermsData,
 } from "./registerValidation";
+import { WIP_TOKEN_ADDRESS } from "../../constants/common";
+import { TokenSpender } from "../../types/utils/token";
 /**
  * Transforms the registration request to the appropriate format based on workflow type.
  *
@@ -639,7 +641,7 @@ const transferMintAndRegisterIpAssetWithPilTermsRequest = <
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: request as T,
-    isUseMulticall3: isPublicMinting,
+    isUseMulticall3: isErc20AboveZero(spenders) ? false : isPublicMinting,
     spenders,
     encodedTxData: {
       to: licenseAttachmentWorkflowsClient.address,
@@ -680,7 +682,6 @@ const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensReques
 }: TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig): TransformedIpRegistrationWorkflowRequest<T> => {
   const { royaltyShares } = getRoyaltyShares(request.royaltyShares);
   /**
-   * TODO: Consider the scenario where the SPG token is WIP and the derivative token is ERC20.
    * The SDK should handle both cases in the `contractCallWithFees` method.
    * Currently, it only supports WIP tokens and does not handle ERC20 tokens, such as approving ERC20 tokens.
    */
@@ -688,18 +689,17 @@ const transferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensReques
     ...request,
     royaltyShares,
   };
-  const spenders = derivativeMintingFee.map((fee) => ({
-    address: royaltyTokenDistributionWorkflowsClient.address,
-    ...fee,
-  }));
+  const spenders = derivativeMintingFee
+    .map((fee) => ({
+      address: royaltyTokenDistributionWorkflowsClient.address,
+      ...fee,
+    }))
+    .concat(nftMintFee ? [{ address: request.spgNftContract, ...nftMintFee }] : []);
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: transformRequest as T,
-    isUseMulticall3: isPublicMinting,
-    spenders: [
-      ...spenders,
-      ...(nftMintFee ? [{ address: request.spgNftContract, ...nftMintFee }] : []),
-    ],
+    isUseMulticall3: isErc20AboveZero(spenders) ? false : isPublicMinting,
+    spenders,
     encodedTxData: {
       to: royaltyTokenDistributionWorkflowsClient.address,
       data: encodeFunctionData({
@@ -736,18 +736,17 @@ const transferMintAndRegisterIpAndMakeDerivativeRequest = <
   isPublicMinting,
   derivativeMintingFee,
 }: TransferMintAndRegisterIpAndMakeDerivativeRequestConfig): TransformedIpRegistrationWorkflowRequest<T> => {
-  const spenders = derivativeMintingFee.map((fee) => ({
-    address: derivativeWorkflowsClient.address,
-    ...fee,
-  }));
+  const spenders = derivativeMintingFee
+    .map((fee) => ({
+      address: derivativeWorkflowsClient.address,
+      ...fee,
+    }))
+    .concat(nftMintFee ? [{ address: request.spgNftContract, ...nftMintFee }] : []);
   return {
     // The `TransformIpRegistrationWorkflowResponse` is a union of all the possible requests, so we need to explicitly cast the type.
     transformRequest: request as T,
-    isUseMulticall3: isPublicMinting,
-    spenders: [
-      ...spenders,
-      ...(nftMintFee ? [{ address: request.spgNftContract, ...nftMintFee }] : []),
-    ],
+    isUseMulticall3: isErc20AboveZero(spenders) ? false : isPublicMinting,
+    spenders,
     encodedTxData: {
       to: derivativeWorkflowsClient.address,
       data: encodeFunctionData({
@@ -892,4 +891,13 @@ export const prepareRoyaltyTokensDistributionRequests = async ({
   }
 
   return results;
+};
+/**
+ * Checks if the spenders contain ERC20 tokens with amount above zero.
+ */
+
+const isErc20AboveZero = (spenders: TokenSpender[]): boolean => {
+  const erc20Spenders = spenders.filter((spender) => spender.token !== WIP_TOKEN_ADDRESS);
+  const erc20TotalAmount = erc20Spenders.reduce((acc, spender) => acc + (spender.amount ?? 0n), 0n);
+  return erc20TotalAmount > 0n;
 };

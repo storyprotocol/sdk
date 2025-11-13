@@ -11,6 +11,7 @@ import {
 import { getDerivedStoryClient } from "./utils/BIP32";
 import {
   aeneid,
+  ANOTHER_ERC20_ADDRESS,
   approveForLicenseToken,
   getStoryClient,
   getTokenId,
@@ -1917,13 +1918,14 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe("Batch Register IP Assets With Optimized Workflows", () => {
-    let spgNftContractWithPublicMinting: Address;
-    let spgNftContractWithPrivateMinting: Address;
+  describe.only("Batch Register IP Assets With Optimized Workflows", () => {
+    let spgNftContractWithPublicMintingFor10WIP: Address;
+    let spgNftContractWithPrivateMintingFor10Erc20: Address;
+    let spgNftContractWithPublicMintForAnother10Erc20: Address;
     let parentIpId1: Hex;
     let parentIpId2: Hex;
-    let licenseTermsId1: bigint;
-    let licenseTermsId2: bigint;
+    let licenseTermsIdFor10WIP: bigint;
+    let licenseTermsIdFor5WIP: bigint;
     before(async () => {
       // Create a public minting NFT collection
       const publicMintingCollectionResult = await client.nftClient.createNFTCollection({
@@ -1936,7 +1938,7 @@ describe("IP Asset Functions", () => {
         mintFeeToken: WIP_TOKEN_ADDRESS,
         contractURI: "",
       });
-      spgNftContractWithPublicMinting = publicMintingCollectionResult.spgNftContract!;
+      spgNftContractWithPublicMintingFor10WIP = publicMintingCollectionResult.spgNftContract!;
 
       // Create a private minting NFT collection
       const privateMintingCollectionResult = await client.nftClient.createNFTCollection({
@@ -1949,7 +1951,20 @@ describe("IP Asset Functions", () => {
         mintFeeToken: erc20Address[aeneid],
         contractURI: "",
       });
-      spgNftContractWithPrivateMinting = privateMintingCollectionResult.spgNftContract!;
+      spgNftContractWithPrivateMintingFor10Erc20 = privateMintingCollectionResult.spgNftContract!;
+
+      // Create a public minting NFT collection with Another ERC20 token
+      const anotherERC20CollectionResult = await client.nftClient.createNFTCollection({
+        name: "Another ERC20 Collection",
+        symbol: "PMC",
+        isPublicMinting: true,
+        mintOpen: true,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        mintFee: 10n,
+        mintFeeToken: ANOTHER_ERC20_ADDRESS,
+        contractURI: "",
+      });
+      spgNftContractWithPublicMintForAnother10Erc20 = anotherERC20CollectionResult.spgNftContract!;
 
       // Register a commercial remix PIL license
       const commercialRemixPILResult = await client.license.registerPILTerms(
@@ -1960,7 +1975,7 @@ describe("IP Asset Functions", () => {
           royaltyPolicy: NativeRoyaltyPolicy.LAP,
         }),
       );
-      licenseTermsId1 = commercialRemixPILResult.licenseTermsId!;
+      licenseTermsIdFor10WIP = commercialRemixPILResult.licenseTermsId!;
 
       // Register a commercial use PIL license
       const commercialUsePILResult = await client.license.registerPILTerms({
@@ -1982,30 +1997,30 @@ describe("IP Asset Functions", () => {
         currency: WIP_TOKEN_ADDRESS,
         uri: "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json",
       });
-      licenseTermsId2 = commercialUsePILResult.licenseTermsId!;
+      licenseTermsIdFor5WIP = commercialUsePILResult.licenseTermsId!;
 
       // Mint and register IP with public minting contract
       const publicMintingIpResult = await client.ipAsset.mintAndRegisterIp({
-        spgNftContract: spgNftContractWithPublicMinting,
+        spgNftContract: spgNftContractWithPublicMintingFor10WIP,
       });
       parentIpId1 = publicMintingIpResult.ipId!;
 
       // Attach license terms to the first IP
       await client.license.attachLicenseTerms({
         ipId: parentIpId1,
-        licenseTermsId: licenseTermsId1,
+        licenseTermsId: licenseTermsIdFor10WIP,
       });
 
       // Mint and register IP with private minting contract
       const privateMintingIpResult = await client.ipAsset.mintAndRegisterIp({
-        spgNftContract: spgNftContractWithPrivateMinting,
+        spgNftContract: spgNftContractWithPrivateMintingFor10Erc20,
       });
       parentIpId2 = privateMintingIpResult.ipId!;
 
       // Attach license terms to the second IP
       await client.license.attachLicenseTerms({
         ipId: parentIpId2,
-        licenseTermsId: licenseTermsId2,
+        licenseTermsId: licenseTermsIdFor5WIP,
       });
     });
 
@@ -2013,30 +2028,30 @@ describe("IP Asset Functions", () => {
       const userBalanceBefore = await client.getBalance(TEST_WALLET_ADDRESS);
       const requests: IpRegistrationWorkflowRequest[] = [
         /**
-         * mintAndRegisterIpAndMakeDerivative workflow
-         * - Total fees: 10(10+0) WIP tokens + 10 ERC20 tokens
+         * mintAndRegisterIpAndMakeDerivative
+         * - Total fees: 10 WIP tokens + 10 ERC20 tokens
          * - Uses `derivativeWorkflowsClient` multicall due to the private minting
          */
         {
-          spgNftContract: spgNftContractWithPrivateMinting,
+          spgNftContract: spgNftContractWithPrivateMintingFor10Erc20,
           derivData: {
             parentIpIds: [parentIpId1],
-            licenseTermsIds: [licenseTermsId1],
+            licenseTermsIds: [licenseTermsIdFor10WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
         },
         /**
-         * mintAndRegisterIpAndMakeDerivative workflow
+         * mintAndRegisterIpAndMakeDerivative
          * - Total fees: 15(10+5) WIP tokens
          * - Uses `multicall3Client` multicall3 due to the public minting
          */
         {
-          spgNftContract: spgNftContractWithPublicMinting,
+          spgNftContract: spgNftContractWithPublicMintingFor10WIP,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2046,10 +2061,11 @@ describe("IP Asset Functions", () => {
          * mintAndRegisterIpAssetWithPilTerms workflow
          * - Total fees: 0 WIP tokens + 10 ERC20 tokens
          * - Uses `licenseAttachmentWorkflowsClient` multicall due to the private minting
+         * - two license terms
          * - `maxLicenseTokens` is set to 1000n for first license terms
          */
         {
-          spgNftContract: spgNftContractWithPrivateMinting,
+          spgNftContract: spgNftContractWithPrivateMintingFor10Erc20,
           allowDuplicates: true,
           licenseTermsData: [
             {
@@ -2112,12 +2128,13 @@ describe("IP Asset Functions", () => {
         },
         /**
          * mintAndRegisterIpAssetWithPilTerms workflow
-         * - Total fees: 10(10+0) WIP tokens
-         * - Uses `multicall3Client` multicall3 due to the public minting
+         * - Total fees: 0 WIP tokens+10 another ERC20 tokens
+         * - Uses `licenseAttachmentWorkflowsClient` multicall3 due to erc20 tokens above zero
+         * - one license terms
          * - `maxLicenseTokens` is set to 100n for license terms
          */
         {
-          spgNftContract: spgNftContractWithPublicMinting,
+          spgNftContract: spgNftContractWithPublicMintForAnother10Erc20,
           allowDuplicates: true,
           licenseTermsData: [
             {
@@ -2153,10 +2170,10 @@ describe("IP Asset Functions", () => {
          * - Uses `multicall3Client` multicall3 due to the public minting
          */
         {
-          spgNftContract: spgNftContractWithPublicMinting,
+          spgNftContract: spgNftContractWithPublicMintingFor10WIP,
           derivData: {
             parentIpIds: [parentIpId1],
-            licenseTermsIds: [licenseTermsId1],
+            licenseTermsIds: [licenseTermsIdFor10WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2170,14 +2187,14 @@ describe("IP Asset Functions", () => {
         },
         /**
          * mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens workflow
-         * - Total fees: 5(0+5) WIP tokens + 10 ERC20 tokens
+         * - Total fees: 5 WIP tokens + 10 ERC20 tokens
          * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the private minting
          */
         {
-          spgNftContract: spgNftContractWithPrivateMinting,
+          spgNftContract: spgNftContractWithPrivateMintingFor10Erc20,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2191,12 +2208,13 @@ describe("IP Asset Functions", () => {
         },
         /**
          * mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens workflow
-         * - Total fees: 10(10+0) WIP tokens
+         * - Total fees: 0 WIP tokens + 10 another ERC20 tokens
          * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the mint tokens is given `msg.sender` as the recipient
+         * - two license terms
          * - `maxLicenseTokens` is set to 80n and 10n for license terms
          */
         {
-          spgNftContract: spgNftContractWithPublicMinting,
+          spgNftContract: spgNftContractWithPublicMintForAnother10Erc20,
           licenseTermsData: [
             {
               terms: {
@@ -2245,10 +2263,11 @@ describe("IP Asset Functions", () => {
         /**
          * mintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokens workflow
          * - Total fees: 0 WIP tokens + 10 ERC20 tokens
+         * - one license terms
          * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the mint tokens is given `msg.sender` as the recipient
          */
         {
-          spgNftContract: spgNftContractWithPrivateMinting,
+          spgNftContract: spgNftContractWithPrivateMintingFor10Erc20,
           licenseTermsData: [
             {
               terms: PILFlavor.creativeCommonsAttribution({
@@ -2272,41 +2291,53 @@ describe("IP Asset Functions", () => {
       const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
       });
-      const totalFeesForWIP = 10 + 15 + 0 + 10 + 20 + 5 + 10 + 0;
+
+      /**
+       * Transaction breakdown:
+       *
+       * 1. derivativeWorkflowsClient: 1 args
+       *    - fee: 10 WIP tokens+ 10 ERC20 tokens
+       *
+       * 2. multicall3Client: 2 args
+       *    - First args includes fee:
+       *      - 15 WIP tokens
+       *    - Second args includes fee:
+       *      - 20 WIP tokens
+       *
+       * 3. licenseAttachmentWorkflowsClient: 2 args
+       *    - First args
+       *        - fee: 0 WIP tokens + 10 ERC20 tokens
+       *        - one maxLicenseTokens and two of licenseTermsId
+       *    - Second args
+       *        - fee: 0 WIP tokens + 10 another ERC20 tokens
+       *        - one maxLicenseTokens and one of licenseTermsId
+       *
+       * 4. royaltyTokenDistributionWorkflowsClient: 3 args
+       *    - First args includes fee:
+       *      - 5 WIP tokens + 10 ERC20 tokens
+       *    - Second args
+       *      - 10 another ERC20 tokens,
+       *      - two maxLicenseTokens and two of licenseTermsId
+       *    - Third args includes fee:
+       *      - 10 ERC20 tokens and one of licenseTermsId
+       *
+       * Summary:
+       * - Total transactions: 1+1+1+1=4
+       * - Total IP assets registered: 8
+       */
+      const totalFeesForWIP = 10 + 15 + 20 + 0 + 0 + 0 + 5 + 0 + 0;
       const userBalanceAfter = await client.getBalance(TEST_WALLET_ADDRESS);
       const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       expect(Number(userBalanceAfter)).lessThan(
         Number(userBalanceBefore - BigInt(totalFeesForWIP)),
       );
       expect(wipBalanceAfter).equal(wipBalanceBefore);
-      /**
-       * Transaction breakdown:
-       *
-       * 1. derivativeWorkflowsClient: 1 transaction
-       *    - No license terms attached
-       *
-       * 2. multicall3Client: 3 transactions
-       *    - Second transaction includes license terms with maxLicenseTokens: 1000n
-       *
-       * 3. licenseAttachmentWorkflowsClient: 1 transaction
-       *    - Two license terms attached
-       *    - First license terms: maxLicenseTokens: 1000n
-       *
-       * 4. royaltyTokenDistributionWorkflowsClient: 3 transactions
-       *    - Second transaction includes two license terms:
-       *    -  First license terms: maxLicenseTokens: 80n
-       *    - Second license terms: maxLicenseTokens: 10n
-       *   - Third transaction includes a license terms
-       *
-       * Summary:
-       * - Total transactions: 4 (4 unique transaction hashes)
-       * - Total IP assets registered: 8
-       */
       expect(result.registrationResults.length).equal(4);
       expect(
         result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
       ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes).equal(undefined);
+      //1 derivativeWorkflowsClient
       expect(result.registrationResults[0].ipAssetsWithLicenseTerms.length).equal(1);
       expect(result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
         undefined,
@@ -2314,27 +2345,65 @@ describe("IP Asset Functions", () => {
       expect(
         result.registrationResults[0].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
-      expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(3);
+
+      //2 Multicall3Client
+      //2.1
+      expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(2);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
+      ).equal(undefined);
+      expect(
+        result.registrationResults[1].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes?.length,
+      ).equal(undefined);
+
+      //2.2
       expect(
         result.registrationResults[1].ipAssetsWithLicenseTerms[1].licenseTermsIds?.length,
-      ).equal(1);
+      ).equal(undefined);
       expect(
         result.registrationResults[1].ipAssetsWithLicenseTerms[1].maxLicenseTokensTxHashes?.length,
-      ).equal(1);
-      expect(result.registrationResults[2].ipAssetsWithLicenseTerms.length).equal(1);
+      ).equal(undefined);
+
+      //3 licenseAttachmentWorkflowsClient
+      //3.1
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms.length).equal(2);
       expect(
         result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
       ).equal(2);
       expect(
         result.registrationResults[2].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes?.length,
       ).equal(1);
+      //3.2
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[1].licenseTermsIds?.length,
+      ).equal(1);
+      expect(
+        result.registrationResults[2].ipAssetsWithLicenseTerms[1].maxLicenseTokensTxHashes?.length,
+      ).equal(1);
+
+      //4 royaltyTokenDistributionWorkflowsClient
+      //4.1
       expect(result.registrationResults[3].ipAssetsWithLicenseTerms.length).equal(3);
+      expect(
+        result.registrationResults[3].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
+      ).equal(undefined);
+      expect(
+        result.registrationResults[3].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes?.length,
+      ).equal(undefined);
+      //4.2
       expect(
         result.registrationResults[3].ipAssetsWithLicenseTerms[1].licenseTermsIds?.length,
       ).equal(2);
       expect(
         result.registrationResults[3].ipAssetsWithLicenseTerms[1].maxLicenseTokensTxHashes?.length,
       ).equal(2);
+      //4.3
+      expect(
+        result.registrationResults[3].ipAssetsWithLicenseTerms[2].licenseTermsIds?.length,
+      ).equal(1);
+      expect(
+        result.registrationResults[3].ipAssetsWithLicenseTerms[2].maxLicenseTokensTxHashes?.length,
+      ).equal(undefined);
     });
 
     it("should successfully batch register multiple IP assets with NFT contracts", async () => {
@@ -2358,7 +2427,7 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId1!,
           derivData: {
             parentIpIds: [parentIpId1],
-            licenseTermsIds: [licenseTermsId1],
+            licenseTermsIds: [licenseTermsIdFor10WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2381,7 +2450,7 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId2!,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2397,7 +2466,8 @@ describe("IP Asset Functions", () => {
          * registerIpAndAttachPilTerms  workflow
          * - Total fees: 0 WIP tokens
          * - Uses `licenseAttachmentWorkflowsClient` multicall
-         * - `maxLicenseTokens` is set to 100n
+         * - `maxLicenseTokens` is set to 100n which owns by the second license term
+         * - two license terms
          */
         {
           nftContract: mockERC721,
@@ -2461,7 +2531,8 @@ describe("IP Asset Functions", () => {
          * - Total fees: 0 WIP tokens
          * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
          * - Need to distribute royalty tokens
-         * - `maxLicenseTokens` is set to 10n
+         * - one `maxLicenseTokens` is set to 10n which owns by the first license term
+         * - two license terms
          */
         {
           nftContract: mockERC721,
@@ -2550,7 +2621,7 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId5!,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2566,7 +2637,7 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId6!,
           derivData: {
             parentIpIds: [parentIpId1],
-            licenseTermsIds: [licenseTermsId1],
+            licenseTermsIds: [licenseTermsIdFor10WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2583,7 +2654,7 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId7!,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2596,6 +2667,37 @@ describe("IP Asset Functions", () => {
           ],
         },
       ];
+      /**
+       * Transaction breakdown:
+       * 1. royaltyTokenDistributionWorkflowsClient: 4 transactions
+       *  - The first args
+       *    - fee: 10 WIP tokens
+       *    - Need to distribute royalty tokens
+       *   - The second args
+       *    - fee: 5 WIP tokens
+       *    - Need to distribute royalty tokens
+       *  - The third args
+       *    - fee: 0 WIP tokens
+       *    - Need to distribute royalty tokens
+       *    - one maxLicenseTokens and two of licenseTermsId
+       *  - The fourth args
+       *    - fee: 5 WIP tokens
+       *    - Need to distribute royalty tokens
+       *    - one maxLicenseTokens and one of licenseTermsId
+       * 2. licenseAttachmentWorkflowsClient: 1 transactions
+       *  - The args
+       *    - fee: 0 WIP tokens
+       *    - two license terms and second `maxLicenseTokens` is set to 100n
+       * 3. derivativeWorkflowsClient: 2 transactions
+       *  - The first args
+       *    - fee: 5 WIP tokens
+       *  - The second args
+       *    - fee: 10 WIP tokens
+       * Summary:
+       * - Total transactions: 3 (7 unique transaction hashes)
+       * - Total IP assets registered: 7
+       * - distributeRoyaltyTokensTxHashes: 3
+       */
       const totalFees = 10 + 5 + 0 + 0 + 5 + 10 + 5;
       const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
@@ -2605,27 +2707,12 @@ describe("IP Asset Functions", () => {
       expect(Number(userBalanceAfter)).lessThan(Number(userBalanceBefore - BigInt(totalFees)));
       const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       expect(wipBalanceAfter).equal(wipBalanceBefore);
-      /**
-       * Transaction breakdown:
-       * 1. royaltyTokenDistributionWorkflowsClient: 4 args
-       *  - The third request has two license terms, first one has `maxLicenseTokens` set to 10n
-       *
-       * 2.licenseAttachmentWorkflowsClient: 1 arg
-       *  - The first request have two license terms, second one has `maxLicenseTokens` set to 100n
-       *
-       * 3.derivativeWorkflowsClient: 2 args
-       *  - None license terms and no `maxLicenseTokens` set
-       *
-       * Summary:
-       * - Total transactions: 3 (3 unique transaction hashes)
-       * - Total IP assets registered: 7
-       */
       expect(result.registrationResults.length).equal(3);
       expect(
         result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
       ).equal(requests.length);
-      expect(result.distributeRoyaltyTokensTxHashes?.length).greaterThan(0);
-
+      expect(result.distributeRoyaltyTokensTxHashes?.length).equal(1);
+      //royaltyTokenDistributionWorkflowsClient
       expect(result.registrationResults[0].ipAssetsWithLicenseTerms.length).equal(4);
       expect(
         result.registrationResults[0].ipAssetsWithLicenseTerms[2].licenseTermsIds?.length,
@@ -2633,7 +2720,13 @@ describe("IP Asset Functions", () => {
       expect(
         result.registrationResults[0].ipAssetsWithLicenseTerms[2].maxLicenseTokensTxHashes?.length,
       ).equal(1);
-
+      expect(
+        result.registrationResults[0].ipAssetsWithLicenseTerms[2].licenseTermsIds?.length,
+      ).equal(2);
+      expect(
+        result.registrationResults[0].ipAssetsWithLicenseTerms[2].maxLicenseTokensTxHashes?.length,
+      ).equal(1);
+      //licenseAttachmentWorkflowsClient
       expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(1);
       expect(
         result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
@@ -2641,7 +2734,7 @@ describe("IP Asset Functions", () => {
       expect(
         result.registrationResults[1].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes?.length,
       ).equal(1);
-
+      //derivativeWorkflowsClient
       expect(result.registrationResults[2].ipAssetsWithLicenseTerms.length).equal(2);
       expect(result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
         undefined,
@@ -2669,10 +2762,10 @@ describe("IP Asset Functions", () => {
          * - Uses `multicall3Client` multicall3 due to the public minting
          */
         {
-          spgNftContract: spgNftContractWithPublicMinting,
+          spgNftContract: spgNftContractWithPublicMintingFor10WIP,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2684,10 +2777,10 @@ describe("IP Asset Functions", () => {
          * - Uses `royaltyTokenDistributionWorkflowsClient` multicall due to the private minting
          */
         {
-          spgNftContract: spgNftContractWithPrivateMinting,
+          spgNftContract: spgNftContractWithPrivateMintingFor10Erc20,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2705,10 +2798,10 @@ describe("IP Asset Functions", () => {
          * - Uses `multicall3Client` multicall3 due to the public minting
          */
         {
-          spgNftContract: spgNftContractWithPublicMinting,
+          spgNftContract: spgNftContractWithPublicMintingFor10WIP,
           derivData: {
             parentIpIds: [parentIpId1],
-            licenseTermsIds: [licenseTermsId1],
+            licenseTermsIds: [licenseTermsIdFor10WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2726,10 +2819,10 @@ describe("IP Asset Functions", () => {
          * - Uses `derivativeWorkflowsClient` multicall due to the private minting
          */
         {
-          spgNftContract: spgNftContractWithPrivateMinting,
+          spgNftContract: spgNftContractWithPrivateMintingFor10Erc20,
           derivData: {
             parentIpIds: [parentIpId1],
-            licenseTermsIds: [licenseTermsId1],
+            licenseTermsIds: [licenseTermsIdFor10WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2746,7 +2839,7 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId1!,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -2763,7 +2856,7 @@ describe("IP Asset Functions", () => {
          * - Total fees: 0 WIP tokens
          * - Uses `royaltyTokenDistributionWorkflowsClient` multicall
          * - Need to distribute royalty tokens
-         * - `maxLicenseTokens` is set to 10n
+         * - one license term and one `maxLicenseTokens` is set to 10n
          */
         {
           nftContract: mockERC721,
@@ -2831,6 +2924,7 @@ describe("IP Asset Functions", () => {
          * - Total fees: 0 WIP tokens
          * - Uses `licenseAttachmentWorkflowsClient` multicall
          * - the second request has `maxLicenseTokens` set to 10n
+         * - two license terms
          */
         {
           nftContract: mockERC721,
@@ -2899,13 +2993,48 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId4!,
           derivData: {
             parentIpIds: [parentIpId1],
-            licenseTermsIds: [licenseTermsId1],
+            licenseTermsIds: [licenseTermsIdFor10WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
           },
         },
       ];
+      /**
+       * Transaction breakdown:
+       * 1. multicall3Client: 2 args
+       *  - The first args:
+       *    - fee: 15 WIP tokens
+       *  - The second args:
+       *    - fee: 20 WIP tokens
+       *
+       * 2. royaltyTokenDistributionWorkflowsClient: 3 args
+       *  - The first args:
+       *    - fee: 5 WIP tokens
+       *  - The second args:
+       *    - fee: 5 WIP tokens
+       *    - need to distribute royalty tokens+1 royalty vault
+       *  - The third args:
+       *    - fee: 0 WIP tokens
+       *    - one license terms and one `maxLicenseTokens` is set to 10n
+       *    - need to distribute royalty tokens+1 royalty vault
+       *
+       * 3. derivativeWorkflowsClient: 2 args
+       *  - The first args:
+       *    - fee: 10 WIP tokens +10 ERC20 tokens
+       *  - The second args:
+       *    - fee: 5 WIP tokens
+       *
+       * 4. licenseAttachmentWorkflowsClient: 1 arg
+       *  - The args:
+       *    - fee: 0 WIP tokens
+       *    - two license terms and second `maxLicenseTokens` is set to 10n
+       *
+       * Summary:
+       * - Total transactions: 4 (4 unique transaction hashes)
+       * - Total IP assets registered: 8
+       * - distributeRoyaltyTokensTxHashes: 2
+       */
       const totalFees = 15 + 5 + 20 + 10 + 5 + 0 + 0 + 10;
       const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       const userBalanceBefore = await client.getBalance(TEST_WALLET_ADDRESS);
@@ -2916,29 +3045,12 @@ describe("IP Asset Functions", () => {
       const wipBalanceAfter = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
       expect(Number(userBalanceAfter)).lessThan(Number(userBalanceBefore - BigInt(totalFees)));
       expect(wipBalanceAfter).equal(wipBalanceBefore);
-      /**
-       * Transaction breakdown:
-       * 1. multicall3Client: 2 args
-       *  - No license terms and no `maxLicenseTokens` set
-       *
-       * 2. royaltyTokenDistributionWorkflowsClient: 3 args
-       *  - The third request has a license terms and `maxLicenseTokens` set to 10n
-       *
-       * 3. derivativeWorkflowsClient: 2 args
-       *  - None license terms and no `maxLicenseTokens` set
-       *
-       * 4. licenseAttachmentWorkflowsClient: 1 arg
-       *  - The first request have two license terms, second one has `maxLicenseTokens` set to 10n
-       *
-       * Summary:
-       * - Total transactions: 4 (4 unique transaction hashes)
-       * - Total IP assets registered: 8
-       */
+
       expect(result.registrationResults.length).equal(4);
       expect(
         result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
       ).equal(requests.length);
-      expect(result.distributeRoyaltyTokensTxHashes?.length).greaterThan(0);
+      expect(result.distributeRoyaltyTokensTxHashes?.length).equal(1);
 
       expect(result.registrationResults[0].ipAssetsWithLicenseTerms.length).equal(2);
       expect(result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
@@ -2996,10 +3108,10 @@ describe("IP Asset Functions", () => {
          * - Uses `derivativeWorkflowsClient` to call the this method
          */
         {
-          spgNftContract: spgNftContractWithPublicMinting,
+          spgNftContract: spgNftContractWithPublicMintingFor10WIP,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -3007,11 +3119,12 @@ describe("IP Asset Functions", () => {
         },
         /**
          * mintAndRegisterIpAssetWithPilTerms workflow
-         * - Total fees: 0 WIP tokens
-         * - Uses `licenseAttachmentWorkflowsClient` to call the this method
+         * - Total fees: 0 WIP tokens+10 ERC20 tokens
+         * - Uses `licenseAttachmentWorkflowsClient` to call the this method`
+         * - one license term
          */
         {
-          spgNftContract: spgNftContractWithPrivateMinting,
+          spgNftContract: spgNftContractWithPrivateMintingFor10Erc20,
           allowDuplicates: true,
           licenseTermsData: [
             {
@@ -3049,12 +3162,12 @@ describe("IP Asset Functions", () => {
         },
         /**
          * mintAndRegisterIpAssetWithPilTerms workflow
-         * - Total fees: 10(10+0) WIP tokens
+         * - Total fees: 10(10+0) Another ERC20 tokens
          * - Uses `licenseAttachmentWorkflowsClient` to call the this method
-         * - the first request has `maxLicenseTokens` set to 10n
+         * - the second request has two license terms and first one has `maxLicenseTokens` is set to 10n
          */
         {
-          spgNftContract: spgNftContractWithPublicMinting,
+          spgNftContract: spgNftContractWithPublicMintForAnother10Erc20,
           allowDuplicates: true,
           licenseTermsData: [
             {
@@ -3133,7 +3246,7 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId1!,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -3156,7 +3269,7 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId2!,
           derivData: {
             parentIpIds: [parentIpId2],
-            licenseTermsIds: [licenseTermsId2],
+            licenseTermsIds: [licenseTermsIdFor5WIP],
             maxMintingFee: 0,
             maxRts: MAX_ROYALTY_TOKEN,
             maxRevenueShare: 100,
@@ -3169,9 +3282,34 @@ describe("IP Asset Functions", () => {
           ],
         },
       ];
+      /**
+       * Transaction breakdown:
+       * 1. derivativeWorkflowsClient: 1 arg
+       *  - The args
+       *    - fee: 15 WIP tokens
+       * 2. licenseAttachmentWorkflowsClient: 2 arg
+       *  - The first args
+       *    - fee: 0 WIP tokens + 10 ERC20 tokens
+       *    - one license term
+       *  - The second args
+       *    - fee: 0 WIP tokens + 10 anotherERC20 tokens
+       *    - two license terms and first one has `maxLicenseTokens` is set to 10n
+       * 3. royaltyTokenDistributionWorkflowsClient: 2 arg
+       *  - The first args
+       *    - fee: 5 WIP tokens
+       *    - Need to distribute royalty tokens
+       *  - The second args
+       *    - fee: 5 WIP tokens
+       *    - Need to distribute royalty tokens
+     
+       * Summary:
+       * - Total transactions: 3 (3 unique transaction hashes)
+       * - Total IP assets registered: 5
+       * - distributeRoyaltyTokensTxHashes: 2
+       */
       const userBalanceBefore = await client.getBalance(TEST_WALLET_ADDRESS);
       const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
-      const totalFees = 15 + 0 + 10 + 5 + 5;
+      const totalFees = 15 + 0 + 0 + 5 + 5;
       const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
         options: {
@@ -3185,23 +3323,14 @@ describe("IP Asset Functions", () => {
 
       expect(Number(userBalanceAfter)).lessThan(Number(userBalanceBefore - BigInt(totalFees)));
       expect(wipBalanceAfter).equal(wipBalanceBefore);
-      /**
-       * Transaction breakdown:
-       * 1. None license terms and no `maxLicenseTokens` set
-       * 2. The request have one license terms and no `maxLicenseTokens` set
-       * 3. The request have two license terms, first one has `maxLicenseTokens` set to 10n
-       * 4. The requests have no license terms and no `maxLicenseTokens` set
-       * 5. The requests have no license terms and no `maxLicenseTokens` set
-       * Summary:
-       * - Total transactions: 5 (5 unique transaction hashes)
-       * - Total IP assets registered: 5
-       */
+
       expect(result.registrationResults.length).equal(requests.length);
       expect(
         result.registrationResults.reduce((a, b) => a + b.ipAssetsWithLicenseTerms.length, 0),
       ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes?.length).equal(2);
 
+      //derivativeWorkflowsClient
       expect(result.registrationResults[0].ipAssetsWithLicenseTerms.length).equal(1);
       expect(result.registrationResults[0].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
         undefined,
@@ -3210,6 +3339,7 @@ describe("IP Asset Functions", () => {
         result.registrationResults[0].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
 
+      //licenseAttachmentWorkflowsClient
       expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(1);
       expect(
         result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
@@ -3217,7 +3347,6 @@ describe("IP Asset Functions", () => {
       expect(
         result.registrationResults[1].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
-
       expect(
         result.registrationResults[2].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
       ).equal(2);
@@ -3800,6 +3929,8 @@ describe("IP Asset Functions", () => {
           contractURI: "",
         })
       ).spgNftContract!;
+      //IP
+      // IERC20($._mintFeeToken).safeTransferFrom(payer, address(this), $._mintFee)
       const result1 = await client.ipAsset.registerIpAsset({
         nft: { type: "mint", spgNftContract: spgContractWith100WIP },
         licenseTermsData: [

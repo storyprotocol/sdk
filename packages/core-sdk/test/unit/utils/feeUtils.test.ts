@@ -445,7 +445,12 @@ describe("Token Fee Utilities", () => {
         tokenSpenders: [
           {
             address: royaltyModuleAddress[aeneid],
-            amount: 50n,
+            amount: 10n,
+            token: erc20Address[aeneid],
+          },
+          {
+            address: royaltyModuleAddress[aeneid],
+            amount: 40n,
             token: erc20Address[aeneid],
           },
           {
@@ -466,7 +471,7 @@ describe("Token Fee Utilities", () => {
       ]);
       expect(allowanceMock.secondCall.args).to.deep.eq([
         TEST_WALLET_ADDRESS,
-        params.tokenSpenders[1].address,
+        params.tokenSpenders[2].address,
       ]);
       expect(contractCallMock.callCount).equals(1);
       expect(approveMock.callCount).equals(0);
@@ -505,7 +510,7 @@ describe("Token Fee Utilities", () => {
         ],
       });
       await expect(contractCallWithFees(params)).to.be.rejectedWith(
-        "Wallet does not have enough erc20 token to pay for fees. Total fees:  0.000000000000000101IP, balance: 0.0000000000000001IP.",
+        "Wallet does not have enough erc20 token of 0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E to pay for fees. Total fees:  0.000000000000000101IP, balance: 0.0000000000000001IP.",
       );
     });
   });
@@ -654,16 +659,23 @@ describe("Token Fee Utilities", () => {
             { address: mockAddress, amount: 100n, token: erc20Address[aeneid] },
             { address: royaltyModuleAddress[aeneid], amount: 100n, token: erc20Address[aeneid] },
             { address: royaltyModuleAddress[aeneid], amount: 100n, token: erc20Address[aeneid] },
+            { address: royaltyModuleAddress[aeneid], amount: 100n, token: mockAddress },
+            { address: royaltyModuleAddress[aeneid], amount: 100n, token: mockAddress },
             { address: mockAddress, amount: 100n, token: WIP_TOKEN_ADDRESS },
             { address: licensingModuleAddress[aeneid], amount: 100n, token: WIP_TOKEN_ADDRESS },
             { address: licensingModuleAddress[aeneid], amount: 100n, token: WIP_TOKEN_ADDRESS },
           ],
         });
         const { txHash: result } = await contractCallWithFees(params);
-        expect(allowanceMockForErc20.callCount).equals(2);
-        expect(approveMockForErc20.callCount).equals(2); //two royaltyModuleAddress approvals merge into one call + one mockAddress approval
+        // two royaltyModuleAddress approvals merge into one call + one mockAddress approval+ two royaltyModuleAddress approvals+other token(mockAddress) merge into one call
+        expect(allowanceMockForErc20.callCount).equals(3);
+        expect(approveMockForErc20.callCount).equals(3);
         expect(approveMockForErc20.firstCall.args).to.deep.eq([mockAddress, maxUint256]);
         expect(approveMockForErc20.secondCall.args).to.deep.eq([
+          royaltyModuleAddress[aeneid],
+          maxUint256,
+        ]);
+        expect(approveMockForErc20.thirdCall.args).to.deep.eq([
           royaltyModuleAddress[aeneid],
           maxUint256,
         ]);
@@ -675,7 +687,7 @@ describe("Token Fee Utilities", () => {
           licensingModuleAddress[aeneid],
           maxUint256,
         ]);
-        expect(rpcWaitForTxMock.callCount).equals(5); // 1 contract call + 2 erc20 approvals + 2 wip approvals
+        expect(rpcWaitForTxMock.callCount).equals(6); // 1 contract call + 3 erc20 approvals + 2 wip approvals
         expect(result).to.equal(txHash);
       });
 
@@ -764,7 +776,9 @@ describe("Token Fee Utilities", () => {
           ],
         });
         await expect(contractCallWithFees(params)).to.be.rejectedWith(
-          `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
+          `Wallet does not have enough erc20 token of ${
+            erc20Address[aeneid]
+          } to pay for fees. Total fees:  ${getTokenAmountDisplay(
             100n,
           )}, balance: ${getTokenAmountDisplay(0n)}.`,
         );

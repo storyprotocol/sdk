@@ -139,3 +139,5 @@ export const getStoryClient = (privateKey?: Address): StoryClient => {
 
   return StoryClient.newClient(config);
 };
+
+export const ANOTHER_ERC20_ADDRESS = "0x1f36AC541B2043E7691846A47C799cA4A2f70882";

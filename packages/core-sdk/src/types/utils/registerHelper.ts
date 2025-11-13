@@ -18,7 +18,7 @@ import {
 } from "../../abi/generated";
 import { TokenIdInput } from "../common";
 import { ChainIds } from "../config";
-import { TransactionResponse, WipOptions } from "../options";
+import { TransactionResponse, WithErc20AndWipOptions } from "../options";
 import { Fee, TokenSpender } from "./token";
 import {
   DerivativeData,
@@ -112,11 +112,10 @@ export type AggregateRegistrationRequest = Record<
   }
 >;
 
-export type MulticallConfigRequest = BasicConfig & {
+export type MulticallConfigRequest = BasicConfig & WithErc20AndWipOptions & {
   transferWorkflowRequests: TransformedIpRegistrationWorkflowRequest[];
   multicall3Address: Address;
   walletAddress: Address;
-  wipOptions?: WipOptions;
 };
 
 export type MulticallConfigResponse = {

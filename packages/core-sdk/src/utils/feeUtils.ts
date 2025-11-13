@@ -1,4 +1,4 @@
-import { Hash, maxUint256, PublicClient } from "viem";
+import { Address, Hash, maxUint256, PublicClient } from "viem";
 
 import { simulateAndWriteContract } from "./contract";
 import { ERC20Client, WipTokenClient } from "./token";
@@ -11,24 +11,11 @@ import {
   ApprovalCall,
   ContractCallWithFees,
   ContractCallWithFeesResponse,
+  Erc20SpendersHandlerRequest,
   Multicall3ValueCall,
   MulticallWithWrapIp,
   TokenSpender,
 } from "../types/utils/token";
-
-/**
- * Merges spenders with the same address by summing their amounts.
- */
-const mergeSpenderByAddress = (spenders: TokenSpender[], newSpender: TokenSpender): void => {
-  const existingSpender = spenders.find(
-    (s) => s.address === newSpender.address && s.token === newSpender.token,
-  );
-  if (existingSpender) {
-    existingSpender.amount = (newSpender.amount || 0n) + (existingSpender.amount || 0n);
-  } else {
-    spenders.push({ ...newSpender, amount: newSpender.amount || 0n });
-  }
-};
 
 /**
  * check the allowance of all spenders and call approval if any spender
@@ -168,34 +155,31 @@ const calculateTotalAmount = (spenders: TokenSpender[]): bigint =>
   spenders.reduce((acc, spender) => acc + (spender.amount || 0n), 0n);
 
 /**
- * Handle ERC20 token payment with approval and balance check.
+ * Handle ERC20 token approval.
+ * If auto approve is enabled, it will approve the token for the spenders.
  */
-const handleErc20Payment = async <T extends Hash | Hash[] = Hash>({
-  tokenSpenders,
+const handleErc20Approval = async ({
+  erc20Spenders,
   sender,
   options,
-  multicall3Address,
   rpcClient,
   wallet,
-  contractCall,
-  txOptions,
-}: ContractCallWithFees<T>): Promise<ContractCallWithFeesResponse<T>> => {
-  const tokenClient = new ERC20Client(rpcClient, wallet, tokenSpenders[0].token);
-  const autoApprove = options?.erc20Options?.enableAutoApprove !== false;
-  if (autoApprove) {
-    // ERC20 token is not supported multicall, because approve method is called by the multicall contract,
-    // the owner is the multicall contract, not the sender. When transfer from the sender to the multicall contract,
-    // the owner is the sender, not the multicall contract. We cannot use multicall in this case.
-    await approvalAllSpenders({
-      spenders: tokenSpenders,
-      client: tokenClient,
-      owner: sender,
-      multicallAddress: multicall3Address,
-      rpcClient,
-      useMultiCall: false,
-    });
+  multicallAddress,
+}: Erc20SpendersHandlerRequest): Promise<void> => {
+  for (const spender of erc20Spenders) {
+    const tokenClient = new ERC20Client(rpcClient, wallet, spender[0].token);
+    const autoApprove = options?.erc20Options?.enableAutoApprove !== false;
+    if (autoApprove) {
+      await approvalAllSpenders({
+        spenders: spender,
+        client: tokenClient,
+        owner: sender,
+        multicallAddress,
+        rpcClient,
+        useMultiCall: false,
+      });
+    }
   }
-  return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
 };
 
 /**
@@ -333,7 +317,8 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   if (zeroFees) {
     return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
   }
-  const { wipSpenders, erc20Spenders } = groupTokenSpenders(tokenSpenders);
+  //TODO: need to check multiple erc20 spenders and multiple wip spenders
+  const { wipSpenders, erc20Spenders } = groupByTokenAndMergeSpenders(tokenSpenders);
   const baseContractCallArgs = {
     sender,
     options,
@@ -345,33 +330,24 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     wallet,
   };
   if (erc20Spenders.length > 0) {
-    //TODO: need to consider multicall erc20 situation
-    const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
-    const erc20Balance = await erc20Client.balanceOf(sender);
-    const erc20TotalFees = calculateTotalAmount(erc20Spenders);
-    //If the wallet does not have enough erc20 token to pay for fees, throw an error.
-    if (erc20Balance < erc20TotalFees) {
-      throw new Error(
-        `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
-          erc20TotalFees,
-        )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
-      );
-    }
+    await judgeErc20BalanceBelowFees({
+      erc20Spenders,
+      sender,
+      rpcClient,
+      wallet,
+      multicallAddress: multicall3Address,
+    });
   }
 
   if (wipSpenders.length > 0 && erc20Spenders.length > 0) {
-    const autoApproveForErc20 = options?.erc20Options?.enableAutoApprove !== false;
-    const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
-    if (autoApproveForErc20) {
-      await approvalAllSpenders({
-        spenders: erc20Spenders,
-        client: erc20Client,
-        owner: sender,
-        multicallAddress: multicall3Address,
-        rpcClient,
-        useMultiCall: false,
-      });
-    }
+    await handleErc20Approval({
+      erc20Spenders,
+      multicallAddress: multicall3Address,
+      sender,
+      options,
+      rpcClient,
+      wallet,
+    });
     return handleWipPayment({
       ...baseContractCallArgs,
       tokenSpenders: wipSpenders,
@@ -384,10 +360,15 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
       },
     });
   } else if (erc20Spenders.length > 0) {
-    return handleErc20Payment({
-      ...baseContractCallArgs,
-      tokenSpenders: erc20Spenders,
+    await handleErc20Approval({
+      erc20Spenders,
+      sender,
+      options,
+      rpcClient,
+      wallet,
+      multicallAddress: multicall3Address,
     });
+    return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
   } else {
     return handleWipPayment({ ...baseContractCallArgs, tokenSpenders: wipSpenders });
   }
@@ -414,20 +395,69 @@ export const handleTransactionResponse = async <T extends Hash | Hash[] = Hash>(
 };
 
 /**
- * Group token spenders into wip and erc20 spenders.
+ * Merges spenders with the same token and address by summing their amounts.
  */
-const groupTokenSpenders = (
-  tokenSpenders: TokenSpender[],
-): { wipSpenders: TokenSpender[]; erc20Spenders: TokenSpender[] } => {
-  const wipSpenders: TokenSpender[] = [];
-  const erc20Spenders: TokenSpender[] = [];
 
-  for (const spender of tokenSpenders) {
-    if (spender.token.toLowerCase() === WIP_TOKEN_ADDRESS.toLowerCase()) {
-      mergeSpenderByAddress(wipSpenders, spender);
+const mergeSpenderByAddress = (spenders: TokenSpender[]): TokenSpender[] => {
+  return spenders.reduce<TokenSpender[]>((acc, spender) => {
+    const existingSpender = acc.find(
+      (s) => s.address === spender.address && s.token === spender.token,
+    );
+    if (existingSpender) {
+      existingSpender.amount = (existingSpender.amount || 0n) + (spender.amount || 0n);
     } else {
-      mergeSpenderByAddress(erc20Spenders, spender);
+      acc.push({ ...spender, amount: spender.amount || 0n });
+    }
+    return acc;
+  }, [] as TokenSpender[]);
+};
+
+/**
+ * Group by token and merge spenders with the same address.
+ */
+const groupByTokenAndMergeSpenders = (
+  tokenSpenders: TokenSpender[],
+): { wipSpenders: TokenSpender[]; erc20Spenders: TokenSpender[][] } => {
+  const wipSpenders: TokenSpender[] = [];
+  const erc20SpendersByToken = new Map<Address, TokenSpender[]>();
+  const erc20Spenders: TokenSpender[][] = [];
+  for (const spender of tokenSpenders) {
+    if (spender.token === WIP_TOKEN_ADDRESS) {
+      wipSpenders.push(spender);
+    } else {
+      if (erc20SpendersByToken.has(spender.token)) {
+        erc20SpendersByToken.get(spender.token)?.push(spender);
+      } else {
+        erc20SpendersByToken.set(spender.token, [spender]);
+      }
     }
   }
-  return { wipSpenders, erc20Spenders };
+
+  for (const [, spenders] of erc20SpendersByToken.entries()) {
+    erc20Spenders.push(mergeSpenderByAddress(spenders));
+  }
+  return { wipSpenders: mergeSpenderByAddress(wipSpenders), erc20Spenders };
+};
+
+const judgeErc20BalanceBelowFees = async ({
+  erc20Spenders,
+  sender,
+  rpcClient,
+  wallet,
+}: Erc20SpendersHandlerRequest): Promise<void> => {
+  for (const spender of erc20Spenders) {
+    const erc20Client = new ERC20Client(rpcClient, wallet, spender[0].token);
+    const erc20Balance = await erc20Client.balanceOf(sender);
+    const erc20TotalFees = calculateTotalAmount(spender);
+    //If the wallet does not have enough erc20 token to pay for fees, throw an error.
+    if (erc20Balance < erc20TotalFees) {
+      throw new Error(
+        `Wallet does not have enough erc20 token of ${
+          spender[0].token
+        } to pay for fees. Total fees:  ${getTokenAmountDisplay(
+          erc20TotalFees,
+        )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
+      );
+    }
+  }
 };

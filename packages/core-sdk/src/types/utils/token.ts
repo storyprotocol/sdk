@@ -7,7 +7,13 @@ import {
   SimpleWalletClient,
 } from "../../abi/generated";
 import { TokenClient, WipTokenClient } from "../../utils/token";
-import { ERC20Options, TransactionResponse, TxOptions, WipOptions } from "../options";
+import {
+  ERC20Options,
+  TransactionResponse,
+  TxOptions,
+  WipOptions,
+  WithERC20Options,
+} from "../options";
 
 export type Multicall3ValueCall = Multicall3Aggregate3Request["calls"][0] & { value: bigint };
 
@@ -81,3 +87,14 @@ export type MulticallWithWrapIp = {
 export type ContractCallWithFeesResponse<T extends Hash | Hash[]> = Promise<
   T extends Hash[] ? TransactionResponse[] : TransactionResponse
 >;
+
+export type Erc20SpendersHandlerRequest = WithERC20Options & {
+  erc20Spenders: TokenSpender[][];
+  sender: Address;
+  options?: {
+    erc20Options?: ERC20Options;
+  };
+  rpcClient: PublicClient;
+  wallet: SimpleWalletClient;
+  multicallAddress: Address;
+};
