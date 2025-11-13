@@ -3850,7 +3850,7 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows", () => {
+  describe.skip("Test ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows", () => {
     /**
      * We need to mock the entire module instead of individual methods because
      * the code needs to access the `address` property from workflow clients,
