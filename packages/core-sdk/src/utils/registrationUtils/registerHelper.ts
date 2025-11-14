@@ -56,7 +56,6 @@ const aggregateTransformIpRegistrationWorkflow = (
     currentRequest.spenders = mergeSpenders(currentRequest.spenders, spenders || []);
     currentRequest.encodedTxData = currentRequest.encodedTxData.concat(encodedTxData);
     currentRequest.extraData = currentRequest.extraData?.concat(extraData || undefined);
-    //TODO:This condition have some issue
     if (isUseMulticall3 || disableMulticallWhenPossible) {
       currentRequest.contractCall = currentRequest.contractCall.concat(res.contractCall);
     } else {

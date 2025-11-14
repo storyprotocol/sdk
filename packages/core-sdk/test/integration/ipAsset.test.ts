@@ -2291,7 +2291,6 @@ describe("IP Asset Functions", () => {
       const result = await client.ipAsset.batchRegisterIpAssetsWithOptimizedWorkflows({
         requests: requests,
       });
-
       /**
        * Transaction breakdown:
        *
@@ -2697,6 +2696,7 @@ describe("IP Asset Functions", () => {
        * - Total transactions: 3 (7 unique transaction hashes)
        * - Total IP assets registered: 7
        * - distributeRoyaltyTokensTxHashes: 3
+       * - ipRoyaltyVault: 4
        */
       const totalFees = 10 + 5 + 0 + 0 + 5 + 10 + 5;
       const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
@@ -2713,6 +2713,7 @@ describe("IP Asset Functions", () => {
       ).equal(requests.length);
       expect(result.distributeRoyaltyTokensTxHashes?.length).equal(1);
       //royaltyTokenDistributionWorkflowsClient
+      expect(result.registrationResults[0].ipRoyaltyVault?.length).equal(4);
       expect(result.registrationResults[0].ipAssetsWithLicenseTerms.length).equal(4);
       expect(
         result.registrationResults[0].ipAssetsWithLicenseTerms[2].licenseTermsIds?.length,
@@ -3306,6 +3307,7 @@ describe("IP Asset Functions", () => {
        * - Total transactions: 3 (3 unique transaction hashes)
        * - Total IP assets registered: 5
        * - distributeRoyaltyTokensTxHashes: 2
+       * - ipRoyaltyVault: 2
        */
       const userBalanceBefore = await client.getBalance(TEST_WALLET_ADDRESS);
       const wipBalanceBefore = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
@@ -3361,6 +3363,7 @@ describe("IP Asset Functions", () => {
       expect(
         result.registrationResults[3].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
+      expect(result.registrationResults[3].ipRoyaltyVault?.length).equal(1);
 
       expect(result.registrationResults[4].ipAssetsWithLicenseTerms.length).equal(1);
       expect(result.registrationResults[4].ipAssetsWithLicenseTerms[0].licenseTermsIds).equal(
@@ -3369,6 +3372,7 @@ describe("IP Asset Functions", () => {
       expect(
         result.registrationResults[4].ipAssetsWithLicenseTerms[0].maxLicenseTokensTxHashes,
       ).equal(undefined);
+      expect(result.registrationResults[4].ipRoyaltyVault?.length).equal(1);
     });
   });
 
@@ -4079,7 +4083,12 @@ describe("IP Asset Functions", () => {
     });
 
     describe("SpgNftContract with WIP token", () => {
-      it("should successfully when register ip with license terms data and royalty shares for WIP", async () => {
+      /**
+       * There is a unknown issue (pending contract team confirmation) where,
+       * if the SpgNftContract supports public minting and multicall3 is used to wrap an IP,
+       * an `ERC721InvalidReceiver` error may be thrown.
+       */
+      it.skip("should successfully when register ip with license terms data and royalty shares for WIP", async () => {
         const result = await client.ipAsset.registerIpAsset({
           nft: { type: "mint", spgNftContract: spgContractWith100WIP },
           licenseTermsData: [

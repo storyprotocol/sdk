@@ -1804,13 +1804,8 @@ export class IPAssetClient {
         const iPRegisteredLog = this.ipAssetRegistryClient.parseTxIpRegisteredEvent(receipt);
         const ipRoyaltyVaultEvent =
           this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt);
-        const ipRoyaltyVault = iPRegisteredLog
-          .map((log) => {
-            return ipRoyaltyVaultEvent.find((vault) => vault.ipId === log.ipId);
-          })
-          .filter((vault) => vault !== undefined);
         // Prepare royalty distribution if needed
-        const royaltyTokensDistributionRequest = await prepareRoyaltyTokensDistributionRequests({
+        const { requests, ipRoyaltyVaults } = await prepareRoyaltyTokensDistributionRequests({
           royaltyDistributionRequests,
           ipRegisteredLog: iPRegisteredLog,
           ipRoyaltyVault: ipRoyaltyVaultEvent,
@@ -1819,12 +1814,12 @@ export class IPAssetClient {
           chainId: this.chainId,
         });
 
-        royaltyTokensDistributionRequests.push(...royaltyTokensDistributionRequest);
+        royaltyTokensDistributionRequests.push(...requests);
 
         responses.push({
           txHash,
           receipt,
-          ipRoyaltyVault,
+          ipRoyaltyVault: ipRoyaltyVaults,
           ipAssetsWithLicenseTerms: iPRegisteredLog.map((log) => {
             return {
               ipId: log.ipId,

@@ -317,7 +317,6 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   if (zeroFees) {
     return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
   }
-  //TODO: need to check multiple erc20 spenders and multiple wip spenders
   const { wipSpenders, erc20Spenders } = groupByTokenAndMergeSpenders(tokenSpenders);
   const baseContractCallArgs = {
     sender,

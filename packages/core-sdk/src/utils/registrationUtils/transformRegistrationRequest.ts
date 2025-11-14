@@ -15,6 +15,7 @@ import {
   SpgnftImplReadOnlyClient,
 } from "../../abi/generated";
 import {
+  PrepareRoyaltyTokensDistributionRequestsResponse,
   TransformedIpRegistrationWorkflowRequest,
   TransformIpRegistrationWorkflowRequest,
 } from "../../types/resources/ipAsset";
@@ -850,15 +851,13 @@ export const prepareRoyaltyTokensDistributionRequests = async ({
   rpcClient,
   wallet,
   chainId,
-}: PrepareDistributeRoyaltyTokensRequestConfig): Promise<
-  TransformedIpRegistrationWorkflowRequest[]
-> => {
+}: PrepareDistributeRoyaltyTokensRequestConfig): Promise<PrepareRoyaltyTokensDistributionRequestsResponse> => {
   if (royaltyDistributionRequests.length === 0) {
-    return [];
+    return { requests: [], ipRoyaltyVaults: [] };
   }
 
-  const results: TransformedIpRegistrationWorkflowRequest[] = [];
-
+  const requests: TransformedIpRegistrationWorkflowRequest[] = [];
+  const ipRoyaltyVaults = [];
   for (const req of royaltyDistributionRequests) {
     const filterIpIdAndTokenId = ipRegisteredLog.find(
       ({ tokenContract, tokenId }) => tokenContract === req.nftContract && tokenId === req.tokenId,
@@ -867,15 +866,16 @@ export const prepareRoyaltyTokensDistributionRequests = async ({
     if (filterIpIdAndTokenId) {
       const { royaltyShares, totalAmount } = getRoyaltyShares(req.royaltyShares ?? []);
       const calculatedDeadline = await getCalculatedDeadline(rpcClient, req.deadline);
-
+      // The ipRoyaltyVaultItem must be found, otherwise, the request is invalid.
+      const ipRoyaltyVaultItem = ipRoyaltyVault.find(
+        (item) => item.ipId === filterIpIdAndTokenId.ipId,
+      )!;
       const response =
         await transferDistributeRoyaltyTokensRequest<RoyaltyTokenDistributionWorkflowsDistributeRoyaltyTokensRequest>(
           {
             request: {
               ipId: filterIpIdAndTokenId.ipId,
-              ipRoyaltyVault: ipRoyaltyVault.find(
-                (item) => item.ipId === filterIpIdAndTokenId.ipId,
-              )!.ipRoyaltyVault,
+              ipRoyaltyVault: ipRoyaltyVaultItem.ipRoyaltyVault,
               royaltyShares,
               totalAmount,
               deadline: calculatedDeadline,
@@ -886,11 +886,12 @@ export const prepareRoyaltyTokensDistributionRequests = async ({
           },
         );
 
-      results.push(response);
+      requests.push(response);
+      ipRoyaltyVaults.push(ipRoyaltyVaultItem);
     }
   }
 
-  return results;
+  return { requests, ipRoyaltyVaults };
 };
 /**
  * Checks if the spenders contain ERC20 tokens with amount above zero.
