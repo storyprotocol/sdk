@@ -3933,8 +3933,6 @@ describe("IP Asset Functions", () => {
           contractURI: "",
         })
       ).spgNftContract!;
-      //IP
-      // IERC20($._mintFeeToken).safeTransferFrom(payer, address(this), $._mintFee)
       const result1 = await client.ipAsset.registerIpAsset({
         nft: { type: "mint", spgNftContract: spgContractWithWIP },
         licenseTermsData: [
