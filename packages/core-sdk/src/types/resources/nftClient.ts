@@ -20,7 +20,7 @@ export type CreateNFTCollectionRequest = {
   maxSupply?: number;
   /** The cost to mint a token. */
   mintFee?: FeeInput;
-  /** The token to mint. */
+  /** The token to mint which is ERC20-compliant token (meet EIP-20 standard) or wrapped ip token. */
   mintFeeToken?: Address;
   /** The owner of the collection. */
   owner?: Address;
