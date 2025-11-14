@@ -3850,7 +3850,7 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe.skip("Test ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows", () => {
+  describe("Test ipAssetClient.batchRegisterIpAssetsWithOptimizedWorkflows", () => {
     /**
      * We need to mock the entire module instead of individual methods because
      * the code needs to access the `address` property from workflow clients,
@@ -4272,64 +4272,57 @@ describe("Test IpAssetClient", () => {
       ).to.equal(1);
       expect(getLicenseTermsIdStub.callCount).to.equal(3);
       expect(result.distributeRoyaltyTokensTxHashes).to.deep.equal([txHash]);
-      expect(result.registrationResults).to.deep.equal([
+      expect(result.registrationResults.length).to.equal(3);
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms).to.deep.equal([
         {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 1n,
-            },
-            {
-              ipId: ipId,
-              tokenId: 2n,
-            },
-            {
-              ipId: ipId,
-              tokenId: 3n,
-              licenseTermsIds: [1n, 1n],
-              maxLicenseTokensTxHashes: [txHash],
-            },
-            {
-              ipId: ipId,
-              tokenId: 4n,
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
+          ipId: ipId,
+          tokenId: 1n,
         },
         {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 5n,
-              licenseTermsIds: [1n],
-              maxLicenseTokensTxHashes: [txHash],
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
+          ipId: ipId,
+          tokenId: 2n,
         },
         {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 6n,
-            },
-            {
-              ipId: ipId,
-              tokenId: 7n,
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
+          ipId: ipId,
+          tokenId: 3n,
+          licenseTermsIds: [1n, 1n],
+          maxLicenseTokensTxHashes: [txHash],
+        },
+        {
+          ipId: ipId,
+          tokenId: 4n,
         },
       ]);
+      expect(result.registrationResults[0].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[0].txHash).to.equal(txHash);
+      expect(result.registrationResults[1].ipAssetsWithLicenseTerms).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 5n,
+          licenseTermsIds: [1n],
+          maxLicenseTokensTxHashes: [txHash],
+        },
+      ]);
+      expect(result.registrationResults[1].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[1].txHash).to.equal(txHash);
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 6n,
+        },
+        {
+          ipId: ipId,
+          tokenId: 7n,
+        },
+      ]);
+      expect(result.registrationResults[2].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[2].txHash).to.equal(txHash);
     });
 
     it("should return success given request are the spg contracts", async () => {
@@ -4575,75 +4568,64 @@ describe("Test IpAssetClient", () => {
       expect(royaltyTokenDistributionWorkflowsMulticallStub.args.length).to.equal(1);
       expect(result.distributeRoyaltyTokensTxHashes).to.equal(undefined);
       expect(getLicenseTermsIdStub.callCount).to.equal(3);
-      expect(result.registrationResults).to.deep.equal([
+      expect(result.registrationResults.length).to.equal(5);
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms).to.deep.equal([
         {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 1n,
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
-        },
-        {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 2n,
-              licenseTermsIds: [1n],
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
-        },
-        {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 3n,
-            },
-            {
-              ipId: ipId,
-              tokenId: 4n,
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
-        },
-        {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 5n,
-              licenseTermsIds: [1n, 1n],
-              maxLicenseTokensTxHashes: [txHash],
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
-        },
-        {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 5n,
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
+          ipId: ipId,
+          tokenId: 1n,
         },
       ]);
+      expect(result.registrationResults[0].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[0].txHash).to.equal(txHash);
+      expect(result.registrationResults[1].ipAssetsWithLicenseTerms).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 2n,
+          licenseTermsIds: [1n],
+        },
+      ]);
+      expect(result.registrationResults[1].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[1].txHash).to.equal(txHash);
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 3n,
+        },
+        {
+          ipId: ipId,
+          tokenId: 4n,
+        },
+      ]);
+      expect(result.registrationResults[2].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[2].txHash).to.equal(txHash);
+      expect(result.registrationResults[3].ipAssetsWithLicenseTerms).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 5n,
+          licenseTermsIds: [1n, 1n],
+          maxLicenseTokensTxHashes: [txHash],
+        },
+      ]);
+      expect(result.registrationResults[3].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[3].txHash).to.equal(txHash);
+      expect(result.registrationResults[4].ipAssetsWithLicenseTerms).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 5n,
+        },
+      ]);
+      expect(result.registrationResults[4].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[4].txHash).to.equal(txHash);
     });
 
     it("should return success given request are mixed of spg and non-spg contracts and disableMulticallWhenPossible is true", async () => {
@@ -4773,56 +4755,47 @@ describe("Test IpAssetClient", () => {
       expect(distributeRoyaltyTokensStub.callCount).to.equal(1);
       expect(distributeRoyaltyTokensStub.args.length).to.equal(1);
       expect(result.distributeRoyaltyTokensTxHashes).to.deep.equal([txHash]);
-      expect(result.registrationResults).to.deep.equal([
+      expect(result.registrationResults.length).to.equal(4);
+      expect(result.registrationResults[0].ipAssetsWithLicenseTerms).to.deep.equal([
         {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 1n,
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
-        },
-        {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 2n,
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
-        },
-        {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 3n,
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
-        },
-        {
-          ipAssetsWithLicenseTerms: [
-            {
-              ipId: ipId,
-              tokenId: 4n,
-            },
-          ],
-          receipt: {
-            transactionHash: txHash,
-          },
-          txHash: txHash,
+          ipId: ipId,
+          tokenId: 1n,
         },
       ]);
+      expect(result.registrationResults[0].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[0].txHash).to.equal(txHash);
+      expect(result.registrationResults[1].ipAssetsWithLicenseTerms).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 2n,
+        },
+      ]);
+      expect(result.registrationResults[1].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[1].txHash).to.equal(txHash);
+      expect(result.registrationResults[2].ipAssetsWithLicenseTerms).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 3n,
+        },
+      ]);
+      expect(result.registrationResults[2].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[2].txHash).to.equal(txHash);
+      expect(result.registrationResults[3].ipAssetsWithLicenseTerms).to.deep.equal([
+        {
+          ipId: ipId,
+          tokenId: 4n,
+        },
+      ]);
+      expect(result.registrationResults[3].receipt).to.deep.equal({
+        transactionHash: txHash,
+      });
+      expect(result.registrationResults[3].txHash).to.equal(txHash);
     });
   });
 
