@@ -29,7 +29,9 @@ export type TokenSpender = {
    */
   amount?: bigint;
   /**
-   * The token address that the address will spend.
+   * The token address that the spender will use.
+   * This can be either an ERC20-compliant token (meeting the EIP-20 standard)
+   * and the protocol's Wrapped IP token.
    */
   token: Address;
 };
@@ -58,7 +60,7 @@ export type TokenApprovalCall = {
 
 export type ContractCallWithFees<T extends Hash | Hash[] = Hash> = {
   multicall3Address: Address;
-  /** all possible spenders of the erc20 tokens or wrapped ip tokens. */
+  /** all possible spenders of the erc20 tokens(meet EIP-20 standard) and wrapped ip tokens. */
   tokenSpenders: TokenSpender[];
   contractCall: () => Promise<T>;
   encodedTxs: EncodedTxData[];

@@ -895,6 +895,7 @@ export const prepareRoyaltyTokensDistributionRequests = async ({
 };
 /**
  * Checks if the spenders contain ERC20 tokens with amount above zero.
+ * Due to the `msg.sender` context limitations, if the spenders contain ERC20 tokens with amount above zero, the multicall3 cannot be used.
  */
 
 const isErc20AboveZero = (spenders: TokenSpender[]): boolean => {

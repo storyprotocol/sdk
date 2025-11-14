@@ -113,6 +113,7 @@ export class DisputeClient {
             {
               address: this.arbitrationPolicyUmaClient.address,
               amount: bonds,
+              // Currently, only WIP is supported as the whitelisted dispute bond token.
               token: WIP_TOKEN_ADDRESS,
             },
           ],
@@ -335,6 +336,7 @@ export class DisputeClient {
           {
             address: this.arbitrationPolicyUmaClient.address,
             amount: bond,
+            // Currently, only WIP is supported as the whitelisted dispute bond token.
             token: WIP_TOKEN_ADDRESS,
           },
         ],

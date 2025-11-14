@@ -99,7 +99,7 @@ export const handleMulticall = async ({
     const useMulticallWhenPossible = key === multicall3Address ? true : false;
     const txResponse = await contractCallWithFees({
       options: {
-        ...options?.erc20Options,
+        ...options,
         wipOptions: {
           ...options?.wipOptions,
           useMulticallWhenPossible,

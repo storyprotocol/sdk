@@ -183,7 +183,7 @@ const handleErc20Approval = async ({
 };
 
 /**
- * Handle WIP token payment with approval and balance check.
+ * Handle WIP token payment with approval and wrapper ip to wip.
  */
 const handleWipPayment = async <T extends Hash | Hash[] = Hash>({
   tokenSpenders,
@@ -289,9 +289,6 @@ const handleIpWrapping = async <T extends Hash | Hash[] = Hash>({
 
 /**
  * Handle contract calls that require token fees.
- * - For fees in `WIP`, it automatically wraps `IP` to `WIP` when insufficient `WIP` balance.
- * - For fees in `ERC20` tokens, it automatically approves if sufficient balance is available.
- * - For fees in `WIP` and `ERC20` tokens, it will first check if the wallet has enough `ERC20` token to pay for fees, if not, it will throw an error.
  *
  * @remarks
  * This function will automatically handle the following logic:
