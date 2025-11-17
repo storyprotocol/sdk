@@ -1,10 +1,10 @@
-import { Hash, maxUint256, PublicClient } from "viem";
+import { Address, Hash, maxUint256, PublicClient } from "viem";
 
 import { simulateAndWriteContract } from "./contract";
 import { ERC20Client, WipTokenClient } from "./token";
 import { waitForTxReceipt, waitForTxReceipts } from "./txOptions";
 import { getTokenAmountDisplay } from "./utils";
-import { multicall3Abi, wrappedIpAbi } from "../abi/generated";
+import { multicall3Abi, SimpleWalletClient, wrappedIpAbi } from "../abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { TxOptions } from "../types/options";
 import {
@@ -345,18 +345,7 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
     wallet,
   };
   if (erc20Spenders.length > 0) {
-    //TODO: need to consider multicall erc20 situation
-    const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
-    const erc20Balance = await erc20Client.balanceOf(sender);
-    const erc20TotalFees = calculateTotalAmount(erc20Spenders);
-    //If the wallet does not have enough erc20 token to pay for fees, throw an error.
-    if (erc20Balance < erc20TotalFees) {
-      throw new Error(
-        `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
-          erc20TotalFees,
-        )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
-      );
-    }
+    await checkErc20BalanceBelowFees(erc20Spenders, rpcClient, wallet, sender);
   }
 
   if (wipSpenders.length > 0 && erc20Spenders.length > 0) {
@@ -430,4 +419,23 @@ const groupTokenSpenders = (
     }
   }
   return { wipSpenders, erc20Spenders };
+};
+
+const checkErc20BalanceBelowFees = async (
+  erc20Spenders: TokenSpender[],
+  rpcClient: PublicClient,
+  wallet: SimpleWalletClient,
+  sender: Address,
+): Promise<void> => {
+  const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
+  const erc20Balance = await erc20Client.balanceOf(sender);
+  const erc20TotalFees = calculateTotalAmount(erc20Spenders);
+  //If the wallet does not have enough erc20 token to pay for fees, throw an error.
+  if (erc20Balance < erc20TotalFees) {
+    throw new Error(
+      `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
+        erc20TotalFees,
+      )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
+    );
+  }
 };

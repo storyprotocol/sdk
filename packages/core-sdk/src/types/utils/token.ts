@@ -18,7 +18,7 @@ export type Fee = {
 export type TokenSpender = {
   address: Address;
   /**
-   * Amount that the address will spend in erc20 token or wrapped ip token.
+   * Amount that the address will spend in erc20 token.
    * If not provided, then unlimited amount is assumed.
    */
   amount?: bigint;
@@ -52,7 +52,7 @@ export type TokenApprovalCall = {
 
 export type ContractCallWithFees<T extends Hash | Hash[] = Hash> = {
   multicall3Address: Address;
-  /** all possible spenders of the erc20 tokens or wrapped ip tokens. */
+  /** all possible spenders of the erc20 tokens. */
   tokenSpenders: TokenSpender[];
   contractCall: () => Promise<T>;
   encodedTxs: EncodedTxData[];
