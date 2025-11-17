@@ -75,7 +75,7 @@ const aggregateTransformIpRegistrationWorkflow = (
 export const handleMulticall = async ({
   transferWorkflowRequests,
   multicall3Address,
-  wipOptions,
+  options,
   rpcClient,
   wallet,
   walletAddress,
@@ -83,7 +83,7 @@ export const handleMulticall = async ({
   const aggregateRegistrationRequest = aggregateTransformIpRegistrationWorkflow(
     transferWorkflowRequests,
     multicall3Address,
-    wipOptions?.useMulticallWhenPossible === false,
+    options?.wipOptions?.useMulticallWhenPossible === false,
   );
   const txResponses: TransactionResponse[] = [];
   for (const key in aggregateRegistrationRequest) {
@@ -99,8 +99,9 @@ export const handleMulticall = async ({
     const useMulticallWhenPossible = key === multicall3Address ? true : false;
     const txResponse = await contractCallWithFees({
       options: {
+        ...options,
         wipOptions: {
-          ...wipOptions,
+          ...options?.wipOptions,
           useMulticallWhenPossible,
         },
       },

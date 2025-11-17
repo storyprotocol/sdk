@@ -458,6 +458,11 @@ export type TransformedIpRegistrationWorkflowRequest<
   extraData?: ExtraData;
 };
 
+export type PrepareRoyaltyTokensDistributionRequestsResponse = {
+  requests: TransformedIpRegistrationWorkflowRequest[];
+  ipRoyaltyVaults: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
+}
+
 /**
  * Utility type that removes option-related fields (txOptions and wipOptions) from a type.
  * This preserves discriminated unions unlike using Omit directly.

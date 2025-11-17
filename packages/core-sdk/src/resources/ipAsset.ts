@@ -1791,7 +1791,7 @@ export class IPAssetClient {
         rpcClient: this.rpcClient,
         wallet: this.wallet,
         walletAddress: this.walletAddress,
-        wipOptions: request.options?.wipOptions,
+        options: request.options,
         chainId: this.chainId,
       });
 
@@ -1804,7 +1804,7 @@ export class IPAssetClient {
         const ipRoyaltyVaultEvent =
           this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt);
         // Prepare royalty distribution if needed
-        const response = await prepareRoyaltyTokensDistributionRequests({
+        const { requests, ipRoyaltyVaults } = await prepareRoyaltyTokensDistributionRequests({
           royaltyDistributionRequests,
           ipRegisteredLog: iPRegisteredLog,
           ipRoyaltyVault: ipRoyaltyVaultEvent,
@@ -1813,11 +1813,12 @@ export class IPAssetClient {
           chainId: this.chainId,
         });
 
-        royaltyTokensDistributionRequests.push(...response);
+        royaltyTokensDistributionRequests.push(...requests);
 
         responses.push({
           txHash,
           receipt,
+          ipRoyaltyVault: ipRoyaltyVaults,
           ipAssetsWithLicenseTerms: iPRegisteredLog.map((log) => {
             return {
               ipId: log.ipId,
@@ -1835,16 +1836,15 @@ export class IPAssetClient {
           rpcClient: this.rpcClient,
           wallet: this.wallet,
           walletAddress: this.walletAddress,
-          wipOptions: request.options?.wipOptions,
+          options: request.options,
           chainId: this.chainId,
         });
         distributeRoyaltyTokensTxHashes = txResponse.map((tx) => tx.txHash);
       }
 
-      const registrationResults = await this.processResponses(
+      const registrationResults = await this.populateLicenseAndTokenIdsForRegistrationResults(
         responses,
         aggregateRegistrationRequest,
-        request.options?.wipOptions?.useMulticallWhenPossible !== false,
       );
       return {
         registrationResults,
@@ -2384,37 +2384,28 @@ export class IPAssetClient {
   /**
    * Process the `LicenseTermsIds` and `maxLicenseTokensTxHashes` for each IP asset.
    */
-  private async processResponses(
-    responses: BatchRegistrationResult[],
+  private async populateLicenseAndTokenIdsForRegistrationResults(
+    registrationResults: BatchRegistrationResult[],
     aggregateRegistrationRequest: AggregateRegistrationRequest,
-    useMulticall: boolean,
   ): Promise<BatchRegistrationResult[]> {
-    if (useMulticall) {
-      for (const [responseIndex, response] of responses.entries()) {
-        for (const [assetIndex, ipAsset] of response.ipAssetsWithLicenseTerms.entries()) {
-          const extraData = Object.values(aggregateRegistrationRequest)[responseIndex]?.extraData?.[
-            assetIndex
-          ];
-          const result = await this.processIpAssetLicenseTerms(ipAsset, extraData);
-          responses[responseIndex].ipAssetsWithLicenseTerms[assetIndex] = result;
+    const allExtraDataArrays = Object.values(aggregateRegistrationRequest).map(
+      ({ extraData }) => extraData,
+    );
+    const allExtraData = allExtraDataArrays.flat();
+    let extraDataFlatIndex = -1;
+    for (const registrationResult of registrationResults) {
+      for (let i = 0; i < registrationResult.ipAssetsWithLicenseTerms.length; i++) {
+        extraDataFlatIndex++;
+        if (registrationResult.ipAssetsWithLicenseTerms[i] && allExtraData[extraDataFlatIndex]) {
+          const ipAsset = await this.processIpAssetLicenseTerms(
+            registrationResult.ipAssetsWithLicenseTerms[i],
+            allExtraData[extraDataFlatIndex],
+          );
+          registrationResult.ipAssetsWithLicenseTerms[i] = ipAsset;
         }
       }
-    } else {
-      const extraData: (ExtraData | undefined)[] = [];
-      Object.values(aggregateRegistrationRequest).map((item) => {
-        extraData.push(...(item.extraData ?? undefined));
-      });
-      for (let i = 0; i < responses.length; i++) {
-        const response = responses[i];
-        const extraDataItem = extraData[i];
-        const ipAsset = await this.processIpAssetLicenseTerms(
-          response.ipAssetsWithLicenseTerms[0],
-          extraDataItem,
-        );
-        responses[i].ipAssetsWithLicenseTerms[0] = ipAsset;
-      }
     }
-    return responses;
+    return registrationResults;
   }
 
   private async processIpAssetLicenseTerms(
