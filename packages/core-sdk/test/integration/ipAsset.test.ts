@@ -3283,7 +3283,7 @@ describe("IP Asset Functions", () => {
        *      - 5 ERC20 tokens
        *      - Need to distribute royalty tokens
        * Summary:
-       * - Total transactions: 5 (5 unique transaction hashes)
+       * - Total transactions: 5 (5 unique transaction hashes) due to the multicall disabled
        * - Total IP assets registered: 5
        * - Two distribute royalty tokens transactions
        */
@@ -3311,7 +3311,7 @@ describe("IP Asset Functions", () => {
 
       //licenseAttachmentWorkflowsClient
       //First arg
-      expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(2);
+      expect(result.registrationResults[1].ipAssetsWithLicenseTerms.length).equal(1);
       expect(
         result.registrationResults[1].ipAssetsWithLicenseTerms[0].licenseTermsIds?.length,
       ).equal(1);

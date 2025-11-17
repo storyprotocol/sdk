@@ -461,7 +461,7 @@ export type TransformedIpRegistrationWorkflowRequest<
 export type PrepareRoyaltyTokensDistributionRequestsResponse = {
   requests: TransformedIpRegistrationWorkflowRequest[];
   ipRoyaltyVaults: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
-}
+};
 
 /**
  * Utility type that removes option-related fields (txOptions and wipOptions) from a type.

@@ -112,11 +112,12 @@ export type AggregateRegistrationRequest = Record<
   }
 >;
 
-export type MulticallConfigRequest = BasicConfig & WithErc20AndWipOptions & {
-  transferWorkflowRequests: TransformedIpRegistrationWorkflowRequest[];
-  multicall3Address: Address;
-  walletAddress: Address;
-};
+export type MulticallConfigRequest = BasicConfig &
+  WithErc20AndWipOptions & {
+    transferWorkflowRequests: TransformedIpRegistrationWorkflowRequest[];
+    multicall3Address: Address;
+    walletAddress: Address;
+  };
 
 export type MulticallConfigResponse = {
   response: TransactionResponse[];
