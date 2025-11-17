@@ -860,6 +860,7 @@ export const prepareRoyaltyTokensDistributionRequests = async ({
   }
 
   const requests: TransformedIpRegistrationWorkflowRequest[] = [];
+  const ipRoyaltyVaults = [];
   for (const req of royaltyDistributionRequests) {
     const filterIpIdAndTokenId = ipRegisteredLog.find(
       ({ tokenContract, tokenId }) => tokenContract === req.nftContract && tokenId === req.tokenId,
@@ -890,12 +891,13 @@ export const prepareRoyaltyTokensDistributionRequests = async ({
         );
 
       requests.push(response);
+      ipRoyaltyVaults.push(ipRoyaltyVaultItem);
     }
   }
 
   return {
     requests,
-    ipRoyaltyVaults: ipRoyaltyVault,
+    ipRoyaltyVaults,
   };
 };
 

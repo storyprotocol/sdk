@@ -1749,6 +1749,8 @@ export class IPAssetClient {
    *
    * 2. For `register*` methods:
    *    - Always uses SPG's multicall for batching registration operations
+   *
+   * Additionally, when multicall3 methods are used, transactions maybe cannot use multicall3 based on fee sufficiency and the presence of ERC20 tokens due to `msg.sender` context limitations.
    */
   public async batchRegisterIpAssetsWithOptimizedWorkflows(
     request: BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
