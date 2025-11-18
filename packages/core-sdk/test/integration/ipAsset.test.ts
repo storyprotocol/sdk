@@ -4039,12 +4039,7 @@ describe("IP Asset Functions", () => {
     });
 
     describe("SpgNftContract with WIP token", () => {
-      /**
-       * There is a unknown issue (pending contract team confirmation) where,
-       * if the SpgNftContract supports public minting and multicall3 is used to wrap an IP,
-       * an `ERC721InvalidReceiver` error may be thrown.
-       */
-      it.only("should successfully when register ip with license terms data and royalty shares for WIP", async () => {
+      it("should successfully when register ip with license terms data and royalty shares for WIP", async () => {
         const result = await client.ipAsset.registerIpAsset({
           nft: { type: "mint", spgNftContract: spgContractWith100WIP },
           licenseTermsData: [

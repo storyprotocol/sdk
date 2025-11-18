@@ -1587,7 +1587,13 @@ export class IPAssetClient {
         );
       };
       const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
-        options: request.options,
+        options: {
+          ...request.options,
+          wipOptions: {
+            ...request.options?.wipOptions,
+            useMulticallWhenPossible: false,
+          },
+        },
         sender: this.walletAddress,
         spgNftContract: transformRequest.spgNftContract,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
