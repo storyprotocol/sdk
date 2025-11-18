@@ -11,12 +11,11 @@ import { privateKeyToAccount } from "viem/accounts";
 
 import { ChainIds, StoryClient, StoryConfig } from "../../../src";
 import {
-  licenseTokenAbi,
   licenseTokenAddress,
   spgnftBeaconAddress,
   SpgnftImplEventClient,
 } from "../../../src/abi/generated";
-import { chainStringToViemChain, waitTx } from "../../../src/utils/utils";
+import { chainStringToViemChain } from "../../../src/utils/utils";
 
 export const RPC = "https://aeneid.storyrpc.io";
 export const aeneid: ChainIds = 1315;
@@ -116,18 +115,6 @@ export const mintBySpg = async (
   const spgnftImplEventClient = new SpgnftImplEventClient(publicClient);
   const events = spgnftImplEventClient.parseTxTransferEvent(receipt);
   return events[0].tokenId;
-};
-
-export const approveForLicenseToken = async (address: Address, tokenId: bigint): Promise<void> => {
-  const { request: call } = await publicClient.simulateContract({
-    abi: licenseTokenAbi,
-    address: licenseToken,
-    functionName: "approve",
-    account: walletClient.account,
-    args: [address, tokenId],
-  });
-  const hash = await walletClient.writeContract(call);
-  await waitTx(publicClient, hash);
 };
 
 export const getStoryClient = (privateKey?: Address): StoryClient => {

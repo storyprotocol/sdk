@@ -226,6 +226,11 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
    * @default true
    */
   allowDuplicates?: boolean;
+  /**
+   * Set to true to automatically approve the license tokens for the DerivativeWorkflows contract.
+   * @default true
+   */
+  autoApproveLicenseTokens?: boolean;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -244,6 +249,11 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
    * @default 1000
    */
   deadline?: DeadlineInput;
+  /**
+   * Set to true to automatically approve the license tokens for the DerivativeWorkflows contract.
+   * @default true
+   */
+  autoApproveLicenseTokens?: boolean;
 } & IpMetadataAndTxOptions &
   WithWipOptions;
 
@@ -794,6 +804,20 @@ export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = Wi
      */
     deadline?: DeadlineInput;
     txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+    /**
+     * Set to true to automatically approve the license tokens for the DerivativeWorkflows contract.
+     *
+     * @remarks
+     * This option takes effect only when the request includes `licenseTokenIds` but does not provide `derivData` or `royaltyShares`:
+     * When enabled, the SDK will automatically approve the license tokens for the DerivativeWorkflows contract
+     * before executing the workflow. This helps streamline workflow execution by ensuring all required token
+     * approvals are in place for mint-on-demand derivative IP registration with royalty distribution.
+     *
+     * Has no effect if the above conditions are not met.
+     *
+     * @default true
+     */
+    autoApproveLicenseTokens?: boolean;
   };
 
 /**
