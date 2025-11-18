@@ -2073,8 +2073,8 @@ describe("Test IpAssetClient", () => {
         autoApproveLicenseTokens: true,
       });
       expect(approveLicenseTokensStub.callCount).to.equal(1);
-      expect(approveLicenseTokensStub.args[0][0].to).to.equal({
-        address: ipAssetClient.derivativeWorkflowsClient.address,
+      expect(approveLicenseTokensStub.args[0][0]).to.deep.equal({
+        to: ipAssetClient.derivativeWorkflowsClient.address,
         tokenId: 1n,
       });
     });
