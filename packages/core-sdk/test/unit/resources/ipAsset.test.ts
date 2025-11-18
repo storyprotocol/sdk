@@ -1912,7 +1912,7 @@ describe("Test IpAssetClient", () => {
       );
     });
 
-    it("should approve license tokens when autoApproveLicenseTokens is true", async () => {
+    it("should approve license tokens", async () => {
       stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf").resolves(
         "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
       );

@@ -2472,11 +2472,11 @@ export class IPAssetClient {
   ): Promise<void> {
     if (autoApproveLicenseTokens !== false) {
       for (const licenseTokenId of licenseTokenIds) {
-        const txHash11 = await this.licenseTokenClient.approve({
+        const txHash = await this.licenseTokenClient.approve({
           to: this.derivativeWorkflowsClient.address,
           tokenId: BigInt(licenseTokenId),
         });
-        await waitTx(this.rpcClient, txHash11);
+        await waitTx(this.rpcClient, txHash);
       }
     }
   }
