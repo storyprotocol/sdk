@@ -101,7 +101,7 @@ export type AttachLicenseTermsRequest = {
   licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   txOptions?: TxOptions;
@@ -118,7 +118,7 @@ export type MintLicenseTokensRequest = {
   licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   /**
@@ -157,7 +157,7 @@ export type PredictMintingLicenseFeeRequest = {
   amount: TokenAmountInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   receiver?: Address;
@@ -183,7 +183,7 @@ export type GetLicensingConfigRequest = {
   licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | PIL} address if not provided.
    */
   licenseTemplate?: Address;
 };

@@ -51,7 +51,7 @@ export type DerivativeDataInput = {
   maxRevenueShare?: RevShareInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | License Template} address if not provided.
    */
   licenseTemplate?: Address;
 };
