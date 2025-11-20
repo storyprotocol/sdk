@@ -1,6 +1,6 @@
 {
   "name": "@story-protocol/core-sdk",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Story Protocol Core SDK",
   "main": "dist/story-protocol-core-sdk.cjs.js",
   "module": "dist/story-protocol-core-sdk.esm.js",
