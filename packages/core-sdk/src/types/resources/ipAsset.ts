@@ -25,9 +25,9 @@ import {
   RevShareInput,
   TokenIdInput,
 } from "../common";
-import { TxOptions, WipOptions, WithWipOptions } from "../options";
+import { ERC20Options, TxOptions, WipOptions, WithErc20AndWipOptions } from "../options";
 import { LicenseTerms, LicenseTermsDataInput } from "./license";
-import { Erc20Spender } from "../utils/wip";
+import { TokenSpender } from "../utils/token";
 
 export type MaxRtsInput = number;
 export type DerivativeDataInput = {
@@ -51,7 +51,7 @@ export type DerivativeDataInput = {
   maxRevenueShare?: RevShareInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | License Template} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | License Template} address if not provided.
    */
   licenseTemplate?: Address;
 };
@@ -93,7 +93,7 @@ export type RegisterDerivativeWithLicenseTokensRequest = {
   txOptions?: TxOptions;
 };
 
-export type RegisterDerivativeRequest = WithWipOptions &
+export type RegisterDerivativeRequest = WithErc20AndWipOptions &
   DerivativeDataInput & {
     txOptions?: TxOptions;
     childIpId: Address;
@@ -118,7 +118,7 @@ export type MintAndRegisterIpAssetWithPilTermsRequest = {
   /** The address to receive the minted NFT. If not provided, the client's own wallet address will be used. */
   recipient?: Address;
 } & IpMetadataAndTxOptions &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type MintAndRegisterIpAssetWithPilTermsResponse = {
   txHash?: Hash;
@@ -141,7 +141,7 @@ export type RegisterIpAndMakeDerivativeRequest = {
   /** The derivative data to be used for register derivative. */
   derivData: DerivativeDataInput;
 } & IpMetadataAndTxOptions &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type RegisterIpAndMakeDerivativeResponse = {
   txHash?: Hash;
@@ -183,8 +183,7 @@ export type MintAndRegisterIpAndMakeDerivativeRequest = {
    */
   allowDuplicates?: boolean;
 } & IpMetadataAndTxOptions &
-  WithWipOptions;
-
+  WithErc20AndWipOptions;
 export type MintAndRegisterIpAndMakeDerivativeResponse = RegistrationResponse & {
   encodedTxData?: EncodedTxData;
 };
@@ -199,7 +198,7 @@ export type WithIpMetadata = {
 };
 
 export type MintAndRegisterIpRequest = IpMetadataAndTxOptions &
-  WithWipOptions & {
+  WithErc20AndWipOptions & {
     spgNftContract: Address;
     /** The address of the recipient of the minted NFT. If not provided, the client's own wallet address will be used. */
     recipient?: Address;
@@ -232,7 +231,7 @@ export type MintAndRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
    */
   autoApproveLicenseTokens?: boolean;
 } & IpMetadataAndTxOptions &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
   nftContract: Address;
@@ -255,10 +254,10 @@ export type RegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
    */
   autoApproveLicenseTokens?: boolean;
 } & IpMetadataAndTxOptions &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type BatchMintAndRegisterIpAssetWithPilTermsRequest = {
-  args: Omit<MintAndRegisterIpAssetWithPilTermsRequest, "txOptions">[];
+  args: Omit<MintAndRegisterIpAssetWithPilTermsRequest, "options" | "txOptions">[];
   txOptions?: Omit<TxOptions, "EncodedTxData">;
 };
 export type BatchMintAndRegisterIpAssetWithPilTermsResult = {
@@ -274,7 +273,7 @@ export type BatchMintAndRegisterIpAssetWithPilTermsResponse = {
 };
 
 export type BatchRegisterDerivativeRequest = {
-  args: RegisterDerivativeRequest[];
+  args: Omit<RegisterDerivativeRequest, "options" | "txOptions">[];
   /**
    * The deadline for the signature in seconds.
    * @default 1000
@@ -287,7 +286,7 @@ export type BatchRegisterDerivativeResponse = {
   txHash: Hash;
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeRequest = {
-  args: Omit<MintAndRegisterIpAndMakeDerivativeRequest, "txOptions">[];
+  args: Omit<MintAndRegisterIpAndMakeDerivativeRequest, "txOptions" | "options">[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 export type BatchMintAndRegisterIpAndMakeDerivativeResponse = {
@@ -361,7 +360,7 @@ export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensReq
   /** Authors of the IP and their shares of the royalty tokens. */
   royaltyShares: RoyaltyShare[];
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-} & WithWipOptions &
+} & WithErc20AndWipOptions &
   WithIpMetadata;
 
 export type RegisterDerivativeAndAttachLicenseTermsAndDistributeRoyaltyTokensResponse = {
@@ -387,7 +386,7 @@ export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensRequest 
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & WithIpMetadata &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type MintAndRegisterIpAndAttachPILTermsAndDistributeRoyaltyTokensResponse = {
   txHash: Hash;
@@ -413,7 +412,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest 
   recipient?: Address;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & WithIpMetadata &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse = {
   txHash: Hash;
@@ -421,7 +420,7 @@ export type MintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensResponse
   tokenId?: bigint;
 };
 
-export type CommonRegistrationParams = {
+export type CommonRegistrationParams = WithErc20AndWipOptions & {
   contractCall: () => Promise<Hash>;
   encodedTxs: EncodedTxData[];
   spgNftContract?: Address;
@@ -430,7 +429,6 @@ export type CommonRegistrationParams = {
   derivData?: DerivativeData;
   sender: Address;
   txOptions?: TxOptions;
-  wipOptions?: WipOptions;
 };
 
 export type RegistrationResponse = {
@@ -466,9 +464,13 @@ export type TransformedIpRegistrationWorkflowRequest<
     | DerivativeWorkflowsClient
     | LicenseAttachmentWorkflowsClient
     | RoyaltyTokenDistributionWorkflowsClient;
-  spenders?: Erc20Spender[];
-  totalFees?: bigint;
+  spenders?: TokenSpender[];
   extraData?: ExtraData;
+};
+
+export type PrepareRoyaltyTokensDistributionRequestsResponse = {
+  requests: TransformedIpRegistrationWorkflowRequest[];
+  ipRoyaltyVaults: RoyaltyModuleIpRoyaltyVaultDeployedEvent[];
 };
 
 /**
@@ -476,7 +478,7 @@ export type TransformedIpRegistrationWorkflowRequest<
  * This preserves discriminated unions unlike using Omit directly.
  */
 type RemoveOptionsFields<Type> = {
-  [Property in keyof Type as Exclude<Property, "txOptions" | "wipOptions">]: Type[Property];
+  [Property in keyof Type as Exclude<Property, "txOptions" | "options">]: Type[Property];
 };
 
 export type MintSpgNftRegistrationRequest = RemoveOptionsFields<
@@ -526,7 +528,7 @@ export type BatchRegistrationResult = {
   }[];
 };
 
-export type BatchRegisterIpAssetsWithOptimizedWorkflowsRequest = WithWipOptions & {
+export type BatchRegisterIpAssetsWithOptimizedWorkflowsRequest = WithErc20AndWipOptions & {
   requests: IpRegistrationWorkflowRequest[];
   txOptions?: Omit<WaitForTransactionReceiptParameters, "hash">;
 };
@@ -544,8 +546,10 @@ export type ExtraData = {
 };
 
 export type BatchMintAndRegisterIpRequest = {
-  requests: Omit<MintAndRegisterIpRequest, "txOptions" | "wipOptions">[];
+  requests: Omit<MintAndRegisterIpRequest, "txOptions" | "options">[];
+  //TODO: merge wipOptions and erc20Options into options in main version upgrade
   wipOptions?: WipOptions;
+  erc20Options?: ERC20Options;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 
@@ -647,7 +651,7 @@ export type MintedNFT = {
  * };
  * ```
  */
-export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithWipOptions &
+export type RegisterIpAssetRequest<T extends MintNFT | MintedNFT> = WithErc20AndWipOptions &
   WithIpMetadata & {
     /** The NFT to be registered as an IP asset. */
     nft: T;
@@ -774,51 +778,52 @@ export type RegisterIpAssetResponse<T extends RegisterIpAssetRequest<MintedNFT |
  * };
  * ```
  */
-export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> = WithWipOptions &
-  WithIpMetadata & {
-    nft: T;
-    /**
-     * Authors of the IP and their shares of the royalty tokens.
-     *
-     * @remarks
-     * Royalty shares can only be specified if `derivData` is also provided.
-     * This ensures that royalty distribution is always associated with derivative IP registration.
-     * The shares define how royalty tokens will be distributed among IP authors.
-     */
-    royaltyShares?: RoyaltyShare[];
-    /**
-     * The derivative data containing parent IP information and licensing terms.
-     * Can be used independently or together with `royaltyShares` for royalty distribution.
-     */
-    derivData?: DerivativeDataInput;
-    /**
-     * The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
-     * @default 100_000_000
-     */
-    maxRts?: MaxRtsInput;
-    /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
-    licenseTokenIds?: LicenseTermsIdInput[];
-    /**
-     * The deadline for the signature in seconds.
-     * @default 1000
-     */
-    deadline?: DeadlineInput;
-    txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-    /**
-     * Set to true to automatically approve the license tokens.
-     *
-     * @remarks
-     * This option takes effect only when the request includes `licenseTokenIds` but does not provide `derivData` or `royaltyShares`:
-     * When enabled, the SDK will automatically approve the license tokens before executing the workflow. 
-     * This helps streamline workflow execution by ensuring all required token
-     * approvals are in place for derivative IP registration.
-     *
-     * Has no effect if the above conditions are not met.
-     *
-     * @default true
-     */
-    autoApproveLicenseTokens?: boolean;
-  };
+export type RegisterDerivativeIpAssetRequest<T extends MintedNFT | MintNFT> =
+  WithErc20AndWipOptions &
+    WithIpMetadata & {
+      nft: T;
+      /**
+       * Authors of the IP and their shares of the royalty tokens.
+       *
+       * @remarks
+       * Royalty shares can only be specified if `derivData` is also provided.
+       * This ensures that royalty distribution is always associated with derivative IP registration.
+       * The shares define how royalty tokens will be distributed among IP authors.
+       */
+      royaltyShares?: RoyaltyShare[];
+      /**
+       * The derivative data containing parent IP information and licensing terms.
+       * Can be used independently or together with `royaltyShares` for royalty distribution.
+       */
+      derivData?: DerivativeDataInput;
+      /**
+       * The maximum number of royalty tokens that can be distributed to the external royalty policies (max: 100,000,000).
+       * @default 100_000_000
+       */
+      maxRts?: MaxRtsInput;
+      /** The IDs of the license tokens to be burned for linking the IP to parent IPs. */
+      licenseTokenIds?: LicenseTermsIdInput[];
+      /**
+       * The deadline for the signature in seconds.
+       * @default 1000
+       */
+      deadline?: DeadlineInput;
+      /**
+       * Set to true to automatically approve the license tokens.
+       *
+       * @remarks
+       * This option takes effect only when the request includes `licenseTokenIds` but does not provide `derivData` or `royaltyShares`:
+       * When enabled, the SDK will automatically approve the license tokens before executing the workflow.
+       * This helps streamline workflow execution by ensuring all required token
+       * approvals are in place for derivative IP registration.
+       *
+       * Has no effect if the above conditions are not met.
+       *
+       * @default true
+       */
+      autoApproveLicenseTokens?: boolean;
+      txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+    };
 
 /**
  * Response type for derivative IP asset registration with conditional return types.

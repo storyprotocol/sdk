@@ -100,7 +100,6 @@ export class DisputeClient {
       } else {
         const contractCall = (): Promise<Hash> => this.disputeModuleClient.raiseDispute(req);
         const { txHash, receipt } = await contractCallWithFees({
-          totalFees: bonds,
           options: {
             wipOptions: {
               ...request.wipOptions,
@@ -114,6 +113,8 @@ export class DisputeClient {
             {
               address: this.arbitrationPolicyUmaClient.address,
               amount: bonds,
+              // Currently, only WIP is supported as the whitelisted dispute bond token.
+              token: WIP_TOKEN_ADDRESS,
             },
           ],
           contractCall,
@@ -319,7 +320,6 @@ export class DisputeClient {
       };
 
       const { txHash, receipt } = await contractCallWithFees({
-        totalFees: bond,
         options: {
           wipOptions: {
             ...request.wipOptions,
@@ -336,6 +336,8 @@ export class DisputeClient {
           {
             address: this.arbitrationPolicyUmaClient.address,
             amount: bond,
+            // Currently, only WIP is supported as the whitelisted dispute bond token.
+            token: WIP_TOKEN_ADDRESS,
           },
         ],
         encodedTxs: [encodedData],

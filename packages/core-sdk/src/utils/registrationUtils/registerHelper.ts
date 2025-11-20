@@ -36,7 +36,7 @@ const aggregateTransformIpRegistrationWorkflow = (
 ): AggregateRegistrationRequest => {
   const aggregateRegistrationRequest: AggregateRegistrationRequest = {};
   for (const res of transferWorkflowRequests) {
-    const { spenders, totalFees, encodedTxData, workflowClient, isUseMulticall3, extraData } = res;
+    const { spenders, encodedTxData, workflowClient, isUseMulticall3, extraData } = res;
     let shouldUseMulticall = isUseMulticall3;
     if (disableMulticallWhenPossible) {
       shouldUseMulticall = false;
@@ -46,7 +46,6 @@ const aggregateTransformIpRegistrationWorkflow = (
     if (!aggregateRegistrationRequest[targetAddress]) {
       aggregateRegistrationRequest[targetAddress] = {
         spenders: [],
-        totalFees: 0n,
         encodedTxData: [],
         contractCall: [],
         extraData: [],
@@ -55,7 +54,6 @@ const aggregateTransformIpRegistrationWorkflow = (
 
     const currentRequest = aggregateRegistrationRequest[targetAddress];
     currentRequest.spenders = mergeSpenders(currentRequest.spenders, spenders || []);
-    currentRequest.totalFees += totalFees || 0n;
     currentRequest.encodedTxData = currentRequest.encodedTxData.concat(encodedTxData);
     currentRequest.extraData = currentRequest.extraData?.concat(extraData || undefined);
     if (isUseMulticall3 || disableMulticallWhenPossible) {
@@ -77,7 +75,7 @@ const aggregateTransformIpRegistrationWorkflow = (
 export const handleMulticall = async ({
   transferWorkflowRequests,
   multicall3Address,
-  wipOptions,
+  options,
   rpcClient,
   wallet,
   walletAddress,
@@ -85,11 +83,11 @@ export const handleMulticall = async ({
   const aggregateRegistrationRequest = aggregateTransformIpRegistrationWorkflow(
     transferWorkflowRequests,
     multicall3Address,
-    wipOptions?.useMulticallWhenPossible === false,
+    options?.wipOptions?.useMulticallWhenPossible === false,
   );
   const txResponses: TransactionResponse[] = [];
   for (const key in aggregateRegistrationRequest) {
-    const { spenders, totalFees, encodedTxData, contractCall } = aggregateRegistrationRequest[key];
+    const { spenders, encodedTxData, contractCall } = aggregateRegistrationRequest[key];
     const contractCalls = async (): Promise<Hash[]> => {
       const txHashes: Hex[] = [];
       for (const call of contractCall) {
@@ -100,10 +98,10 @@ export const handleMulticall = async ({
     };
     const useMulticallWhenPossible = key === multicall3Address ? true : false;
     const txResponse = await contractCallWithFees({
-      totalFees,
       options: {
+        ...options,
         wipOptions: {
-          ...wipOptions,
+          ...options?.wipOptions,
           useMulticallWhenPossible,
         },
       },

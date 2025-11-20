@@ -1,10 +1,11 @@
-import { Hash, maxUint256, PublicClient } from "viem";
+import { Address, Hash, maxUint256, PublicClient } from "viem";
 
 import { simulateAndWriteContract } from "./contract";
 import { ERC20Client, WipTokenClient } from "./token";
 import { waitForTxReceipt, waitForTxReceipts } from "./txOptions";
 import { getTokenAmountDisplay } from "./utils";
-import { multicall3Abi, wrappedIpAbi } from "../abi/generated";
+import { multicall3Abi, SimpleWalletClient, wrappedIpAbi } from "../abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { TxOptions } from "../types/options";
 import {
   ApprovalCall,
@@ -12,7 +13,22 @@ import {
   ContractCallWithFeesResponse,
   Multicall3ValueCall,
   MulticallWithWrapIp,
-} from "../types/utils/wip";
+  TokenSpender,
+} from "../types/utils/token";
+
+/**
+ * Merges spenders with the same address by summing their amounts.
+ */
+const mergeSpenderByAddress = (spenders: TokenSpender[], newSpender: TokenSpender): void => {
+  const existingSpender = spenders.find(
+    (s) => s.address === newSpender.address && s.token === newSpender.token,
+  );
+  if (existingSpender) {
+    existingSpender.amount = (newSpender.amount || 0n) + (existingSpender.amount || 0n);
+  } else {
+    spenders.push({ ...newSpender, amount: newSpender.amount || 0n });
+  }
+};
 
 /**
  * check the allowance of all spenders and call approval if any spender
@@ -146,20 +162,162 @@ const multiCallWrapIp = async ({
 };
 
 /**
- * Handle contract calls that require token fees. For fees in WIP, it automatically wraps IP to WIP when insufficient WIP balance.
- * For all other ERC20 tokens, it handles approvals if insufficient allowance.
+ * Calculate the total amount needed from spenders.
+ */
+const calculateTotalAmount = (spenders: TokenSpender[]): bigint =>
+  spenders.reduce((acc, spender) => acc + (spender.amount || 0n), 0n);
+
+/**
+ * Handle ERC20 token payment with approval and balance check.
+ */
+const handleErc20Payment = async <T extends Hash | Hash[] = Hash>({
+  tokenSpenders,
+  sender,
+  options,
+  multicall3Address,
+  rpcClient,
+  wallet,
+  contractCall,
+  txOptions,
+}: ContractCallWithFees<T>): Promise<ContractCallWithFeesResponse<T>> => {
+  const tokenClient = new ERC20Client(rpcClient, wallet, tokenSpenders[0].token);
+  const autoApprove = options?.erc20Options?.enableAutoApprove !== false;
+  if (autoApprove) {
+    // ERC20 token is not supported multicall, because approve method is called by the multicall contract,
+    // the owner is the multicall contract, not the sender. When transfer from the sender to the multicall contract,
+    // the owner is the sender, not the multicall contract. We cannot use multicall in this case.
+    await approvalAllSpenders({
+      spenders: tokenSpenders,
+      client: tokenClient,
+      owner: sender,
+      multicallAddress: multicall3Address,
+      rpcClient,
+      useMultiCall: false,
+    });
+  }
+  return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
+};
+
+/**
+ * Handle WIP token payment with approval and balance check.
+ */
+const handleWipPayment = async <T extends Hash | Hash[] = Hash>({
+  tokenSpenders,
+  sender,
+  options,
+  multicall3Address,
+  rpcClient,
+  contractCall,
+  txOptions,
+  wallet,
+  encodedTxs,
+}: ContractCallWithFees<T>): Promise<ContractCallWithFeesResponse<T>> => {
+  const wipTokenClient = new WipTokenClient(rpcClient, wallet);
+  const balance = await wipTokenClient.balanceOf(sender);
+  const totalFees = calculateTotalAmount(tokenSpenders);
+
+  if (balance < totalFees) {
+    return handleIpWrapping({
+      tokenSpenders,
+      sender,
+      options,
+      rpcClient,
+      multicall3Address,
+      contractCall,
+      encodedTxs,
+      wallet,
+      txOptions,
+    });
+  }
+
+  const autoApprove = options?.wipOptions?.enableAutoApprove !== false;
+  if (autoApprove) {
+    await approvalAllSpenders({
+      spenders: tokenSpenders,
+      client: wipTokenClient,
+      owner: sender,
+      multicallAddress: multicall3Address,
+      rpcClient,
+      useMultiCall: false,
+    });
+  }
+
+  return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
+};
+
+/**
+ * Handle IP wrapping to WIP when insufficient WIP balance.
+ */
+const handleIpWrapping = async <T extends Hash | Hash[] = Hash>({
+  tokenSpenders,
+  sender,
+  options,
+  rpcClient,
+  multicall3Address,
+  contractCall,
+  encodedTxs,
+  wallet,
+  txOptions,
+}: ContractCallWithFees<T>): Promise<ContractCallWithFeesResponse<T>> => {
+  const autoWrapIp = options?.wipOptions?.enableAutoWrapIp !== false;
+  const ipBalance = await rpcClient.getBalance({ address: sender });
+  const wipClient = new WipTokenClient(rpcClient, wallet);
+  const wipBalance = await wipClient.balanceOf(sender);
+  const totalFees = calculateTotalAmount(tokenSpenders);
+
+  if (ipBalance < totalFees) {
+    throw new Error(
+      `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
+        totalFees,
+      )}, balance: ${getTokenAmountDisplay(ipBalance)}.`,
+    );
+  }
+
+  if (!autoWrapIp) {
+    throw new Error(
+      `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
+        totalFees,
+      )}, balance: ${getTokenAmountDisplay(wipBalance, "WIP")}.`,
+    );
+  }
+
+  const { txHash } = await multiCallWrapIp({
+    ipAmountToWrap: totalFees,
+    multicall3Address,
+    wipClient,
+    wipOptions: options?.wipOptions,
+    contractCall,
+    wipSpenders: tokenSpenders,
+    rpcClient,
+    wallet,
+    calls: encodedTxs.map((data) => ({
+      target: data.to,
+      allowFailure: false,
+      value: 0n,
+      callData: data.data,
+    })),
+  });
+
+  return handleTransactionResponse(txHash, rpcClient, txOptions) as unknown as Promise<
+    ContractCallWithFeesResponse<T>
+  >;
+};
+
+/**
+ * Handle contract calls that require token fees.
+ * - For fees in `WIP`, it automatically wraps `IP` to `WIP` when insufficient `WIP` balance.
+ * - For fees in `ERC20` tokens, it automatically approves if sufficient balance is available.
+ * - For fees in `WIP` and `ERC20` tokens, it will first check if the wallet has enough `ERC20` token to pay for fees, if not, it will throw an error.
  *
  * @remarks
- * This function will automatically handle the following:
- *
- * If token is wip and the user does not have enough WIP, it will wrap IP to WIP, unless
+ * This function will automatically handle the following logic:
+ * - If token is `WIP` and the user does not have enough `WIP` balance, it will wrap `IP` to `WIP`, unless
  * disabled via `disableAutoWrappingIp`.
- *
- * If the user have enough token, it will check for if approvals are needed
+ * - If the user have enough token, it will check for if approvals are needed
  * for each spender address and approve it, unless disabled via `disableAutoApprove`.
+ * - If the fees are in `WIP` and `ERC20` tokens, it will not use disable `useMulticallWhenPossible` to pay for fees.
  */
 export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
-  totalFees,
   options,
   multicall3Address,
   wallet,
@@ -169,84 +327,59 @@ export const contractCallWithFees = async <T extends Hash | Hash[] = Hash>({
   txOptions,
   encodedTxs,
   rpcClient,
-  token,
 }: ContractCallWithFees<T>): Promise<ContractCallWithFeesResponse<T>> => {
-  const wipTokenClient = new WipTokenClient(rpcClient, wallet);
-  const isWip = token === wipTokenClient.address || token === undefined;
-  const selectedOptions = isWip ? options?.wipOptions : options.erc20Options;
-  const tokenClient = isWip ? wipTokenClient : new ERC20Client(rpcClient, wallet, token);
-  // if no fees, skip all logic
-  if (totalFees === 0n) {
-    const txHash = await contractCall();
-    return handleTransactionResponse(txHash, rpcClient, txOptions);
+  // Skip fee logic if no fees
+  const zeroFees = tokenSpenders.every((spender) => spender.amount === 0n);
+  if (zeroFees) {
+    return handleTransactionResponse(await contractCall(), rpcClient, txOptions);
   }
-  const balance = await tokenClient.balanceOf(sender);
-  const autoApprove = selectedOptions?.enableAutoApprove !== false;
+  const { wipSpenders, erc20Spenders } = groupTokenSpenders(tokenSpenders);
+  const baseContractCallArgs = {
+    sender,
+    options,
+    multicall3Address,
+    rpcClient,
+    contractCall,
+    encodedTxs,
+    txOptions,
+    wallet,
+  };
+  if (erc20Spenders.length > 0) {
+    await checkErc20BalanceBelowFees(erc20Spenders, rpcClient, wallet, sender);
+  }
 
-  // handle when there's enough token to cover all fees
-  if (balance >= totalFees) {
-    if (autoApprove) {
+  if (wipSpenders.length > 0 && erc20Spenders.length > 0) {
+    const autoApproveForErc20 = options?.erc20Options?.enableAutoApprove !== false;
+    const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
+    if (autoApproveForErc20) {
       await approvalAllSpenders({
-        spenders: tokenSpenders,
-        client: tokenClient,
-        owner: sender, // sender owns the wip
+        spenders: erc20Spenders,
+        client: erc20Client,
+        owner: sender,
         multicallAddress: multicall3Address,
         rpcClient,
-        // since sender has all token, if using multicall, we cannot approve transfer token into multicall by multicall.
-        //  So in this case, we don't use multicall here and instead just wait for each approval to be finished.
         useMultiCall: false,
       });
     }
-    const txHash = await contractCall();
-    return handleTransactionResponse(txHash, rpcClient, txOptions);
+    return handleWipPayment({
+      ...baseContractCallArgs,
+      tokenSpenders: wipSpenders,
+      options: {
+        wipOptions: {
+          ...options?.wipOptions,
+          // Need to pay erc20 fees with the wallet, cannot use multicall when handling erc20 payment.
+          useMulticallWhenPossible: false,
+        },
+      },
+    });
+  } else if (erc20Spenders.length > 0) {
+    return handleErc20Payment({
+      ...baseContractCallArgs,
+      tokenSpenders: erc20Spenders,
+    });
+  } else {
+    return handleWipPayment({ ...baseContractCallArgs, tokenSpenders: wipSpenders });
   }
-
-  if (!isWip) {
-    throw new Error(
-      `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
-        totalFees,
-      )}, balance: ${getTokenAmountDisplay(balance)}.`,
-    );
-  }
-  const autoWrapIp = options?.wipOptions?.enableAutoWrapIp !== false;
-  const startingBalance = await rpcClient.getBalance({ address: sender });
-  // error if wallet does not have enough IP to cover fees
-  if (startingBalance < totalFees) {
-    throw new Error(
-      `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
-        totalFees,
-      )}, balance: ${getTokenAmountDisplay(startingBalance)}.`,
-    );
-  }
-
-  // error if there's enough IP to cover fees and we cannot wrap IP to WIP
-  if (!autoWrapIp) {
-    throw new Error(
-      `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
-        totalFees,
-      )}, balance: ${getTokenAmountDisplay(balance, "WIP")}.`,
-    );
-  }
-  const calls = encodedTxs?.map((data) => ({
-    target: data.to,
-    allowFailure: false,
-    value: 0n,
-    callData: data.data,
-  }));
-  const { txHash } = await multiCallWrapIp({
-    ipAmountToWrap: totalFees,
-    multicall3Address,
-    wipClient: wipTokenClient,
-    wipOptions: options?.wipOptions,
-    contractCall,
-    wipSpenders: tokenSpenders,
-    rpcClient,
-    wallet,
-    calls,
-  });
-  return handleTransactionResponse(txHash, rpcClient, txOptions) as unknown as Promise<
-    ContractCallWithFeesResponse<T>
-  >;
 };
 
 export const handleTransactionResponse = async <T extends Hash | Hash[] = Hash>(
@@ -267,4 +400,42 @@ export const handleTransactionResponse = async <T extends Hash | Hash[] = Hash>(
     txOptions,
     txHash,
   }) as unknown as Promise<ContractCallWithFeesResponse<T>>;
+};
+
+/**
+ * Group token spenders into wip and erc20 spenders.
+ */
+const groupTokenSpenders = (
+  tokenSpenders: TokenSpender[],
+): { wipSpenders: TokenSpender[]; erc20Spenders: TokenSpender[] } => {
+  const wipSpenders: TokenSpender[] = [];
+  const erc20Spenders: TokenSpender[] = [];
+
+  for (const spender of tokenSpenders) {
+    if (spender.token.toLowerCase() === WIP_TOKEN_ADDRESS.toLowerCase()) {
+      mergeSpenderByAddress(wipSpenders, spender);
+    } else {
+      mergeSpenderByAddress(erc20Spenders, spender);
+    }
+  }
+  return { wipSpenders, erc20Spenders };
+};
+
+const checkErc20BalanceBelowFees = async (
+  erc20Spenders: TokenSpender[],
+  rpcClient: PublicClient,
+  wallet: SimpleWalletClient,
+  sender: Address,
+): Promise<void> => {
+  const erc20Client = new ERC20Client(rpcClient, wallet, erc20Spenders[0]?.token);
+  const erc20Balance = await erc20Client.balanceOf(sender);
+  const erc20TotalFees = calculateTotalAmount(erc20Spenders);
+  //If the wallet does not have enough erc20 token to pay for fees, throw an error.
+  if (erc20Balance < erc20TotalFees) {
+    throw new Error(
+      `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
+        erc20TotalFees,
+      )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
+    );
+  }
 };

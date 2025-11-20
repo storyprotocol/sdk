@@ -8,7 +8,7 @@ import {
   RevShareInput,
   TokenAmountInput,
 } from "../common";
-import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
+import { TxOptions, WithErc20AndWipOptions, WithTxOptions } from "../options";
 import { RoyaltyPolicyInput } from "./royalty";
 /**
  * This structure defines the terms for a Programmable IP License (PIL).
@@ -101,7 +101,7 @@ export type AttachLicenseTermsRequest = {
   licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   txOptions?: TxOptions;
@@ -118,7 +118,7 @@ export type MintLicenseTokensRequest = {
   licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   /**
@@ -141,7 +141,7 @@ export type MintLicenseTokensRequest = {
   /** The address of the receiver. */
   receiver?: Address;
 } & WithTxOptions &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type MintLicenseTokensResponse = {
   licenseTokenIds?: bigint[];
@@ -157,7 +157,7 @@ export type PredictMintingLicenseFeeRequest = {
   amount: TokenAmountInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | PIL} address if not provided.
    */
   licenseTemplate?: Address;
   receiver?: Address;
@@ -183,7 +183,7 @@ export type GetLicensingConfigRequest = {
   licenseTermsId: LicenseTermsIdInput;
   /**
    * The address of the license template.
-   * Defaults to {@link https://docs.story.foundation/docs/programmable-ip-license | PIL} address if not provided.
+   * Defaults to {@link https://docs.story.foundation/concepts/licensing-module/license-template | PIL} address if not provided.
    */
   licenseTemplate?: Address;
 };

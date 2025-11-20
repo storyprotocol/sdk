@@ -47,8 +47,8 @@ import {
   SetMaxLicenseTokensRequest,
 } from "../types/resources/license";
 import { SignatureMethodType } from "../types/utils/registerHelper";
-import { Erc20Spender } from "../types/utils/wip";
-import { calculateLicenseWipMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
+import { TokenSpender } from "../types/utils/token";
+import { calculateLicenseMintFee, predictMintingLicenseFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
@@ -232,23 +232,22 @@ export class LicenseClient {
       }
 
       // get license token minting fee
-      const licenseMintingFee = await calculateLicenseWipMintFee({
+      const licenseMintingFee = await calculateLicenseMintFee({
         predictMintingFeeRequest: req,
         rpcClient: this.rpcClient,
         chainId: this.chainId,
         walletAddress: this.walletAddress,
       });
 
-      const wipSpenders: Erc20Spender[] = [];
-      if (licenseMintingFee > 0n) {
+      const wipSpenders: TokenSpender[] = [];
+      if (licenseMintingFee.amount > 0n) {
         wipSpenders.push({
           address: royaltyModuleAddress[this.chainId],
-          amount: licenseMintingFee,
+          ...licenseMintingFee,
         });
       }
       const { txHash, receipt } = await contractCallWithFees({
-        totalFees: licenseMintingFee,
-        options: { wipOptions: request.options?.wipOptions },
+        options: request.options,
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
         tokenSpenders: wipSpenders,

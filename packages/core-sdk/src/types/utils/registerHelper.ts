@@ -18,8 +18,8 @@ import {
 } from "../../abi/generated";
 import { TokenIdInput } from "../common";
 import { ChainIds } from "../config";
-import { TransactionResponse, WipOptions } from "../options";
-import { Erc20Spender } from "./wip";
+import { TransactionResponse, WithErc20AndWipOptions } from "../options";
+import { Fee, TokenSpender } from "./token";
 import {
   DerivativeData,
   DerivativeDataInput,
@@ -105,20 +105,19 @@ export type RoyaltyDistributionRequest = {
 export type AggregateRegistrationRequest = Record<
   string,
   {
-    spenders: Erc20Spender[];
-    totalFees: bigint;
+    spenders: TokenSpender[];
     encodedTxData: EncodedTxData[];
     contractCall: Array<() => Promise<Hash>>;
     extraData: (ExtraData | undefined)[];
   }
 >;
 
-export type MulticallConfigRequest = BasicConfig & {
-  transferWorkflowRequests: TransformedIpRegistrationWorkflowRequest[];
-  multicall3Address: Address;
-  walletAddress: Address;
-  wipOptions?: WipOptions;
-};
+export type MulticallConfigRequest = BasicConfig &
+  WithErc20AndWipOptions & {
+    transferWorkflowRequests: TransformedIpRegistrationWorkflowRequest[];
+    multicall3Address: Address;
+    walletAddress: Address;
+  };
 
 export type MulticallConfigResponse = {
   response: TransactionResponse[];
@@ -159,7 +158,7 @@ export type TransferRegisterIpAndMakeDerivativeAndDeployRoyaltyVaultRequestConfi
   wallet: SimpleWalletClient;
   chainId: ChainIds;
   royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
-  totalFees: bigint;
+  derivativeMintingFee: Fee[];
   royaltyShares: RoyaltyShare[];
 };
 export type TransferRegisterDerivativeIpRequestConfig = {
@@ -169,28 +168,28 @@ export type TransferRegisterDerivativeIpRequestConfig = {
   wallet: SimpleWalletClient;
   chainId: ChainIds;
   derivativeWorkflowsClient: DerivativeWorkflowsClient;
-  totalFees: bigint;
+  derivativeMintingFee: Fee[];
 };
 
 export type TransferMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensConfig = {
   request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokensRequest;
-  nftMintFee: bigint;
+  nftMintFee: Fee | undefined;
   isPublicMinting: boolean;
-  totalDerivativeMintingFee: bigint;
+  derivativeMintingFee: Fee[];
   royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
 };
 
 export type TransformMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest = {
   request: RoyaltyTokenDistributionWorkflowsMintAndRegisterIpAndAttachPilTermsAndDistributeRoyaltyTokensRequest;
   royaltyTokenDistributionWorkflowsClient: RoyaltyTokenDistributionWorkflowsClient;
-  nftMintFee: bigint;
+  nftMintFee: Fee | undefined;
   maxLicenseTokens: bigint[];
 };
 
 export type TransferMintAndRegisterIpAssetWithPilTermsConfig = {
   request: LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest;
   licenseAttachmentWorkflowsClient: LicenseAttachmentWorkflowsClient;
-  nftMintFee: bigint;
+  nftMintFee: Fee | undefined;
   isPublicMinting: boolean;
   maxLicenseTokens: bigint[];
 };
@@ -198,7 +197,7 @@ export type TransferMintAndRegisterIpAssetWithPilTermsConfig = {
 export type TransferMintAndRegisterIpAndMakeDerivativeRequestConfig = {
   request: DerivativeWorkflowsMintAndRegisterIpAndMakeDerivativeRequest;
   derivativeWorkflowsClient: DerivativeWorkflowsClient;
-  nftMintFee: bigint;
+  nftMintFee: Fee | undefined;
   isPublicMinting: boolean;
-  totalDerivativeMintingFee: bigint;
+  derivativeMintingFee: Fee[];
 };
