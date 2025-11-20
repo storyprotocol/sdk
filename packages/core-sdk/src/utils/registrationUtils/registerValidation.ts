@@ -22,7 +22,7 @@ import {
   GetIpIdAddressConfig,
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
-import { Erc20Spender } from "../../types/utils/wip";
+import { TokenSpender } from "../../types/utils/token";
 import { PILFlavor } from "../pilFlavor";
 import { getRevenueShare } from "../royalty";
 import { getDeadline } from "../sign";
@@ -225,9 +225,9 @@ export const getCalculatedDeadline = async (
 };
 
 export const mergeSpenders = (
-  previousSpenders: Erc20Spender[],
-  newSpenders: Erc20Spender[],
-): Erc20Spender[] => {
+  previousSpenders: TokenSpender[],
+  newSpenders: TokenSpender[],
+): TokenSpender[] => {
   if (!newSpenders || newSpenders.length === 0) {
     return previousSpenders;
   }
@@ -238,7 +238,9 @@ export const mergeSpenders = (
         return acc;
       }
 
-      const existingSpender = acc.find((s) => s.address === spender.address);
+      const existingSpender = acc.find(
+        (s) => s.address === spender.address && s.token === spender.token,
+      );
       if (!existingSpender) {
         acc.push({ ...spender, amount: spender.amount || 0n });
       } else {

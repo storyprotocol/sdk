@@ -8,7 +8,7 @@ import {
   RevShareInput,
   TokenAmountInput,
 } from "../common";
-import { TxOptions, WithTxOptions, WithWipOptions } from "../options";
+import { TxOptions, WithErc20AndWipOptions, WithTxOptions } from "../options";
 import { RoyaltyPolicyInput } from "./royalty";
 /**
  * This structure defines the terms for a Programmable IP License (PIL).
@@ -141,7 +141,7 @@ export type MintLicenseTokensRequest = {
   /** The address of the receiver. */
   receiver?: Address;
 } & WithTxOptions &
-  WithWipOptions;
+  WithErc20AndWipOptions;
 
 export type MintLicenseTokensResponse = {
   licenseTokenIds?: bigint[];

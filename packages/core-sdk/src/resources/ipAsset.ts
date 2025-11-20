@@ -104,8 +104,8 @@ import {
 import { IpCreator, IpMetadata } from "../types/resources/ipMetadata";
 import { LicenseTerms } from "../types/resources/license";
 import { AggregateRegistrationRequest, SignatureMethodType } from "../types/utils/registerHelper";
-import { Erc20Spender } from "../types/utils/wip";
-import { calculateDerivativeMintingFee, calculateSPGWipMintFee } from "../utils/calculateMintFee";
+import { TokenSpender } from "../types/utils/token";
+import { calculateDerivativeMintingFee, calculateSPGMintFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
@@ -403,9 +403,12 @@ export class IPAssetClient {
           txOptions: request.txOptions,
           encodedTxs: [encodedTxData],
           spgSpenderAddress: this.royaltyModuleEventClient.address,
-          wipOptions: {
-            ...request.options?.wipOptions,
-            useMulticallWhenPossible: false,
+          options: {
+            ...request.options,
+            wipOptions: {
+              ...request.options?.wipOptions,
+              useMulticallWhenPossible: false,
+            },
           },
         });
       }
@@ -604,7 +607,7 @@ export class IPAssetClient {
         );
       };
       const rsp = await this.handleRegistrationWithFees({
-        wipOptions: request.options?.wipOptions,
+        options: request.options,
         sender: this.walletAddress,
         spgNftContract: transformRequest.spgNftContract,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -847,9 +850,12 @@ export class IPAssetClient {
         return this.derivativeWorkflowsClient.registerIpAndMakeDerivative(transformRequest);
       };
       return this.handleRegistrationWithFees({
-        wipOptions: {
-          ...request.options?.wipOptions,
-          useMulticallWhenPossible: false,
+        options: {
+          ...request.options,
+          wipOptions: {
+            ...request.options?.wipOptions,
+            useMulticallWhenPossible: false,
+          },
         },
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
@@ -910,7 +916,7 @@ export class IPAssetClient {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivative(transformRequest);
       };
       return this.handleRegistrationWithFees({
-        wipOptions: request.options?.wipOptions,
+        options: request.options,
         sender: this.walletAddress,
         spgSpenderAddress: this.derivativeWorkflowsClient.address,
         spgNftContract,
@@ -1008,9 +1014,12 @@ export class IPAssetClient {
         contractCall,
         spgNftContract: object.spgNftContract,
         txOptions: request.txOptions,
-        wipOptions: {
-          ...request.options?.wipOptions,
-          useMulticallWhenPossible: false,
+        options: {
+          ...request.options,
+          wipOptions: {
+            ...request.options?.wipOptions,
+            useMulticallWhenPossible: false,
+          },
         },
       });
     } catch (error) {
@@ -1038,11 +1047,9 @@ export class IPAssetClient {
   ): Promise<BatchMintAndRegisterIpResponse> {
     try {
       const publicMintEncodedTxs: EncodedTxData[] = [];
-      let publicMintSpenders: Erc20Spender[] = [];
+      let publicMintSpenders: TokenSpender[] = [];
       const privateMintEncodedTxs: EncodedTxData[] = [];
-      let privateMintSpenders: Erc20Spender[] = [];
-      let publicMintFeesTotal = 0n;
-      let privateMintFeesTotal = 0n;
+      let privateMintSpenders: TokenSpender[] = [];
       for (const req of request.requests) {
         const registrationRequest: RegistrationWorkflowsMintAndRegisterIpRequest = {
           spgNftContract: validateAddress(req.spgNftContract),
@@ -1051,7 +1058,7 @@ export class IPAssetClient {
           allowDuplicates: req.allowDuplicates || true,
         };
         const isPublicMinting = await getPublicMinting(req.spgNftContract, this.rpcClient);
-        const nftMintFee = await calculateSPGWipMintFee(
+        const nftMintFee = await calculateSPGMintFee(
           new SpgnftImplReadOnlyClient(this.rpcClient, registrationRequest.spgNftContract),
         );
         const encodeTx = {
@@ -1068,13 +1075,10 @@ export class IPAssetClient {
           }),
         };
         if (isPublicMinting) {
-          publicMintFeesTotal += nftMintFee;
-          publicMintSpenders = mergeSpenders(publicMintSpenders, [
-            {
-              address: registrationRequest.spgNftContract,
-              amount: nftMintFee,
-            },
-          ]);
+          publicMintSpenders = mergeSpenders(
+            publicMintSpenders,
+            nftMintFee ? [{ address: registrationRequest.spgNftContract, ...nftMintFee }] : [],
+          );
           publicMintEncodedTxs.push(encodeTx);
         } else {
           const isMinterRole = await hasMinterRole(
@@ -1087,21 +1091,17 @@ export class IPAssetClient {
               `Caller ${this.walletAddress} does not have the minter role for ${registrationRequest.spgNftContract}`,
             );
           }
-          privateMintFeesTotal += nftMintFee;
-          privateMintSpenders = mergeSpenders(privateMintSpenders, [
-            {
-              address: registrationRequest.spgNftContract,
-              amount: nftMintFee,
-            },
-          ]);
+          privateMintSpenders = mergeSpenders(
+            privateMintSpenders,
+            nftMintFee ? [{ address: registrationRequest.spgNftContract, ...nftMintFee }] : [],
+          );
           privateMintEncodedTxs.push(encodeTx);
         }
       }
 
       const handlePublicMintTransactions = async (): Promise<TransactionResponse> => {
         return await contractCallWithFees({
-          totalFees: publicMintFeesTotal,
-          options: { wipOptions: request.wipOptions },
+          options: { wipOptions: request.wipOptions, erc20Options: request.erc20Options },
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
           tokenSpenders: publicMintSpenders,
@@ -1118,8 +1118,10 @@ export class IPAssetClient {
 
       const handlePrivateMintTransactions = async (): Promise<TransactionResponse> => {
         return await contractCallWithFees({
-          totalFees: privateMintFeesTotal,
-          options: { wipOptions: { ...request.wipOptions, useMulticallWhenPossible: false } },
+          options: {
+            wipOptions: { ...request.wipOptions, useMulticallWhenPossible: false },
+            erc20Options: request.erc20Options,
+          },
           multicall3Address: this.multicall3Client.address,
           rpcClient: this.rpcClient,
           tokenSpenders: privateMintSpenders,
@@ -1208,11 +1210,14 @@ export class IPAssetClient {
         );
       };
       return this.handleRegistrationWithFees({
-        wipOptions: {
-          ...request.options?.wipOptions,
-          // need to disable multicall to avoid needing to transfer the license
-          // token to the multicall contract.
-          useMulticallWhenPossible: false,
+        options: {
+          ...request.options,
+          wipOptions: {
+            ...request.options?.wipOptions,
+            // need to disable multicall to avoid needing to transfer the license
+            // token to the multicall contract.
+            useMulticallWhenPossible: false,
+          },
         },
         sender: this.walletAddress,
         spgNftContract: object.spgNftContract,
@@ -1481,9 +1486,12 @@ export class IPAssetClient {
         );
       };
       const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
-        wipOptions: {
-          ...request.options?.wipOptions,
-          useMulticallWhenPossible: false,
+        options: {
+          ...request.options,
+          wipOptions: {
+            ...request.options?.wipOptions,
+            useMulticallWhenPossible: false,
+          },
         },
         sender: this.walletAddress,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -1579,7 +1587,13 @@ export class IPAssetClient {
         );
       };
       const { txHash, ipId, tokenId, receipt } = await this.handleRegistrationWithFees({
-        wipOptions: request.options?.wipOptions,
+        options: {
+          ...request.options,
+          wipOptions: {
+            ...request.options?.wipOptions,
+            useMulticallWhenPossible: false,
+          },
+        },
         sender: this.walletAddress,
         spgNftContract: transformRequest.spgNftContract,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
@@ -1666,7 +1680,7 @@ export class IPAssetClient {
       };
       return await this.handleRegistrationWithFees({
         spgNftContract: transformRequest.spgNftContract,
-        wipOptions: request.options?.wipOptions,
+        options: request.options,
         sender: this.walletAddress,
         spgSpenderAddress: this.royaltyTokenDistributionWorkflowsClient.address,
         derivData: transformRequest.derivData,
@@ -1729,7 +1743,7 @@ export class IPAssetClient {
    * The method supports automatic token handling for minting fees:
    * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
-   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   * - These automatic processes can be configured through the `options` parameter to control behavior like multicall usage and approval settings.
    *
    * @remark Multicall selection logic:
    *
@@ -1741,6 +1755,8 @@ export class IPAssetClient {
    *
    * 2. For `register*` methods:
    *    - Always uses SPG's multicall for batching registration operations
+   *
+   * Additionally, when multicall3 methods are used, transactions maybe cannot use multicall3 based on fee sufficiency and the presence of ERC20 tokens due to `msg.sender` context limitations.
    */
   public async batchRegisterIpAssetsWithOptimizedWorkflows(
     request: BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
@@ -1783,7 +1799,7 @@ export class IPAssetClient {
         rpcClient: this.rpcClient,
         wallet: this.wallet,
         walletAddress: this.walletAddress,
-        wipOptions: request.options?.wipOptions,
+        options: request.options,
         chainId: this.chainId,
       });
 
@@ -1796,7 +1812,7 @@ export class IPAssetClient {
         const ipRoyaltyVaultEvent =
           this.royaltyModuleEventClient.parseTxIpRoyaltyVaultDeployedEvent(receipt);
         // Prepare royalty distribution if needed
-        const response = await prepareRoyaltyTokensDistributionRequests({
+        const { requests, ipRoyaltyVaults } = await prepareRoyaltyTokensDistributionRequests({
           royaltyDistributionRequests,
           ipRegisteredLog: iPRegisteredLog,
           ipRoyaltyVault: ipRoyaltyVaultEvent,
@@ -1805,11 +1821,12 @@ export class IPAssetClient {
           chainId: this.chainId,
         });
 
-        royaltyTokensDistributionRequests.push(...response);
+        royaltyTokensDistributionRequests.push(...requests);
 
         responses.push({
           txHash,
           receipt,
+          ipRoyaltyVault: ipRoyaltyVaults,
           ipAssetsWithLicenseTerms: iPRegisteredLog.map((log) => {
             return {
               ipId: log.ipId,
@@ -1827,16 +1844,15 @@ export class IPAssetClient {
           rpcClient: this.rpcClient,
           wallet: this.wallet,
           walletAddress: this.walletAddress,
-          wipOptions: request.options?.wipOptions,
+          options: request.options,
           chainId: this.chainId,
         });
         distributeRoyaltyTokensTxHashes = txResponse.map((tx) => tx.txHash);
       }
 
-      const registrationResults = await this.processResponses(
+      const registrationResults = await this.populateLicenseAndTokenIdsForRegistrationResults(
         responses,
         aggregateRegistrationRequest,
-        request.options?.wipOptions?.useMulticallWhenPossible !== false,
       );
       return {
         registrationResults,
@@ -1901,7 +1917,7 @@ export class IPAssetClient {
    * **Automatic Token Handling:**
    * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
-   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   * - These automatic processes can be configured through the `options` parameter to control behavior like multicall usage and approval settings.
    *
    * @throws {Error} If the NFT type is invalid.
    * @throws {Error} If `licenseTermsData` is not provided when `royaltyShares` are specified.
@@ -1987,7 +2003,7 @@ export class IPAssetClient {
    * **Automatic Token Handling:**
    * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
-   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   * - These automatic processes can be configured through the `options` parameter to control behavior like multicall usage and approval settings.
    *
    * @throws {Error} If `derivData` is not provided when `royaltyShares` are provided.
    * @throws {Error} If neither `derivData` nor `licenseTokenIds` are provided.
@@ -2157,7 +2173,7 @@ export class IPAssetClient {
    * **Automatic Token Handling:**
    * - If the wallet's IP token balance is insufficient to cover minting fees, it automatically wraps native IP tokens into WIP tokens.
    * - It checks allowances for all required spenders and automatically approves them if their current allowance is lower than needed.
-   * - These automatic processes can be configured through the `wipOptions` parameter to control behavior like multicall usage and approval settings.
+   * - These automatic processes can be configured through the `options` parameter to control behavior like multicall usage and approval settings.
    */
   public async linkDerivative(
     request: RegisterDerivativeWithLicenseTokensRequest | RegisterDerivativeRequest,
@@ -2303,17 +2319,17 @@ export class IPAssetClient {
     spgNftContract,
     spgSpenderAddress,
     txOptions,
-    wipOptions,
+    options,
     encodedTxs,
     contractCall,
   }: CommonRegistrationParams): Promise<CommonRegistrationTxResponse> {
-    let totalFees = 0n;
-    const wipSpenders: Erc20Spender[] = [];
+    const tokenSpenders: TokenSpender[] = [];
+    const wipOptions = options?.wipOptions;
     let useMulticallWhenPossible = wipOptions?.useMulticallWhenPossible ?? true;
 
     // get spg minting fee
     if (spgNftContract) {
-      const nftMintFee = await calculateSPGWipMintFee(
+      const nftMintFee = await calculateSPGMintFee(
         new SpgnftImplReadOnlyClient(this.rpcClient, spgNftContract),
       );
       const publicMinting = await getPublicMinting(spgNftContract, this.rpcClient);
@@ -2328,43 +2344,34 @@ export class IPAssetClient {
       if (!publicMinting) {
         useMulticallWhenPossible = false;
       }
-      totalFees += nftMintFee;
-      wipSpenders.push({
-        address: spgNftContract,
-        amount: nftMintFee,
-      });
+      tokenSpenders.push(...(nftMintFee ? [{ address: spgNftContract, ...nftMintFee }] : []));
     }
 
     // get derivative minting fee
     if (derivData) {
-      const totalDerivativeMintingFee = await calculateDerivativeMintingFee({
+      const mintFees = await calculateDerivativeMintingFee({
         derivData,
         rpcClient: this.rpcClient,
         wallet: this.wallet,
         chainId: this.chainId,
         sender,
       });
-      totalFees += totalDerivativeMintingFee;
-      if (totalDerivativeMintingFee > 0) {
-        wipSpenders.push({
+      for (const mintFee of mintFees) {
+        tokenSpenders.push({
           address: spgSpenderAddress,
-          amount: totalDerivativeMintingFee,
+          ...mintFee,
         });
       }
     }
 
-    if (totalFees < 0) {
-      throw new Error(
-        `Total fees for registering derivative should never be negative: ${totalFees}`,
-      );
-    }
-
     const { txHash, receipt } = await contractCallWithFees({
-      totalFees,
-      options: { wipOptions: { ...wipOptions, useMulticallWhenPossible } },
+      options: {
+        ...options,
+        wipOptions: { ...wipOptions, useMulticallWhenPossible },
+      },
       multicall3Address: this.multicall3Client.address,
       rpcClient: this.rpcClient,
-      tokenSpenders: wipSpenders,
+      tokenSpenders: tokenSpenders,
       contractCall,
       sender,
       wallet: this.wallet,
@@ -2385,37 +2392,28 @@ export class IPAssetClient {
   /**
    * Process the `LicenseTermsIds` and `maxLicenseTokensTxHashes` for each IP asset.
    */
-  private async processResponses(
-    responses: BatchRegistrationResult[],
+  private async populateLicenseAndTokenIdsForRegistrationResults(
+    registrationResults: BatchRegistrationResult[],
     aggregateRegistrationRequest: AggregateRegistrationRequest,
-    useMulticall: boolean,
   ): Promise<BatchRegistrationResult[]> {
-    if (useMulticall) {
-      for (const [responseIndex, response] of responses.entries()) {
-        for (const [assetIndex, ipAsset] of response.ipAssetsWithLicenseTerms.entries()) {
-          const extraData = Object.values(aggregateRegistrationRequest)[responseIndex]?.extraData?.[
-            assetIndex
-          ];
-          const result = await this.processIpAssetLicenseTerms(ipAsset, extraData);
-          responses[responseIndex].ipAssetsWithLicenseTerms[assetIndex] = result;
+    const allExtraDataArrays = Object.values(aggregateRegistrationRequest).map(
+      ({ extraData }) => extraData,
+    );
+    const allExtraData = allExtraDataArrays.flat();
+    let extraDataFlatIndex = -1;
+    for (const registrationResult of registrationResults) {
+      for (let i = 0; i < registrationResult.ipAssetsWithLicenseTerms.length; i++) {
+        extraDataFlatIndex++;
+        if (registrationResult.ipAssetsWithLicenseTerms[i] && allExtraData[extraDataFlatIndex]) {
+          const ipAsset = await this.processIpAssetLicenseTerms(
+            registrationResult.ipAssetsWithLicenseTerms[i],
+            allExtraData[extraDataFlatIndex],
+          );
+          registrationResult.ipAssetsWithLicenseTerms[i] = ipAsset;
         }
       }
-    } else {
-      const extraData: (ExtraData | undefined)[] = [];
-      Object.values(aggregateRegistrationRequest).map((item) => {
-        extraData.push(...(item.extraData ?? undefined));
-      });
-      for (let i = 0; i < responses.length; i++) {
-        const response = responses[i];
-        const extraDataItem = extraData[i];
-        const ipAsset = await this.processIpAssetLicenseTerms(
-          response.ipAssetsWithLicenseTerms[0],
-          extraDataItem,
-        );
-        responses[i].ipAssetsWithLicenseTerms[0] = ipAsset;
-      }
     }
-    return responses;
+    return registrationResults;
   }
 
   private async processIpAssetLicenseTerms(

@@ -38,7 +38,7 @@ import {
   TransferClaimedTokensFromIpToWalletParams,
   TransferToVaultRequest,
 } from "../types/resources/royalty";
-import { Erc20Spender } from "../types/utils/wip";
+import { TokenSpender } from "../types/utils/token";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { royaltyPolicyInputToAddress } from "../utils/royalty";
@@ -266,14 +266,7 @@ export class RoyaltyClient {
     request: PayRoyaltyOnBehalfRequest,
   ): Promise<PayRoyaltyOnBehalfResponse> {
     try {
-      const {
-        receiverIpId,
-        payerIpId,
-        token,
-        amount,
-        options: { erc20Options, wipOptions } = {},
-        txOptions,
-      } = request;
+      const { receiverIpId, payerIpId, token, amount, options, txOptions } = request;
       const sender = this.wallet.account!.address;
       const payAmount = BigInt(amount);
       if (payAmount <= 0n) {
@@ -309,21 +302,20 @@ export class RoyaltyClient {
       const contractCall = (): Promise<Hash> => {
         return this.royaltyModuleClient.payRoyaltyOnBehalf(req);
       };
-      const tokenSpenders: Erc20Spender[] = [
+      const tokenSpenders: TokenSpender[] = [
         {
           address: this.royaltyModuleClient.address,
           amount: payAmount,
+          token,
         },
       ];
       return await contractCallWithFees({
-        totalFees: payAmount,
-        options: { erc20Options, wipOptions },
+        options,
         multicall3Address: this.multicall3Client.address,
         rpcClient: this.rpcClient,
         tokenSpenders: tokenSpenders,
         contractCall,
         sender,
-        token,
         wallet: this.wallet,
         txOptions,
         encodedTxs: [encodedTxData],
