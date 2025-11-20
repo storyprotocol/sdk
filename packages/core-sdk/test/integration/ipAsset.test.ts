@@ -11,7 +11,6 @@ import {
 import { getDerivedStoryClient } from "./utils/BIP32";
 import {
   aeneid,
-  approveForLicenseToken,
   getStoryClient,
   getTokenId,
   mintBySpg,
@@ -527,12 +526,6 @@ describe("IP Asset Functions", () => {
         maxMintingFee: 0,
         maxRevenueShare: 100,
       });
-
-      await approveForLicenseToken(
-        derivativeWorkflowsAddress[aeneid],
-        mintLicenseTokensResult.licenseTokenIds![0],
-      );
-
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
         spgNftContract: nftContract,
         licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
@@ -556,11 +549,6 @@ describe("IP Asset Functions", () => {
         maxMintingFee: 0,
         maxRevenueShare: 100,
       });
-
-      await approveForLicenseToken(
-        derivativeWorkflowsAddress[aeneid],
-        mintLicenseTokensResult.licenseTokenIds![0],
-      );
 
       const result = await client.ipAsset.registerIpAndMakeDerivativeWithLicenseTokens({
         nftContract: nftContract,
@@ -1108,8 +1096,6 @@ describe("IP Asset Functions", () => {
         maxMintingFee: 0n,
         maxRevenueShare: 100,
       });
-      await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
-      expect(licenseTokenIds).to.be.an("array");
       const { txHash, ipId } =
         await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
           spgNftContract: nftContractWithMintingFee,
@@ -1429,7 +1415,6 @@ describe("IP Asset Functions", () => {
         maxRevenueShare: 100,
       });
       const licenseTokenId = mintLicenseTokensResult.licenseTokenIds![0];
-      await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenId);
       const result = await client.ipAsset.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
         spgNftContract: spgNftContractWithPrivateMinting,
         licenseTokenIds: [licenseTokenId],
@@ -3700,8 +3685,6 @@ describe("IP Asset Functions", () => {
           maxMintingFee: 0n,
           maxRevenueShare: 100,
         });
-        await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
-
         const tokenId = await getTokenId();
         const result = await client.ipAsset.registerDerivativeIpAsset({
           nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
@@ -3762,7 +3745,6 @@ describe("IP Asset Functions", () => {
           maxMintingFee: 0n,
           maxRevenueShare: 100,
         });
-        await approveForLicenseToken(derivativeWorkflowsAddress[aeneid], licenseTokenIds![0]);
         const result = await client.ipAsset.registerDerivativeIpAsset({
           nft: { type: "mint", spgNftContract },
           licenseTokenIds: licenseTokenIds!,

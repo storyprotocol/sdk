@@ -1755,6 +1755,19 @@ describe("Test IpAssetClient", () => {
   });
 
   describe("Test ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens", () => {
+    beforeEach(() => {
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+    });
     it("should throw licenseTokens error when mintAndRegisterIpAndMakeDerivativeWithLicenseTokens given licenseTokens empty", async () => {
       try {
         await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
@@ -1795,17 +1808,6 @@ describe("Test IpAssetClient", () => {
         ipAssetClient.derivativeWorkflowsClient,
         "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
       ).resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
-        {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          chainId: 1513n,
-          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 1n,
-          name: "",
-          uri: "",
-          registrationDate: 0n,
-        },
-      ]);
       const result = await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
         spgNftContract,
         licenseTokenIds: [1n],
@@ -1834,17 +1836,6 @@ describe("Test IpAssetClient", () => {
         ipAssetClient.derivativeWorkflowsClient,
         "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
       ).resolves(txHash);
-      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
-        {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          chainId: 0n,
-          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 1n,
-          name: "",
-          uri: "",
-          registrationDate: 0n,
-        },
-      ]);
 
       const result = await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
         spgNftContract,
@@ -1895,17 +1886,6 @@ describe("Test IpAssetClient", () => {
         ipAssetClient.derivativeWorkflowsClient,
         "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
       ).resolves(txHash);
-      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
-        {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          chainId: 0n,
-          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 1n,
-          name: "",
-          uri: "",
-          registrationDate: 0n,
-        },
-      ]);
       await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
         spgNftContract,
         licenseTokenIds: [1n],
@@ -1932,6 +1912,43 @@ describe("Test IpAssetClient", () => {
         MAX_ROYALTY_TOKEN,
       );
     });
+
+    it("should approve license tokens", async () => {
+      stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf").resolves(
+        "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+      );
+      const approveLicenseTokensStub = stub(ipAssetClient.licenseTokenClient, "approve").resolves(
+        txHash,
+      );
+      stub(
+        ipAssetClient.derivativeWorkflowsClient,
+        "mintAndRegisterIpAndMakeDerivativeWithLicenseTokens",
+      ).resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
+        spgNftContract,
+        licenseTokenIds: [1n],
+      });
+      expect(approveLicenseTokensStub.callCount).to.equal(1);
+      expect(approveLicenseTokensStub.args[0][0]).to.deep.equal({
+        to: ipAssetClient.derivativeWorkflowsClient.address,
+        tokenId: 1n,
+      });
+    });
+
+    it("should not approve license tokens when autoApproveLicenseTokens is false", async () => {
+      stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf").resolves(
+        "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+      );
+      const approveLicenseTokensStub = stub(ipAssetClient.licenseTokenClient, "approve").resolves(
+        txHash,
+      );
+      await ipAssetClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens({
+        spgNftContract,
+        licenseTokenIds: [1n],
+        autoApproveLicenseTokens: false,
+      });
+      expect(approveLicenseTokensStub.callCount).to.equal(0);
+    });
   });
 
   describe("Test ipAssetClient.registerIpAndMakeDerivativeWithLicenseTokens", () => {
@@ -1939,6 +1956,17 @@ describe("Test IpAssetClient", () => {
       stub(IpAssetRegistryClient.prototype, "ipId").resolves(
         "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       );
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
     });
     it("should throw tokenId error when registerIpAndMakeDerivativeWithLicenseTokens given tokenId is registered", async () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
@@ -1985,17 +2013,7 @@ describe("Test IpAssetClient", () => {
         ipAssetClient.derivativeWorkflowsClient,
         "registerIpAndMakeDerivativeWithLicenseTokens",
       ).resolves(txHash);
-      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
-        {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          chainId: 0n,
-          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 1n,
-          name: "",
-          uri: "",
-          registrationDate: 0n,
-        },
-      ]);
+
       const result = await ipAssetClient.registerIpAndMakeDerivativeWithLicenseTokens({
         nftContract: spgNftContract,
         tokenId: 3,
@@ -2035,6 +2053,47 @@ describe("Test IpAssetClient", () => {
         },
       });
       expect(result.encodedTxData!.data).to.be.a("string");
+    });
+    it("should call approve license tokens", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+
+      stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf").resolves(
+        "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+      );
+      stub(
+        ipAssetClient.derivativeWorkflowsClient,
+        "registerIpAndMakeDerivativeWithLicenseTokens",
+      ).resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
+      const approveLicenseTokensStub = stub(ipAssetClient.licenseTokenClient, "approve").resolves(
+        txHash,
+      );
+      await ipAssetClient.registerIpAndMakeDerivativeWithLicenseTokens({
+        nftContract: spgNftContract,
+        tokenId: 3,
+        licenseTokenIds: [1n],
+        autoApproveLicenseTokens: true,
+      });
+      expect(approveLicenseTokensStub.callCount).to.equal(1);
+      expect(approveLicenseTokensStub.args[0][0]).to.deep.equal({
+        to: ipAssetClient.derivativeWorkflowsClient.address,
+        tokenId: 1n,
+      });
+    });
+    it("should not call approve license tokens when autoApproveLicenseTokens is false", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      stub(ipAssetClient.licenseTokenReadOnlyClient, "ownerOf").resolves(
+        "0x73fcb515cee99e4991465ef586cfe2b072ebb512",
+      );
+      const approveLicenseTokensStub = stub(ipAssetClient.licenseTokenClient, "approve").resolves(
+        txHash,
+      );
+      await ipAssetClient.registerIpAndMakeDerivativeWithLicenseTokens({
+        nftContract: spgNftContract,
+        tokenId: 3,
+        licenseTokenIds: [1n],
+        autoApproveLicenseTokens: false,
+      });
+      expect(approveLicenseTokensStub.callCount).to.equal(0);
     });
   });
 
@@ -5906,6 +5965,7 @@ describe("Test IpAssetClient", () => {
             nftMetadataHash: toHex("nftMetadata", { size: 32 }),
             nftMetadataURI: "",
           },
+          autoApproveLicenseTokens: undefined,
         });
       });
       it("should call mintAndRegisterIpAndMakeDerivativeAndDistributeRoyaltyTokens with optional parameters", async () => {
@@ -6056,6 +6116,7 @@ describe("Test IpAssetClient", () => {
         ).to.deep.equal({
           spgNftContract: mockERC721,
           licenseTokenIds: [1, 2, 3],
+          autoApproveLicenseTokens: undefined,
           maxRts: 100,
           txOptions: { timeout: 10000 },
           allowDuplicates: false,

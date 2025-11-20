@@ -25,6 +25,7 @@ import {
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
   LicenseAttachmentWorkflowsRegisterIpAndAttachPilTermsRequest,
   LicenseRegistryReadOnlyClient,
+  LicenseTokenClient,
   LicenseTokenReadOnlyClient,
   licensingModuleAbi,
   LicensingModuleClient,
@@ -130,7 +131,7 @@ import {
 } from "../utils/registrationUtils/transformRegistrationRequest";
 import { getRevenueShare } from "../utils/royalty";
 import { setMaxLicenseTokens } from "../utils/setMaxLicenseTokens";
-import { validateAddress } from "../utils/utils";
+import { validateAddress, waitTx } from "../utils/utils";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -149,6 +150,7 @@ export class IPAssetClient {
   public wipClient: WrappedIpClient;
   public spgNftClient: SpgnftImplReadOnlyClient;
   public totalLicenseTokenLimitHookClient: TotalLicenseTokenLimitHookClient;
+  public licenseTokenClient: LicenseTokenClient;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -176,6 +178,7 @@ export class IPAssetClient {
     this.multicall3Client = new Multicall3Client(rpcClient, wallet);
     this.spgNftClient = new SpgnftImplReadOnlyClient(rpcClient);
     this.totalLicenseTokenLimitHookClient = new TotalLicenseTokenLimitHookClient(rpcClient, wallet);
+    this.licenseTokenClient = new LicenseTokenClient(rpcClient, wallet);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -1204,6 +1207,11 @@ export class IPAssetClient {
         return { encodedTxData };
       }
 
+      await this.approveLicenseTokensForDerivativeWorkflows(
+        request.licenseTokenIds,
+        request.autoApproveLicenseTokens,
+      );
+
       const contractCall = async (): Promise<Hash> => {
         return this.derivativeWorkflowsClient.mintAndRegisterIpAndMakeDerivativeWithLicenseTokens(
           object,
@@ -1283,6 +1291,11 @@ export class IPAssetClient {
         wallet: this.wallet,
         chainId: this.chainId,
       });
+      await this.approveLicenseTokensForDerivativeWorkflows(
+        licenseTokenIds,
+        request.autoApproveLicenseTokens,
+      );
+
       const object: DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest = {
         ...request,
         tokenId,
@@ -2091,6 +2104,7 @@ export class IPAssetClient {
       ...baseParams,
       licenseTokenIds: licenseTokenIds!,
       maxRts,
+      autoApproveLicenseTokens: request.autoApproveLicenseTokens,
     });
   }
 
@@ -2143,6 +2157,7 @@ export class IPAssetClient {
       ...baseParams,
       licenseTokenIds: licenseTokenIds!,
       maxRts,
+      autoApproveLicenseTokens: request.autoApproveLicenseTokens,
     });
   }
 
@@ -2447,5 +2462,20 @@ export class IPAssetClient {
       ipAsset.maxLicenseTokensTxHashes = maxLicenseTokensTxHashes;
     }
     return ipAsset;
+  }
+
+  private async approveLicenseTokensForDerivativeWorkflows(
+    licenseTokenIds: LicenseTermsIdInput[],
+    autoApproveLicenseTokens?: boolean,
+  ): Promise<void> {
+    if (autoApproveLicenseTokens !== false) {
+      for (const licenseTokenId of licenseTokenIds) {
+        const txHash = await this.licenseTokenClient.approve({
+          to: this.derivativeWorkflowsClient.address,
+          tokenId: BigInt(licenseTokenId),
+        });
+        await waitTx(this.rpcClient, txHash);
+      }
+    }
   }
 }
