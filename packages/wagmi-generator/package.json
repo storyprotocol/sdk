@@ -7,13 +7,13 @@
   "devDependencies": {
     "@types/node": "^20.8.2",
     "@wagmi/cli": "^2.1.15",
-    "@wagmi/connectors": "^4.1.14",
+    "@wagmi/connectors": "5.0.0",
     "@wagmi/core": "^2.6.5",
     "abitype": "^1.0.2",
     "change-case": "^5.4.3",
     "dotenv": "^16.3.1",
     "typescript": "^5.4.2",
     "viem": "^2.8.6",
-    "wagmi": "^2.5.7"
+    "wagmi": "2.17.1"
   }
 }
