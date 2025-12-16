@@ -643,6 +643,9 @@ export class IPAssetClient {
   /**
    * Batch mint an NFT from a collection and register it as an IP.
    *
+   * @remark For better gas efficiency, consider using {@link batchRegisterIpAssetsWithOptimizedWorkflows} instead.
+   * The optimized workflows method provides intelligent transaction batching, automatic token handling.
+   *
    * Emits on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} and {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/modules/licensing/ILicensingModule.sol#L19 | `LicenseTermsAttached`} events.
    */
   public async batchMintAndRegisterIpAssetWithPilTerms(
@@ -935,6 +938,9 @@ export class IPAssetClient {
 
   /**
    * Batch mint an NFT from a collection and register it as a derivative IP without license tokens.
+   *
+   * @remark For better gas efficiency, consider using {@link batchRegisterIpAssetsWithOptimizedWorkflows} instead.
+   * The optimized workflows method provides intelligent transaction batching, automatic token handling.
    *
    * Emits an on-chain {@link https://github.com/storyprotocol/protocol-core-v1/blob/v1.3.1/contracts/interfaces/registries/IIPAssetRegistry.sol#L17 | `IPRegistered`} event.
    */
