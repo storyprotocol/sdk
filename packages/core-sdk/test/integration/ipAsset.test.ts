@@ -3776,9 +3776,11 @@ describe("IP Asset Functions", () => {
   });
 
   describe("Link Derivative", () => {
-    let parentIpId: Address;
-    let commercialRemixLicenseTermsId: bigint;
-    before(async () => {
+    let parentIpId1: Address;
+    let commercialRemixLicenseTermsId2: bigint;
+    const createParentIpAndLicenseTerms = async (
+      token: Address = WIP_TOKEN_ADDRESS,
+    ): Promise<{ parentIpId: Address; licenseTermsId: bigint }> => {
       const tokenId = await getTokenId();
       const result = await client.ipAsset.registerIpAndAttachPilTerms({
         nftContract: mockERC721,
@@ -3788,13 +3790,17 @@ describe("IP Asset Functions", () => {
             terms: PILFlavor.commercialRemix({
               defaultMintingFee: 10000n,
               commercialRevShare: 100,
-              currency: WIP_TOKEN_ADDRESS,
+              currency: token,
             }),
           },
         ],
       });
-      parentIpId = result.ipId!;
-      commercialRemixLicenseTermsId = result.licenseTermsIds![0];
+      return { parentIpId: result.ipId!, licenseTermsId: result.licenseTermsIds![0] };
+    };
+    before(async () => {
+      const { parentIpId, licenseTermsId } = await createParentIpAndLicenseTerms();
+      parentIpId1 = parentIpId;
+      commercialRemixLicenseTermsId2 = licenseTermsId;
     });
     it("should successfully when give childIpId and licenseTokenIds", async () => {
       // register a child ip
@@ -3806,8 +3812,8 @@ describe("IP Asset Functions", () => {
         })
       ).ipId!;
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
-        licenseTermsId: commercialRemixLicenseTermsId,
-        licensorIpId: parentIpId,
+        licenseTermsId: commercialRemixLicenseTermsId2,
+        licensorIpId: parentIpId1,
         maxMintingFee: 0,
         maxRevenueShare: 100,
       });
@@ -3819,7 +3825,7 @@ describe("IP Asset Functions", () => {
       expect(result.txHash).to.be.a("string");
     });
 
-    it("should successfully when give parentIpId and licenseTokenIds", async () => {
+    it.only("should successfully when give parentIpId and licenseTokenIds", async () => {
       const tokenId = await getTokenId();
       const childIpId = (
         await client.ipAsset.register({
@@ -3827,17 +3833,23 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId!,
         })
       ).ipId!;
-
+      const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
+        erc20Address[aeneid],
+      );
       const result = await client.ipAsset.linkDerivative({
         childIpId: childIpId,
-        parentIpIds: [parentIpId],
-        licenseTermsIds: [commercialRemixLicenseTermsId],
+        parentIpIds: [parentIpId1, parentIpIdAndLicenseTermsIdForERC20.parentIpId],
+        licenseTermsIds: [
+          commercialRemixLicenseTermsId2,
+          parentIpIdAndLicenseTermsIdForERC20.licenseTermsId,
+        ],
         maxMintingFee: 0,
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: 0,
       });
 
       expect(result.txHash).to.be.a("string");
+      console.log(result);
     });
   });
 

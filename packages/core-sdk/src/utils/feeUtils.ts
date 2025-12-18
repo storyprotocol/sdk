@@ -405,7 +405,7 @@ export const handleTransactionResponse = async <T extends Hash | Hash[] = Hash>(
 /**
  * Group token spenders into wip and erc20 spenders.
  */
-const groupTokenSpenders = (
+export const groupTokenSpenders = (
   tokenSpenders: TokenSpender[],
 ): { wipSpenders: TokenSpender[]; erc20Spenders: TokenSpender[] } => {
   const wipSpenders: TokenSpender[] = [];

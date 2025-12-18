@@ -1,8 +1,10 @@
 import {
   Address,
   encodeFunctionData,
+  erc20Abi,
   Hash,
   Hex,
+  maxUint256,
   PublicClient,
   TransactionReceipt,
   zeroAddress,
@@ -20,6 +22,7 @@ import {
   EncodedTxData,
   ipAccountImplAbi,
   IpAccountImplClient,
+  IpAccountImplExecuteBatchRequest,
   IpAssetRegistryClient,
   LicenseAttachmentWorkflowsClient,
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
@@ -47,6 +50,7 @@ import {
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { LicenseTermsIdInput, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
@@ -108,7 +112,7 @@ import { AggregateRegistrationRequest, SignatureMethodType } from "../types/util
 import { TokenSpender } from "../types/utils/token";
 import { calculateDerivativeMintingFee, calculateSPGMintFee } from "../utils/calculateMintFee";
 import { handleError } from "../utils/errors";
-import { contractCallWithFees } from "../utils/feeUtils";
+import { contractCallWithFees, groupTokenSpenders } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import { PILFlavor } from "../utils/pilFlavor";
@@ -378,6 +382,8 @@ export class IPAssetClient {
     request: RegisterDerivativeRequest,
   ): Promise<LinkDerivativeResponse> {
     try {
+      //Need to consider erc20 and wip tokens
+      const callData: IpAccountImplExecuteBatchRequest["calls"] = [];
       const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
       if (!isChildIpIdRegistered) {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
@@ -396,23 +402,100 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       } else {
-        const contractCall = (): Promise<Hash> => {
-          return this.licensingModuleClient.registerDerivative(object);
-        };
-        return this.handleRegistrationWithFees({
-          sender: this.walletAddress,
+        const ipAccount = new IpAccountImplClient(
+          this.rpcClient,
+          this.wallet,
+          validateAddress(request.childIpId),
+        );
+        // Multicall
+        // wip in multicall->call relative method-> 4-5 transactions
+
+        //Multicall->ipAccount->call relative method two transactions
+        // mint fee instead of gas fee
+        // Calculate minting fees for the derivative
+        const mintFees = await calculateDerivativeMintingFee({
           derivData: object,
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
+          chainId: this.chainId,
+          sender: this.walletAddress,
+        });
+        // Approve child IP to spend WIP tokens
+        // We need to separate approve to approve the `msg.sender` is ipId.
+        const txHash1 = await this.multicall3Client.aggregate3({
+          calls: [
+            {
+              target: WIP_TOKEN_ADDRESS,
+              allowFailure: false,
+              callData: encodeFunctionData({
+                abi: erc20Abi,
+                functionName: "approve",
+                args: [request.childIpId, maxUint256],
+              }),
+            },
+          ],
+        });
+        await this.rpcClient.waitForTransactionReceipt({
+          hash: txHash1,
+        });
+
+        // Transfer WIP tokens to child IP
+        callData.push({
+          target: WIP_TOKEN_ADDRESS,
+          value: 0n,
+          data: this.wipClient.transferFromEncode({
+            from: this.multicall3Client.address,
+            to: request.childIpId,
+            amount: mintFees.reduce((acc, spender) => acc + (spender.amount || 0n), 0n),
+          }).data,
+        });
+        // Approve royalty module to spend WIP tokens from child IP
+        callData.push({
+          target: WIP_TOKEN_ADDRESS,
+          value: 0n,
+          data: this.wipClient.approveEncode({
+            spender: this.royaltyModuleEventClient.address,
+            amount: maxUint256,
+          }).data,
+        });
+        // Register derivative
+        callData.push({
+          target: this.licensingModuleClient.address,
+          value: 0n,
+          data: this.licensingModuleClient.registerDerivativeEncode({
+            childIpId: request.childIpId,
+            parentIpIds: request.parentIpIds,
+            licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
+            licenseTemplate: request.licenseTemplate || this.licenseTemplateAddress,
+            royaltyContext: zeroAddress,
+            maxMintingFee: BigInt(request.maxMintingFee ?? 0),
+            maxRts: validateMaxRts(request.maxRts),
+            maxRevenueShare: getRevenueShare(
+              request.maxRevenueShare ?? 100,
+              RevShareType.MAX_REVENUE_SHARE,
+            ),
+          }).data,
+        });
+        const encodedTxData2 = ipAccount.executeBatchEncode({
+          calls: callData,
+          operation: 0,
+        });
+        const contractCall = (): Promise<Hash> => {
+          return ipAccount.executeBatch({
+            calls: callData,
+            operation: 0,
+          });
+        };
+        return await contractCallWithFees({
+          options: request.options,
+          sender: this.walletAddress,
+          encodedTxs: [encodedTxData2],
           contractCall,
           txOptions: request.txOptions,
-          encodedTxs: [encodedTxData],
-          spgSpenderAddress: this.royaltyModuleEventClient.address,
-          options: {
-            ...request.options,
-            wipOptions: {
-              ...request.options?.wipOptions,
-              useMulticallWhenPossible: false,
-            },
-          },
+          multicall3Address: this.multicall3Client.address,
+          tokenSpenders: [],
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
         });
       }
     } catch (error) {
