@@ -20,6 +20,7 @@ import {
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   EncodedTxData,
+  erc20Address,
   ipAccountImplAbi,
   IpAccountImplClient,
   IpAccountImplExecuteBatchRequest,
@@ -407,10 +408,6 @@ export class IPAssetClient {
           this.wallet,
           validateAddress(request.childIpId),
         );
-        // Multicall
-        // wip in multicall->call relative method-> 4-5 transactions
-
-        //Multicall->ipAccount->call relative method two transactions
         // mint fee instead of gas fee
         // Calculate minting fees for the derivative
         const mintFees = await calculateDerivativeMintingFee({
@@ -420,44 +417,111 @@ export class IPAssetClient {
           chainId: this.chainId,
           sender: this.walletAddress,
         });
-        // Approve child IP to spend WIP tokens
+        const { wipSpenders, erc20Spenders } = groupTokenSpenders(
+          mintFees.map((fee) => ({
+            address: this.royaltyModuleEventClient.address,
+            ...fee,
+          })),
+        );
+        const wipTotalFees = wipSpenders.reduce((acc, spender) => acc + (spender.amount || 0n), 0n);
+        const erc20TotalFees = erc20Spenders.reduce(
+          (acc, spender) => acc + (spender.amount || 0n),
+          0n,
+        );
+        // Approve child IP to spend WIP and ERC20 tokens
         // We need to separate approve to approve the `msg.sender` is ipId.
-        const txHash1 = await this.multicall3Client.aggregate3({
-          calls: [
-            {
-              target: WIP_TOKEN_ADDRESS,
-              allowFailure: false,
-              callData: encodeFunctionData({
-                abi: erc20Abi,
-                functionName: "approve",
-                args: [request.childIpId, maxUint256],
-              }),
-            },
-          ],
-        });
-        await this.rpcClient.waitForTransactionReceipt({
-          hash: txHash1,
-        });
+        const getApproveEncode = (spender: Address): Hex => {
+          return encodeFunctionData({
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [spender, maxUint256],
+          });
+        };
 
-        // Transfer WIP tokens to child IP
-        callData.push({
-          target: WIP_TOKEN_ADDRESS,
-          value: 0n,
-          data: this.wipClient.transferFromEncode({
-            from: this.multicall3Client.address,
-            to: request.childIpId,
-            amount: mintFees.reduce((acc, spender) => acc + (spender.amount || 0n), 0n),
-          }).data,
-        });
-        // Approve royalty module to spend WIP tokens from child IP
-        callData.push({
-          target: WIP_TOKEN_ADDRESS,
-          value: 0n,
-          data: this.wipClient.approveEncode({
-            spender: this.royaltyModuleEventClient.address,
-            amount: maxUint256,
-          }).data,
-        });
+        const getTransferFromEncode = (amount: bigint): Hex => {
+          return encodeFunctionData({
+            abi: erc20Abi,
+            functionName: "transferFrom",
+            args: [this.multicall3Client.address, request.childIpId, amount],
+          });
+        };
+
+        const transferTokenToChildIpAndApproveRoyaltyModule = (
+          token: Address,
+          amount: bigint,
+        ): IpAccountImplExecuteBatchRequest["calls"] => {
+          const calls: IpAccountImplExecuteBatchRequest["calls"] = [];
+          calls.push({
+            target: token,
+            value: 0n,
+            data: getTransferFromEncode(amount),
+          });
+          calls.push({
+            target: token,
+            value: 0n,
+            data: getApproveEncode(this.royaltyModuleEventClient.address),
+          });
+          return calls;
+        };
+
+        let approveTx: Hash | undefined = undefined;
+        console.log("wipTotalFees", wipTotalFees);
+        console.log("erc20TotalFees", erc20TotalFees);
+        if (wipTotalFees > 0n && erc20TotalFees > 0) {
+          approveTx = await this.multicall3Client.aggregate3({
+            calls: [
+              {
+                target: WIP_TOKEN_ADDRESS,
+                allowFailure: false,
+                callData: getApproveEncode(request.childIpId),
+              },
+              {
+                target: erc20Address[this.chainId],
+                allowFailure: false,
+                callData: getApproveEncode(request.childIpId),
+              },
+            ],
+          });
+
+          callData.push(
+            ...transferTokenToChildIpAndApproveRoyaltyModule(WIP_TOKEN_ADDRESS, wipTotalFees),
+          );
+          callData.push(
+            ...transferTokenToChildIpAndApproveRoyaltyModule(
+              erc20Address[this.chainId],
+              erc20TotalFees,
+            ),
+          );
+        } else if (wipTotalFees > 0n || erc20TotalFees > 0n) {
+          approveTx = await this.multicall3Client.aggregate3({
+            calls: [
+              {
+                target: wipTotalFees > 0n ? WIP_TOKEN_ADDRESS : erc20Address[this.chainId],
+                allowFailure: false,
+                callData: getApproveEncode(request.childIpId),
+              },
+            ],
+          });
+          if (wipTotalFees > 0n) {
+            callData.push(
+              ...transferTokenToChildIpAndApproveRoyaltyModule(WIP_TOKEN_ADDRESS, wipTotalFees),
+            );
+          } else {
+            callData.push(
+              ...transferTokenToChildIpAndApproveRoyaltyModule(
+                erc20Address[this.chainId],
+                erc20TotalFees,
+              ),
+            );
+          }
+        }
+
+        if (approveTx) {
+          await this.rpcClient.waitForTransactionReceipt({
+            hash: approveTx,
+          });
+        }
+
         // Register derivative
         callData.push({
           target: this.licensingModuleClient.address,
@@ -476,9 +540,10 @@ export class IPAssetClient {
             ),
           }).data,
         });
-        const encodedTxData2 = ipAccount.executeBatchEncode({
-          calls: callData,
-          operation: 0,
+        const executeBatchEncode = encodeFunctionData({
+          abi: ipAccountImplAbi,
+          functionName: "executeBatch",
+          args: [callData, 0],
         });
         const contractCall = (): Promise<Hash> => {
           return ipAccount.executeBatch({
@@ -487,9 +552,20 @@ export class IPAssetClient {
           });
         };
         return await contractCallWithFees({
-          options: request.options,
+          options: {
+            ...request.options,
+            erc20Options: {
+              ...request.options?.erc20Options,
+              enableAutoApprove: true,
+            },
+          },
           sender: this.walletAddress,
-          encodedTxs: [encodedTxData2],
+          encodedTxs: [
+            {
+              to: ipAccount.address,
+              data: executeBatchEncode,
+            },
+          ],
           contractCall,
           txOptions: request.txOptions,
           multicall3Address: this.multicall3Client.address,

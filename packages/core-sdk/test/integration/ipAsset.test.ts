@@ -3788,7 +3788,7 @@ describe("IP Asset Functions", () => {
         licenseTermsData: [
           {
             terms: PILFlavor.commercialRemix({
-              defaultMintingFee: 10000n,
+              defaultMintingFee: 10n,
               commercialRevShare: 100,
               currency: token,
             }),
@@ -3838,11 +3838,8 @@ describe("IP Asset Functions", () => {
       );
       const result = await client.ipAsset.linkDerivative({
         childIpId: childIpId,
-        parentIpIds: [parentIpId1, parentIpIdAndLicenseTermsIdForERC20.parentIpId],
-        licenseTermsIds: [
-          commercialRemixLicenseTermsId2,
-          parentIpIdAndLicenseTermsIdForERC20.licenseTermsId,
-        ],
+        parentIpIds: [parentIpIdAndLicenseTermsIdForERC20.parentIpId],
+        licenseTermsIds: [parentIpIdAndLicenseTermsIdForERC20.licenseTermsId],
         maxMintingFee: 0,
         maxRts: 5 * 10 ** 6,
         maxRevenueShare: 0,
