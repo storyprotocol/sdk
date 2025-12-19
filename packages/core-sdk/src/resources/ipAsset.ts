@@ -21,6 +21,7 @@ import {
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   EncodedTxData,
   erc20Address,
+  Erc20Client,
   ipAccountImplAbi,
   IpAccountImplClient,
   IpAccountImplExecuteBatchRequest,
@@ -156,6 +157,7 @@ export class IPAssetClient {
   public spgNftClient: SpgnftImplReadOnlyClient;
   public totalLicenseTokenLimitHookClient: TotalLicenseTokenLimitHookClient;
   public licenseTokenClient: LicenseTokenClient;
+  public erc20Client: Erc20Client;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -184,6 +186,7 @@ export class IPAssetClient {
     this.spgNftClient = new SpgnftImplReadOnlyClient(rpcClient);
     this.totalLicenseTokenLimitHookClient = new TotalLicenseTokenLimitHookClient(rpcClient, wallet);
     this.licenseTokenClient = new LicenseTokenClient(rpcClient, wallet);
+    this.erc20Client = new Erc20Client(rpcClient, wallet, erc20Address[chainId]);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -438,15 +441,16 @@ export class IPAssetClient {
           });
         };
 
-        const getTransferFromEncode = (amount: bigint): Hex => {
+        const getTransferFromEncode = (from: Address, amount: bigint): Hex => {
           return encodeFunctionData({
             abi: erc20Abi,
             functionName: "transferFrom",
-            args: [this.multicall3Client.address, request.childIpId, amount],
+            args: [from, request.childIpId, amount],
           });
         };
 
         const transferTokenToChildIpAndApproveRoyaltyModule = (
+          from: Address,
           token: Address,
           amount: bigint,
         ): IpAccountImplExecuteBatchRequest["calls"] => {
@@ -454,13 +458,13 @@ export class IPAssetClient {
           calls.push({
             target: token,
             value: 0n,
-            data: getTransferFromEncode(amount),
+            data: getTransferFromEncode(from, amount),
           });
-          calls.push({
-            target: token,
-            value: 0n,
-            data: getApproveEncode(this.royaltyModuleEventClient.address),
-          });
+          // calls.push({
+          //   target: token,
+          //   value: 0n,
+          //   data: getApproveEncode(this.royaltyModuleEventClient.address),
+          // });
           return calls;
         };
 
@@ -484,62 +488,81 @@ export class IPAssetClient {
           });
 
           callData.push(
-            ...transferTokenToChildIpAndApproveRoyaltyModule(WIP_TOKEN_ADDRESS, wipTotalFees),
+            ...transferTokenToChildIpAndApproveRoyaltyModule(
+              this.multicall3Client.address,
+              WIP_TOKEN_ADDRESS,
+              wipTotalFees,
+            ),
           );
           callData.push(
             ...transferTokenToChildIpAndApproveRoyaltyModule(
+              this.multicall3Client.address,
               erc20Address[this.chainId],
               erc20TotalFees,
             ),
           );
         } else if (wipTotalFees > 0n || erc20TotalFees > 0n) {
-          approveTx = await this.multicall3Client.aggregate3({
-            calls: [
-              {
-                target: wipTotalFees > 0n ? WIP_TOKEN_ADDRESS : erc20Address[this.chainId],
-                allowFailure: false,
-                callData: getApproveEncode(request.childIpId),
-              },
-            ],
-          });
           if (wipTotalFees > 0n) {
-            callData.push(
-              ...transferTokenToChildIpAndApproveRoyaltyModule(WIP_TOKEN_ADDRESS, wipTotalFees),
-            );
-          } else {
+            //1. Approve childIpId from multicall3 contract to spend WIP token
+            approveTx = await this.multicall3Client.aggregate3({
+              calls: [
+                {
+                  target: WIP_TOKEN_ADDRESS,
+                  allowFailure: false,
+                  callData: getApproveEncode(request.childIpId),
+                },
+              ],
+            });
+            //2. Transfer WIP token to child Ip and approve royalty module
             callData.push(
               ...transferTokenToChildIpAndApproveRoyaltyModule(
+                this.multicall3Client.address,
+                WIP_TOKEN_ADDRESS,
+                wipTotalFees,
+              ),
+            );
+          } else {
+            //Need to separate approve and transfer to approve the `msg.sender` is ipId.
+            approveTx = await this.erc20Client.approve({
+              spender: request.childIpId,
+              value: maxUint256,
+            });
+            //Transfer erc20 token to child IP and approve royalty module
+            callData.push(
+              ...transferTokenToChildIpAndApproveRoyaltyModule(
+                this.walletAddress,
                 erc20Address[this.chainId],
                 erc20TotalFees,
               ),
             );
           }
         }
-
+        console.log("callData", callData);
         if (approveTx) {
+          console.log("approveTx", approveTx);
           await this.rpcClient.waitForTransactionReceipt({
             hash: approveTx,
           });
         }
 
         // Register derivative
-        callData.push({
-          target: this.licensingModuleClient.address,
-          value: 0n,
-          data: this.licensingModuleClient.registerDerivativeEncode({
-            childIpId: request.childIpId,
-            parentIpIds: request.parentIpIds,
-            licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
-            licenseTemplate: request.licenseTemplate || this.licenseTemplateAddress,
-            royaltyContext: zeroAddress,
-            maxMintingFee: BigInt(request.maxMintingFee ?? 0),
-            maxRts: validateMaxRts(request.maxRts),
-            maxRevenueShare: getRevenueShare(
-              request.maxRevenueShare ?? 100,
-              RevShareType.MAX_REVENUE_SHARE,
-            ),
-          }).data,
-        });
+        // callData.push({
+        //   target: this.licensingModuleClient.address,
+        //   value: 0n,
+        //   data: this.licensingModuleClient.registerDerivativeEncode({
+        //     childIpId: request.childIpId,
+        //     parentIpIds: request.parentIpIds,
+        //     licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
+        //     licenseTemplate: request.licenseTemplate || this.licenseTemplateAddress,
+        //     royaltyContext: zeroAddress,
+        //     maxMintingFee: BigInt(request.maxMintingFee ?? 0),
+        //     maxRts: validateMaxRts(request.maxRts),
+        //     maxRevenueShare: getRevenueShare(
+        //       request.maxRevenueShare ?? 100,
+        //       RevShareType.MAX_REVENUE_SHARE,
+        //     ),
+        //   }).data,
+        // });
         const executeBatchEncode = encodeFunctionData({
           abi: ipAccountImplAbi,
           functionName: "executeBatch",
@@ -552,11 +575,12 @@ export class IPAssetClient {
           });
         };
         return await contractCallWithFees({
+          //Need to consider if disable approve
           options: {
             ...request.options,
             erc20Options: {
               ...request.options?.erc20Options,
-              enableAutoApprove: true,
+              enableAutoApprove: false,
             },
           },
           sender: this.walletAddress,
@@ -569,7 +593,7 @@ export class IPAssetClient {
           contractCall,
           txOptions: request.txOptions,
           multicall3Address: this.multicall3Client.address,
-          tokenSpenders: [],
+          tokenSpenders: [...wipSpenders, ...erc20Spenders],
           rpcClient: this.rpcClient,
           wallet: this.wallet,
         });

@@ -3825,7 +3825,7 @@ describe("IP Asset Functions", () => {
       expect(result.txHash).to.be.a("string");
     });
 
-    it.only("should successfully when give parentIpId and licenseTokenIds", async () => {
+    it("should successfully when give parentIpId and licenseTokenIds with ERC20 token", async () => {
       const tokenId = await getTokenId();
       const childIpId = (
         await client.ipAsset.register({
@@ -3845,6 +3845,25 @@ describe("IP Asset Functions", () => {
         maxRevenueShare: 0,
       });
 
+      expect(result.txHash).to.be.a("string");
+    });
+    it.only("should successfully when give parentIpId and licenseTokenIds with WIP token", async () => {
+      const tokenId = await getTokenId();
+      const childIpId = (
+        await client.ipAsset.register({
+          nftContract: mockERC721,
+          tokenId: tokenId!,
+        })
+      ).ipId!;
+      const parentIpIdAndLicenseTermsIdForWIP = await createParentIpAndLicenseTerms();
+      const result = await client.ipAsset.linkDerivative({
+        childIpId: childIpId,
+        parentIpIds: [parentIpIdAndLicenseTermsIdForWIP.parentIpId],
+        licenseTermsIds: [parentIpIdAndLicenseTermsIdForWIP.licenseTermsId],
+        maxMintingFee: 0,
+        maxRts: 5 * 10 ** 6,
+        maxRevenueShare: 0,
+      });
       expect(result.txHash).to.be.a("string");
       console.log(result);
     });
