@@ -415,11 +415,12 @@ export class IPAssetClient {
           this.wallet,
           request.childIpId,
         );
-        return batchExecutor.executeWithFees(
+        return batchExecutor.executeWithFees({
           mintFees,
-          this.royaltyModuleEventClient.address,
-          encodedTxData,
-        );
+          spenderAddress: this.royaltyModuleEventClient.address,
+          encodedTxs: encodedTxData,
+          options: request.options,
+        });
       }
     } catch (error) {
       return handleError(error, "Failed to register derivative");
