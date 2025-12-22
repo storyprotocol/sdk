@@ -3787,10 +3787,10 @@ describe("IP Asset Functions", () => {
         tokenId: tokenId!,
         licenseTermsData: [
           {
-            terms: PILFlavor.commercialRemix({
+            terms: PILFlavor.commercialUse({
               defaultMintingFee: 10n,
-              commercialRevShare: 100,
               currency: token,
+              override: { derivativesAllowed: true },
             }),
           },
         ],
@@ -3824,48 +3824,144 @@ describe("IP Asset Functions", () => {
       });
       expect(result.txHash).to.be.a("string");
     });
+    describe("parentIpId and licenseTermsId", () => {
+      it("should successfully give ERC20 token", async () => {
+        // 1. register a child ip
+        const tokenId = await getTokenId();
+        const childIpId = (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId!,
+          })
+        ).ipId!;
+        // 2. create parent ip and license terms for ERC20
+        const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
+          erc20Address[aeneid],
+        );
+        // 3. link derivative
+        const result = await client.ipAsset.linkDerivative({
+          childIpId: childIpId,
+          parentIpIds: [parentIpIdAndLicenseTermsIdForERC20.parentIpId],
+          licenseTermsIds: [parentIpIdAndLicenseTermsIdForERC20.licenseTermsId],
+        });
 
-    it("should successfully when give parentIpId and licenseTokenIds with ERC20 token", async () => {
-      const tokenId = await getTokenId();
-      const childIpId = (
-        await client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-        })
-      ).ipId!;
-      const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
-        erc20Address[aeneid],
-      );
-      const result = await client.ipAsset.linkDerivative({
-        childIpId: childIpId,
-        parentIpIds: [parentIpIdAndLicenseTermsIdForERC20.parentIpId],
-        licenseTermsIds: [parentIpIdAndLicenseTermsIdForERC20.licenseTermsId],
-        maxMintingFee: 0,
-        maxRts: 5 * 10 ** 6,
-        maxRevenueShare: 0,
+        expect(result.txHash).to.be.a("string");
+      });
+      it("should successfully give sufficient WIP token", async () => {
+        // 1. deposit 100 WIP token
+        await client.wipClient.deposit({
+          amount: 100n,
+        });
+        // 2. register a child ip
+        const tokenId = await getTokenId();
+        const childIpId = (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId!,
+          })
+        ).ipId!;
+        // 3. create parent ip and license terms for WIP
+        const parentIpIdAndLicenseTermsIdForWIP = await createParentIpAndLicenseTerms();
+        // 4. link derivative
+        const result = await client.ipAsset.linkDerivative({
+          childIpId: childIpId,
+          parentIpIds: [parentIpIdAndLicenseTermsIdForWIP.parentIpId],
+          licenseTermsIds: [parentIpIdAndLicenseTermsIdForWIP.licenseTermsId],
+        });
+        expect(result.txHash).to.be.a("string");
+        // 5. withdraw all WIP token
+        const wipBalance = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+        await client.wipClient.withdraw({
+          amount: wipBalance,
+        });
       });
 
-      expect(result.txHash).to.be.a("string");
-    });
-    it.only("should successfully when give parentIpId and licenseTokenIds with WIP token", async () => {
-      const tokenId = await getTokenId();
-      const childIpId = (
-        await client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-        })
-      ).ipId!;
-      const parentIpIdAndLicenseTermsIdForWIP = await createParentIpAndLicenseTerms();
-      const result = await client.ipAsset.linkDerivative({
-        childIpId: childIpId,
-        parentIpIds: [parentIpIdAndLicenseTermsIdForWIP.parentIpId],
-        licenseTermsIds: [parentIpIdAndLicenseTermsIdForWIP.licenseTermsId],
-        maxMintingFee: 0,
-        maxRts: 5 * 10 ** 6,
-        maxRevenueShare: 0,
+      it("should successfully give insufficient WIP token", async () => {
+        // 1. register a child ip
+        const tokenId = await getTokenId();
+        const childIpId = (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId!,
+          })
+        ).ipId!;
+        // 2. create parent ip and license terms for WIP
+        const parentIpIdAndLicenseTermsIdForWIP = await createParentIpAndLicenseTerms();
+        // 3. link derivative
+        const result = await client.ipAsset.linkDerivative({
+          childIpId: childIpId,
+          parentIpIds: [parentIpIdAndLicenseTermsIdForWIP.parentIpId],
+          licenseTermsIds: [parentIpIdAndLicenseTermsIdForWIP.licenseTermsId],
+        });
+        expect(result.txHash).to.be.a("string");
       });
-      expect(result.txHash).to.be.a("string");
-      console.log(result);
+
+      it("should successfully give wip token with insufficient balance and sufficient erc20 token", async () => {
+        //1. register a child ip
+        const tokenId = await getTokenId();
+        const childIpId = (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId!,
+          })
+        ).ipId!;
+        // 2. create parent ip and license terms for WIP
+        const parentIpIdAndLicenseTermsIdForWIP1 = await createParentIpAndLicenseTerms();
+        const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
+          erc20Address[aeneid],
+        );
+        // 3. link derivative
+        const result = await client.ipAsset.linkDerivative({
+          childIpId: childIpId,
+          parentIpIds: [
+            parentIpIdAndLicenseTermsIdForWIP1.parentIpId,
+            parentIpIdAndLicenseTermsIdForERC20.parentIpId,
+          ],
+          licenseTermsIds: [
+            parentIpIdAndLicenseTermsIdForWIP1.licenseTermsId,
+            parentIpIdAndLicenseTermsIdForERC20.licenseTermsId,
+          ],
+        });
+        expect(result.txHash).to.be.a("string");
+      });
+      it.only("should successfully give wip token with sufficient balance and sufficient erc20 token", async () => {
+        // 1. deposit 100 WIP token
+        await client.wipClient.deposit({
+          amount: 100n,
+        });
+        // 2. register a child ip
+        const tokenId = await getTokenId();
+        const childIpId = (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId!,
+          })
+        ).ipId!;
+        // 3. create parent ip and license terms for WIP
+        const parentIpIdAndLicenseTermsIdForWIP1 = await createParentIpAndLicenseTerms();
+        // 4. create parent ip and license terms for ERC20
+        const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
+          erc20Address[aeneid],
+        );
+        // 5. link derivative
+        const result = await client.ipAsset.linkDerivative({
+          childIpId: childIpId,
+          parentIpIds: [
+            parentIpIdAndLicenseTermsIdForWIP1.parentIpId,
+            parentIpIdAndLicenseTermsIdForERC20.parentIpId,
+          ],
+          licenseTermsIds: [
+            parentIpIdAndLicenseTermsIdForWIP1.licenseTermsId,
+            parentIpIdAndLicenseTermsIdForERC20.licenseTermsId,
+          ],
+        });
+        expect(result.txHash).to.be.a("string");
+        // 6. withdraw all WIP token
+        const wipBalance = await client.wipClient.balanceOf(TEST_WALLET_ADDRESS);
+        await client.wipClient.withdraw({
+          amount: wipBalance,
+        });
+      });
     });
   });
 

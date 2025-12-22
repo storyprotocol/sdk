@@ -82,6 +82,10 @@ export class WipTokenClient implements TokenClient {
     return this.wipClient.depositEncode();
   }
 
+  transferFromEncode(from: Address, to: Address, value: bigint): EncodedTxData {
+    return this.wipClient.transferFromEncode({ from, to, amount: value });
+  }
+
   get address(): Address {
     return this.wipClient.address;
   }

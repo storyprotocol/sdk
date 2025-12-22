@@ -446,19 +446,18 @@ export class IPAssetClient {
             )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
           );
         }
+
+        if (ipBalance < wipTotalFees) {
+          throw new Error(
+            `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
+              wipTotalFees,
+            )}, balance: ${getTokenAmountDisplay(ipBalance)}.`,
+          );
+        }
+
         let isDepositWip: boolean = false;
         if (wipTotalFees > 0n && erc20TotalFees > 0n) {
-          //TODO: handle both wip and erc20 fees
-        } else if (wipTotalFees > 0n) {
           if (wipBalance < wipTotalFees) {
-            if (ipBalance < wipTotalFees) {
-              throw new Error(
-                `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
-                  wipTotalFees,
-                )}, balance: ${getTokenAmountDisplay(ipBalance)}.`,
-              );
-            }
-
             if (!autoWrapIp) {
               throw new Error(
                 `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
@@ -472,13 +471,68 @@ export class IPAssetClient {
               data: wipToken.depositEncode().data,
             });
             isDepositWip = true;
+          } else {
+            const approveTxHash = await wipToken.approve(request.childIpId, wipTotalFees);
+            await waitTx(this.rpcClient, approveTxHash);
             callData.push({
               target: WIP_TOKEN_ADDRESS,
               value: 0n,
-              data: wipToken.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
+              data: wipToken.transferFromEncode(this.walletAddress, request.childIpId, wipTotalFees)
+                .data,
             });
           }
-        } else {
+          callData.push({
+            target: WIP_TOKEN_ADDRESS,
+            value: 0n,
+            data: wipToken.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
+          });
+          const approveTxHash = await erc20Token.approve(request.childIpId, erc20TotalFees);
+          await waitTx(this.rpcClient, approveTxHash);
+          callData.push({
+            target: erc20ContractAddress,
+            value: 0n,
+            data: erc20Token.transferFromEncode(
+              this.walletAddress,
+              request.childIpId,
+              erc20TotalFees,
+            ).data,
+          });
+          callData.push({
+            target: erc20ContractAddress,
+            value: 0n,
+            data: erc20Token.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
+          });
+        } else if (wipTotalFees > 0n) {
+          if (wipBalance < wipTotalFees) {
+            if (!autoWrapIp) {
+              throw new Error(
+                `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
+                  wipTotalFees,
+                )}, balance: ${getTokenAmountDisplay(wipBalance, "WIP")}.`,
+              );
+            }
+            callData.push({
+              target: WIP_TOKEN_ADDRESS,
+              value: wipTotalFees,
+              data: wipToken.depositEncode().data,
+            });
+            isDepositWip = true;
+          } else {
+            const approveTxHash = await wipToken.approve(request.childIpId, wipTotalFees);
+            await waitTx(this.rpcClient, approveTxHash);
+            callData.push({
+              target: WIP_TOKEN_ADDRESS,
+              value: 0n,
+              data: wipToken.transferFromEncode(this.walletAddress, request.childIpId, wipTotalFees)
+                .data,
+            });
+          }
+          callData.push({
+            target: WIP_TOKEN_ADDRESS,
+            value: 0n,
+            data: wipToken.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
+          });
+        } else if (erc20TotalFees > 0n) {
           const approveTxHash = await erc20Token.approve(request.childIpId, erc20TotalFees);
           await waitTx(this.rpcClient, approveTxHash);
           callData.push({
@@ -514,6 +568,7 @@ export class IPAssetClient {
             ),
           }).data,
         });
+        console.log(callData);
         const txHash = await simulateAndWriteContract({
           rpcClient: this.rpcClient,
           wallet: this.wallet,
