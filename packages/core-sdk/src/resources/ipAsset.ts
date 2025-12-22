@@ -1,7 +1,6 @@
 import {
   Address,
   encodeFunctionData,
-  erc20Abi,
   Hash,
   Hex,
   maxUint256,
@@ -113,6 +112,7 @@ import { LicenseTerms } from "../types/resources/license";
 import { AggregateRegistrationRequest, SignatureMethodType } from "../types/utils/registerHelper";
 import { TokenSpender } from "../types/utils/token";
 import { calculateDerivativeMintingFee, calculateSPGMintFee } from "../utils/calculateMintFee";
+import { simulateAndWriteContract } from "../utils/contract";
 import { handleError } from "../utils/errors";
 import { contractCallWithFees, groupTokenSpenders } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
@@ -137,7 +137,8 @@ import {
 } from "../utils/registrationUtils/transformRegistrationRequest";
 import { getRevenueShare } from "../utils/royalty";
 import { setMaxLicenseTokens } from "../utils/setMaxLicenseTokens";
-import { validateAddress, waitTx } from "../utils/utils";
+import { ERC20Client, WipTokenClient } from "../utils/token";
+import { getTokenAmountDisplay, validateAddress, waitTx } from "../utils/utils";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -431,172 +432,82 @@ export class IPAssetClient {
           (acc, spender) => acc + (spender.amount || 0n),
           0n,
         );
-        // Approve child IP to spend WIP and ERC20 tokens
-        // We need to separate approve to approve the `msg.sender` is ipId.
-        const getApproveEncode = (spender: Address): Hex => {
-          return encodeFunctionData({
-            abi: erc20Abi,
-            functionName: "approve",
-            args: [spender, maxUint256],
-          });
-        };
-
-        const getTransferFromEncode = (from: Address, amount: bigint): Hex => {
-          return encodeFunctionData({
-            abi: erc20Abi,
-            functionName: "transferFrom",
-            args: [from, request.childIpId, amount],
-          });
-        };
-
-        const transferTokenToChildIpAndApproveRoyaltyModule = (
-          from: Address,
-          token: Address,
-          amount: bigint,
-        ): IpAccountImplExecuteBatchRequest["calls"] => {
-          const calls: IpAccountImplExecuteBatchRequest["calls"] = [];
-          calls.push({
-            target: token,
-            value: 0n,
-            data: getTransferFromEncode(from, amount),
-          });
-          // calls.push({
-          //   target: token,
-          //   value: 0n,
-          //   data: getApproveEncode(this.royaltyModuleEventClient.address),
-          // });
-          return calls;
-        };
-
-        let approveTx: Hash | undefined = undefined;
-        console.log("wipTotalFees", wipTotalFees);
-        console.log("erc20TotalFees", erc20TotalFees);
-        if (wipTotalFees > 0n && erc20TotalFees > 0) {
-          approveTx = await this.multicall3Client.aggregate3({
-            calls: [
-              {
-                target: WIP_TOKEN_ADDRESS,
-                allowFailure: false,
-                callData: getApproveEncode(request.childIpId),
-              },
-              {
-                target: erc20Address[this.chainId],
-                allowFailure: false,
-                callData: getApproveEncode(request.childIpId),
-              },
-            ],
-          });
-
-          callData.push(
-            ...transferTokenToChildIpAndApproveRoyaltyModule(
-              this.multicall3Client.address,
-              WIP_TOKEN_ADDRESS,
-              wipTotalFees,
-            ),
-          );
-          callData.push(
-            ...transferTokenToChildIpAndApproveRoyaltyModule(
-              this.multicall3Client.address,
-              erc20Address[this.chainId],
-              erc20TotalFees,
-            ),
-          );
-        } else if (wipTotalFees > 0n || erc20TotalFees > 0n) {
-          if (wipTotalFees > 0n) {
-            //1. Approve childIpId from multicall3 contract to spend WIP token
-            approveTx = await this.multicall3Client.aggregate3({
-              calls: [
-                {
-                  target: WIP_TOKEN_ADDRESS,
-                  allowFailure: false,
-                  callData: getApproveEncode(request.childIpId),
-                },
-              ],
-            });
-            //2. Transfer WIP token to child Ip and approve royalty module
-            callData.push(
-              ...transferTokenToChildIpAndApproveRoyaltyModule(
-                this.multicall3Client.address,
-                WIP_TOKEN_ADDRESS,
-                wipTotalFees,
-              ),
-            );
-          } else {
-            //Need to separate approve and transfer to approve the `msg.sender` is ipId.
-            approveTx = await this.erc20Client.approve({
-              spender: request.childIpId,
-              value: maxUint256,
-            });
-            //Transfer erc20 token to child IP and approve royalty module
-            callData.push(
-              ...transferTokenToChildIpAndApproveRoyaltyModule(
-                this.walletAddress,
-                erc20Address[this.chainId],
+        const erc20Token = new ERC20Client(this.rpcClient, this.wallet);
+        const wipToken = new WipTokenClient(this.rpcClient, this.wallet);
+        const erc20Balance = await erc20Token.balanceOf(this.walletAddress);
+        const wipBalance = await wipToken.balanceOf(this.walletAddress);
+        const ipBalance = await this.rpcClient.getBalance({ address: this.walletAddress });
+        const autoWrapIp = request.options?.wipOptions?.enableAutoWrapIp !== false;
+        if (wipTotalFees > 0n && erc20TotalFees > 0n) {
+          if (erc20Balance < erc20TotalFees) {
+            throw new Error(
+              `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
                 erc20TotalFees,
-              ),
+              )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
             );
           }
-        }
-        console.log("callData", callData);
-        if (approveTx) {
-          console.log("approveTx", approveTx);
-          await this.rpcClient.waitForTransactionReceipt({
-            hash: approveTx,
-          });
-        }
+        } else if (wipTotalFees > 0n) {
+          if (wipBalance < wipTotalFees) {
+            if (ipBalance < wipTotalFees) {
+              throw new Error(
+                `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
+                  wipTotalFees,
+                )}, balance: ${getTokenAmountDisplay(ipBalance)}.`,
+              );
+            }
 
+            if (!autoWrapIp) {
+              throw new Error(
+                `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
+                  wipTotalFees,
+                )}, balance: ${getTokenAmountDisplay(wipBalance, "WIP")}.`,
+              );
+            }
+            callData.push({
+              target: WIP_TOKEN_ADDRESS,
+              value: wipTotalFees,
+              data: wipToken.depositEncode().data,
+            });
+            callData.push({
+              target: WIP_TOKEN_ADDRESS,
+              value: 0n,
+              data: wipToken.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
+            });
+          }
+        } else {
+          //TODO:handle erc20 payment
+        }
         // Register derivative
-        // callData.push({
-        //   target: this.licensingModuleClient.address,
-        //   value: 0n,
-        //   data: this.licensingModuleClient.registerDerivativeEncode({
-        //     childIpId: request.childIpId,
-        //     parentIpIds: request.parentIpIds,
-        //     licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
-        //     licenseTemplate: request.licenseTemplate || this.licenseTemplateAddress,
-        //     royaltyContext: zeroAddress,
-        //     maxMintingFee: BigInt(request.maxMintingFee ?? 0),
-        //     maxRts: validateMaxRts(request.maxRts),
-        //     maxRevenueShare: getRevenueShare(
-        //       request.maxRevenueShare ?? 100,
-        //       RevShareType.MAX_REVENUE_SHARE,
-        //     ),
-        //   }).data,
-        // });
-        const executeBatchEncode = encodeFunctionData({
-          abi: ipAccountImplAbi,
-          functionName: "executeBatch",
-          args: [callData, 0],
+        callData.push({
+          target: this.licensingModuleClient.address,
+          value: 0n,
+          data: this.licensingModuleClient.registerDerivativeEncode({
+            childIpId: request.childIpId,
+            parentIpIds: request.parentIpIds,
+            licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
+            licenseTemplate: request.licenseTemplate || this.licenseTemplateAddress,
+            royaltyContext: zeroAddress,
+            maxMintingFee: BigInt(request.maxMintingFee ?? 0),
+            maxRts: validateMaxRts(request.maxRts),
+            maxRevenueShare: getRevenueShare(
+              request.maxRevenueShare ?? 100,
+              RevShareType.MAX_REVENUE_SHARE,
+            ),
+          }).data,
         });
-        const contractCall = (): Promise<Hash> => {
-          return ipAccount.executeBatch({
-            calls: callData,
-            operation: 0,
-          });
-        };
-        return await contractCallWithFees({
-          //Need to consider if disable approve
-          options: {
-            ...request.options,
-            erc20Options: {
-              ...request.options?.erc20Options,
-              enableAutoApprove: false,
-            },
-          },
-          sender: this.walletAddress,
-          encodedTxs: [
-            {
-              to: ipAccount.address,
-              data: executeBatchEncode,
-            },
-          ],
-          contractCall,
-          txOptions: request.txOptions,
-          multicall3Address: this.multicall3Client.address,
-          tokenSpenders: [...wipSpenders, ...erc20Spenders],
+        const txHash = await simulateAndWriteContract({
           rpcClient: this.rpcClient,
           wallet: this.wallet,
+          data: {
+            abi: ipAccountImplAbi,
+            address: ipAccount.address,
+            functionName: "executeBatch",
+            args: [callData, 0],
+            //TODO: need to consider when to add the deposit value
+            value: wipTotalFees,
+          },
         });
+        return { txHash: txHash.txHash };
       }
     } catch (error) {
       return handleError(error, "Failed to register derivative");

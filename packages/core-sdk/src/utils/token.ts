@@ -1,6 +1,13 @@
 import { Address, Hash, PublicClient } from "viem";
 
-import { EncodedTxData, Erc20Client, SimpleWalletClient, WrappedIpClient } from "../abi/generated";
+import { aeneid } from "./chain";
+import {
+  EncodedTxData,
+  erc20Address,
+  Erc20Client,
+  SimpleWalletClient,
+  WrappedIpClient,
+} from "../abi/generated";
 
 export interface TokenClient {
   balanceOf(account: Address): Promise<bigint>;
@@ -12,7 +19,11 @@ export interface TokenClient {
 export class ERC20Client implements TokenClient {
   private ercClient: Erc20Client;
 
-  constructor(rpcClient: PublicClient, wallet: SimpleWalletClient, address: Address) {
+  constructor(
+    rpcClient: PublicClient,
+    wallet: SimpleWalletClient,
+    address: Address = erc20Address[aeneid.id],
+  ) {
     this.ercClient = new Erc20Client(rpcClient, wallet, address);
   }
 
