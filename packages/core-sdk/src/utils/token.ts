@@ -14,6 +14,7 @@ export interface TokenClient {
   allowance(owner: string, spender: string): Promise<bigint>;
   approve(spender: string, value: bigint): Promise<Hash>;
   approveEncode(spender: Address, value: bigint): EncodedTxData;
+  transferFromEncode(from: Address, to: Address, value: bigint): EncodedTxData;
 }
 
 export class ERC20Client implements TokenClient {

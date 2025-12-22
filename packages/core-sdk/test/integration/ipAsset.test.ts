@@ -3924,7 +3924,7 @@ describe("IP Asset Functions", () => {
         });
         expect(result.txHash).to.be.a("string");
       });
-      it.only("should successfully give wip token with sufficient balance and sufficient erc20 token", async () => {
+      it("should successfully give wip token with sufficient balance and sufficient erc20 token", async () => {
         // 1. deposit 100 WIP token
         await client.wipClient.deposit({
           amount: 100n,

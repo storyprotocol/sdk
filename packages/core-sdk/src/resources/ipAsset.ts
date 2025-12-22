@@ -3,7 +3,6 @@ import {
   encodeFunctionData,
   Hash,
   Hex,
-  maxUint256,
   PublicClient,
   TransactionReceipt,
   zeroAddress,
@@ -23,7 +22,6 @@ import {
   Erc20Client,
   ipAccountImplAbi,
   IpAccountImplClient,
-  IpAccountImplExecuteBatchRequest,
   IpAssetRegistryClient,
   LicenseAttachmentWorkflowsClient,
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
@@ -51,7 +49,6 @@ import {
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import { LicenseTermsIdInput, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
@@ -112,11 +109,11 @@ import { LicenseTerms } from "../types/resources/license";
 import { AggregateRegistrationRequest, SignatureMethodType } from "../types/utils/registerHelper";
 import { TokenSpender } from "../types/utils/token";
 import { calculateDerivativeMintingFee, calculateSPGMintFee } from "../utils/calculateMintFee";
-import { simulateAndWriteContract } from "../utils/contract";
 import { handleError } from "../utils/errors";
-import { contractCallWithFees, groupTokenSpenders } from "../utils/feeUtils";
+import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
+import { IpAccountBatchExecutor } from "../utils/ipAccountBatchExecutor";
 import { PILFlavor } from "../utils/pilFlavor";
 import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
@@ -137,8 +134,7 @@ import {
 } from "../utils/registrationUtils/transformRegistrationRequest";
 import { getRevenueShare } from "../utils/royalty";
 import { setMaxLicenseTokens } from "../utils/setMaxLicenseTokens";
-import { ERC20Client, WipTokenClient } from "../utils/token";
-import { getTokenAmountDisplay, validateAddress, waitTx } from "../utils/utils";
+import { validateAddress, waitTx } from "../utils/utils";
 
 export class IPAssetClient {
   public licensingModuleClient: LicensingModuleClient;
@@ -387,8 +383,6 @@ export class IPAssetClient {
     request: RegisterDerivativeRequest,
   ): Promise<LinkDerivativeResponse> {
     try {
-      //Need to consider erc20 and wip tokens
-      const callData: IpAccountImplExecuteBatchRequest["calls"] = [];
       const isChildIpIdRegistered = await this.isRegistered(request.childIpId);
       if (!isChildIpIdRegistered) {
         throw new Error(`The child IP with id ${request.childIpId} is not registered.`);
@@ -407,11 +401,6 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       } else {
-        const ipAccount = new IpAccountImplClient(
-          this.rpcClient,
-          this.wallet,
-          validateAddress(request.childIpId),
-        );
         // mint fee instead of gas fee
         // Calculate minting fees for the derivative
         const mintFees = await calculateDerivativeMintingFee({
@@ -421,167 +410,16 @@ export class IPAssetClient {
           chainId: this.chainId,
           sender: this.walletAddress,
         });
-        const { wipSpenders, erc20Spenders } = groupTokenSpenders(
-          mintFees.map((fee) => ({
-            address: this.royaltyModuleEventClient.address,
-            ...fee,
-          })),
+        const batchExecutor = new IpAccountBatchExecutor(
+          this.rpcClient,
+          this.wallet,
+          request.childIpId,
         );
-        const wipTotalFees = wipSpenders.reduce((acc, spender) => acc + (spender.amount || 0n), 0n);
-        const erc20TotalFees = erc20Spenders.reduce(
-          (acc, spender) => acc + (spender.amount || 0n),
-          0n,
+        return batchExecutor.executeWithFees(
+          mintFees,
+          this.royaltyModuleEventClient.address,
+          encodedTxData,
         );
-        const erc20Token = new ERC20Client(this.rpcClient, this.wallet);
-        const wipToken = new WipTokenClient(this.rpcClient, this.wallet);
-        const erc20Balance = await erc20Token.balanceOf(this.walletAddress);
-        const wipBalance = await wipToken.balanceOf(this.walletAddress);
-        const ipBalance = await this.rpcClient.getBalance({ address: this.walletAddress });
-        const autoWrapIp = request.options?.wipOptions?.enableAutoWrapIp !== false;
-        const erc20ContractAddress = erc20Address[this.chainId];
-        if (erc20Balance < erc20TotalFees) {
-          throw new Error(
-            `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
-              erc20TotalFees,
-            )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
-          );
-        }
-
-        if (ipBalance < wipTotalFees) {
-          throw new Error(
-            `Wallet does not have enough IP to wrap to WIP and pay for fees. Total fees: ${getTokenAmountDisplay(
-              wipTotalFees,
-            )}, balance: ${getTokenAmountDisplay(ipBalance)}.`,
-          );
-        }
-
-        let isDepositWip: boolean = false;
-        if (wipTotalFees > 0n && erc20TotalFees > 0n) {
-          if (wipBalance < wipTotalFees) {
-            if (!autoWrapIp) {
-              throw new Error(
-                `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
-                  wipTotalFees,
-                )}, balance: ${getTokenAmountDisplay(wipBalance, "WIP")}.`,
-              );
-            }
-            callData.push({
-              target: WIP_TOKEN_ADDRESS,
-              value: wipTotalFees,
-              data: wipToken.depositEncode().data,
-            });
-            isDepositWip = true;
-          } else {
-            const approveTxHash = await wipToken.approve(request.childIpId, wipTotalFees);
-            await waitTx(this.rpcClient, approveTxHash);
-            callData.push({
-              target: WIP_TOKEN_ADDRESS,
-              value: 0n,
-              data: wipToken.transferFromEncode(this.walletAddress, request.childIpId, wipTotalFees)
-                .data,
-            });
-          }
-          callData.push({
-            target: WIP_TOKEN_ADDRESS,
-            value: 0n,
-            data: wipToken.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
-          });
-          const approveTxHash = await erc20Token.approve(request.childIpId, erc20TotalFees);
-          await waitTx(this.rpcClient, approveTxHash);
-          callData.push({
-            target: erc20ContractAddress,
-            value: 0n,
-            data: erc20Token.transferFromEncode(
-              this.walletAddress,
-              request.childIpId,
-              erc20TotalFees,
-            ).data,
-          });
-          callData.push({
-            target: erc20ContractAddress,
-            value: 0n,
-            data: erc20Token.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
-          });
-        } else if (wipTotalFees > 0n) {
-          if (wipBalance < wipTotalFees) {
-            if (!autoWrapIp) {
-              throw new Error(
-                `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
-                  wipTotalFees,
-                )}, balance: ${getTokenAmountDisplay(wipBalance, "WIP")}.`,
-              );
-            }
-            callData.push({
-              target: WIP_TOKEN_ADDRESS,
-              value: wipTotalFees,
-              data: wipToken.depositEncode().data,
-            });
-            isDepositWip = true;
-          } else {
-            const approveTxHash = await wipToken.approve(request.childIpId, wipTotalFees);
-            await waitTx(this.rpcClient, approveTxHash);
-            callData.push({
-              target: WIP_TOKEN_ADDRESS,
-              value: 0n,
-              data: wipToken.transferFromEncode(this.walletAddress, request.childIpId, wipTotalFees)
-                .data,
-            });
-          }
-          callData.push({
-            target: WIP_TOKEN_ADDRESS,
-            value: 0n,
-            data: wipToken.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
-          });
-        } else if (erc20TotalFees > 0n) {
-          const approveTxHash = await erc20Token.approve(request.childIpId, erc20TotalFees);
-          await waitTx(this.rpcClient, approveTxHash);
-          callData.push({
-            target: erc20ContractAddress,
-            value: 0n,
-            data: erc20Token.transferFromEncode(
-              this.walletAddress,
-              request.childIpId,
-              erc20TotalFees,
-            ).data,
-          });
-          callData.push({
-            target: erc20ContractAddress,
-            value: 0n,
-            data: erc20Token.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
-          });
-        }
-        // Register derivative
-        callData.push({
-          target: this.licensingModuleClient.address,
-          value: 0n,
-          data: this.licensingModuleClient.registerDerivativeEncode({
-            childIpId: request.childIpId,
-            parentIpIds: request.parentIpIds,
-            licenseTermsIds: request.licenseTermsIds.map((id) => BigInt(id)),
-            licenseTemplate: request.licenseTemplate || this.licenseTemplateAddress,
-            royaltyContext: zeroAddress,
-            maxMintingFee: BigInt(request.maxMintingFee ?? 0),
-            maxRts: validateMaxRts(request.maxRts),
-            maxRevenueShare: getRevenueShare(
-              request.maxRevenueShare ?? 100,
-              RevShareType.MAX_REVENUE_SHARE,
-            ),
-          }).data,
-        });
-        console.log(callData);
-        const txHash = await simulateAndWriteContract({
-          rpcClient: this.rpcClient,
-          wallet: this.wallet,
-          data: {
-            abi: ipAccountImplAbi,
-            address: ipAccount.address,
-            functionName: "executeBatch",
-            args: [callData, 0],
-            ...(isDepositWip && { value: wipTotalFees }),
-          },
-        });
-        await waitTx(this.rpcClient, txHash.txHash);
-        return { txHash: txHash.txHash };
       }
     } catch (error) {
       return handleError(error, "Failed to register derivative");
