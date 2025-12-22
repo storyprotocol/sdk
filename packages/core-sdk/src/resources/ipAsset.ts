@@ -438,14 +438,17 @@ export class IPAssetClient {
         const wipBalance = await wipToken.balanceOf(this.walletAddress);
         const ipBalance = await this.rpcClient.getBalance({ address: this.walletAddress });
         const autoWrapIp = request.options?.wipOptions?.enableAutoWrapIp !== false;
+        const erc20ContractAddress = erc20Address[this.chainId];
+        if (erc20Balance < erc20TotalFees) {
+          throw new Error(
+            `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
+              erc20TotalFees,
+            )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
+          );
+        }
+        let isDepositWip: boolean = false;
         if (wipTotalFees > 0n && erc20TotalFees > 0n) {
-          if (erc20Balance < erc20TotalFees) {
-            throw new Error(
-              `Wallet does not have enough erc20 token to pay for fees. Total fees:  ${getTokenAmountDisplay(
-                erc20TotalFees,
-              )}, balance: ${getTokenAmountDisplay(erc20Balance)}.`,
-            );
-          }
+          //TODO: handle both wip and erc20 fees
         } else if (wipTotalFees > 0n) {
           if (wipBalance < wipTotalFees) {
             if (ipBalance < wipTotalFees) {
@@ -468,6 +471,7 @@ export class IPAssetClient {
               value: wipTotalFees,
               data: wipToken.depositEncode().data,
             });
+            isDepositWip = true;
             callData.push({
               target: WIP_TOKEN_ADDRESS,
               value: 0n,
@@ -475,7 +479,22 @@ export class IPAssetClient {
             });
           }
         } else {
-          //TODO:handle erc20 payment
+          const approveTxHash = await erc20Token.approve(request.childIpId, erc20TotalFees);
+          await waitTx(this.rpcClient, approveTxHash);
+          callData.push({
+            target: erc20ContractAddress,
+            value: 0n,
+            data: erc20Token.transferFromEncode(
+              this.walletAddress,
+              request.childIpId,
+              erc20TotalFees,
+            ).data,
+          });
+          callData.push({
+            target: erc20ContractAddress,
+            value: 0n,
+            data: erc20Token.approveEncode(this.royaltyModuleEventClient.address, maxUint256).data,
+          });
         }
         // Register derivative
         callData.push({
@@ -503,10 +522,10 @@ export class IPAssetClient {
             address: ipAccount.address,
             functionName: "executeBatch",
             args: [callData, 0],
-            //TODO: need to consider when to add the deposit value
-            value: wipTotalFees,
+            ...(isDepositWip && { value: wipTotalFees }),
           },
         });
+        await waitTx(this.rpcClient, txHash.txHash);
         return { txHash: txHash.txHash };
       }
     } catch (error) {
