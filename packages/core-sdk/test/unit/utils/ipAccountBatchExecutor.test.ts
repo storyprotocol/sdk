@@ -44,7 +44,7 @@ describe("IpAccountBatchExecutor", () => {
   });
 
   describe("validation errors", () => {
-    it("should throw error when wallet does not have enough ERC20 tokens to pay for fees", async () => {
+    it("should reject when wallet ERC20 balance is insufficient for fees", async () => {
       const mintFees = [{ token: erc20Contract, address: mockAddress, amount: 100n }];
       stub(ERC20Client.prototype, "balanceOf").resolves(0n);
       await expect(
@@ -57,7 +57,7 @@ describe("IpAccountBatchExecutor", () => {
         "Wallet does not have enough ERC20 tokens to pay for fees. Required: 0.0000000000000001IP, Available: 0IP.",
       );
     });
-    it("should throw error when wallet does not have enough IP tokens to wrap to WIP and pay for fees", async () => {
+    it("should reject when wallet IP balance is insufficient to wrap into WIP for fees", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 1000n }];
       await expect(
         ipAccountBatchExecutor.executeWithFees({ mintFees, spenderAddress, encodedTxs }),
@@ -65,7 +65,7 @@ describe("IpAccountBatchExecutor", () => {
         `Wallet does not have enough IP tokens to wrap to WIP and pay for fees. Required: 0.000000000000001IP, Available: 0.0000000000000001IP.`,
       );
     });
-    it("should throw error when wip token balance is insufficient and enableAutoWrapIp is false", async () => {
+    it("should reject when WIP balance is insufficient and auto-wrapping is disabled", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n }];
       stub(WipTokenClient.prototype, "balanceOf").resolves(0n);
       await expect(
@@ -80,8 +80,8 @@ describe("IpAccountBatchExecutor", () => {
       );
     });
   });
-  describe("erc20", () => {
-    it("should success when erc20 token balance is sufficient", async () => {
+  describe("ERC20 token fee handling", () => {
+    it("should execute batch with transfer, approve, and transaction calls when ERC20 balance is sufficient", async () => {
       const mintFees = [{ token: erc20Contract, address: mockAddress, amount: 100n }];
       stub(ERC20Client.prototype, "balanceOf").resolves(100n);
       const approveMock = stub(ERC20Client.prototype, "approve").resolves("0x1");
@@ -109,7 +109,7 @@ describe("IpAccountBatchExecutor", () => {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should only a call to executeBatch when autoApprove is false", async () => {
+    it("should skip approval and transfer calls when auto-approve is disabled", async () => {
       const mintFees = [{ token: erc20Contract, address: mockAddress, amount: 100n }];
       stub(ERC20Client.prototype, "balanceOf").resolves(100n);
       const approveMock = stub(ERC20Client.prototype, "approve").resolves("0x1");
@@ -134,7 +134,7 @@ describe("IpAccountBatchExecutor", () => {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should only a call to executeBatch when fee amount is 0", async () => {
+    it("should skip fee handling and only execute transaction when fee amount is zero", async () => {
       const mintFees = [{ token: erc20Contract, address: mockAddress, amount: 0n }];
       stub(ERC20Client.prototype, "balanceOf").resolves(100n);
       const approveMock = stub(ERC20Client.prototype, "approve").resolves("0x1");
@@ -158,8 +158,8 @@ describe("IpAccountBatchExecutor", () => {
     });
   });
 
-  describe("wip", () => {
-    it("should successfully when wip token balance is sufficient", async () => {
+  describe("WIP token fee handling", () => {
+    it("should execute batch with approve, transfer, and transaction calls when WIP balance is sufficient but allowances are insufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n }];
       stub(WipTokenClient.prototype, "balanceOf").resolves(100n);
       stub(WipTokenClient.prototype, "allowance").resolves(10n);
@@ -188,7 +188,7 @@ describe("IpAccountBatchExecutor", () => {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should success when wip token balance is sufficient and ip id allowance is sufficient", async () => {
+    it("should execute batch with approve, transfer, and transaction calls when WIP balance and IP account allowance are sufficient but spender allowance is insufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n }];
       stub(WipTokenClient.prototype, "balanceOf").resolves(100n);
       stub(WipTokenClient.prototype, "allowance")
@@ -216,7 +216,7 @@ describe("IpAccountBatchExecutor", () => {
       expect((callData as IpAccountImplExecuteBatchRequest["calls"]).length).equals(3); //approve, transfer, actual transaction
     });
 
-    it("should when wip token balance is sufficient and both allowance are sufficient", async () => {
+    it("should execute batch with only transfer and transaction calls when WIP balance and both allowances are sufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n }];
       stub(WipTokenClient.prototype, "balanceOf").resolves(100n);
       stub(WipTokenClient.prototype, "allowance").resolves(100n);
@@ -241,7 +241,7 @@ describe("IpAccountBatchExecutor", () => {
       expect(approveMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
     });
-    it("should only a call to executeBatch when autoApprove is false", async () => {
+    it("should skip approval and transfer calls when auto-approve is disabled", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n }];
       stub(WipTokenClient.prototype, "balanceOf").resolves(100n);
       stub(WipTokenClient.prototype, "allowance").resolves(10n);
@@ -266,7 +266,7 @@ describe("IpAccountBatchExecutor", () => {
       expect(approveMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
     });
-    it("should success when wip token balance is insufficient and both allowance are sufficient", async () => {
+    it("should auto-wrap IP tokens to WIP via deposit when WIP balance is insufficient but allowances are sufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n }];
       stub(WipTokenClient.prototype, "balanceOf").resolves(0n);
       stub(WipTokenClient.prototype, "allowance").resolves(100n);
@@ -292,7 +292,7 @@ describe("IpAccountBatchExecutor", () => {
       expect(approveMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
     });
-    it("should success when allowance and wip token balance are insufficient and first allowance is sufficient", async () => {
+    it("should auto-wrap IP and add approve call when WIP balance is insufficient, wallet-to-IP-account allowance is insufficient, but spender allowance is sufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n }];
       stub(WipTokenClient.prototype, "balanceOf").resolves(0n);
       stub(WipTokenClient.prototype, "allowance")
@@ -318,7 +318,7 @@ describe("IpAccountBatchExecutor", () => {
       expect((callData as IpAccountImplExecuteBatchRequest["calls"]).length).equals(3); // deposit, approve, actual transaction
       expect(approveMock.callCount).equals(0);
     });
-    it("should success when allowance and wip token balance are insufficient and  ip id allowance is sufficient and spender allowance is insufficient", async () => {
+    it("should auto-wrap IP without approve call when WIP balance is insufficient, wallet-to-IP-account allowance is sufficient, but spender allowance is insufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n }];
       stub(WipTokenClient.prototype, "balanceOf").resolves(0n);
       stub(WipTokenClient.prototype, "allowance")
@@ -345,7 +345,7 @@ describe("IpAccountBatchExecutor", () => {
       expect(approveMock.callCount).equals(0);
     });
 
-    it("should success when fee amount is 0", async () => {
+    it("should skip fee handling and only execute transaction when fee amount is zero", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 0n }];
       stub(WipTokenClient.prototype, "balanceOf").resolves(100n);
       stub(WipTokenClient.prototype, "allowance").resolves(100n);
@@ -370,11 +370,11 @@ describe("IpAccountBatchExecutor", () => {
       expect(result.txHash).equals(txHash);
     });
   });
-  describe("erc20 and wip", () => {
-    it("should successfully execute with fees when erc20 token balance is sufficient and wip token balance is sufficient", async () => {
+  describe("Combined ERC20 and WIP token fee handling", () => {
+    it("should execute batch with all ERC20 and WIP fee calls when both token balances are sufficient", async () => {
       const mintFees = [
         { token: erc20Contract, address: mockAddress, amount: 100n },
-        { token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n },
+        { token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 10n },
       ];
       stub(ERC20Client.prototype, "balanceOf").resolves(100n);
       stub(WipTokenClient.prototype, "balanceOf").resolves(100n);
@@ -414,7 +414,7 @@ describe("IpAccountBatchExecutor", () => {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should throw error when erc20 token balance is insufficient and wip token balance is sufficient", async () => {
+    it("should reject when ERC20 balance is insufficient even if WIP balance is sufficient", async () => {
       const mintFees = [
         { token: erc20Contract, address: mockAddress, amount: 100n },
         { token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n },
@@ -428,7 +428,7 @@ describe("IpAccountBatchExecutor", () => {
       );
     });
 
-    it("should throw error when erc20 token balance is sufficient and wip token balance is insufficient and ip balance is insufficient", async () => {
+    it("should reject when ERC20 balance is sufficient but IP balance is insufficient to wrap into WIP", async () => {
       const mintFees = [
         { token: erc20Contract, address: mockAddress, amount: 100n },
         { token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 101n },
@@ -442,7 +442,7 @@ describe("IpAccountBatchExecutor", () => {
       );
     });
 
-    it("should success when erc20 token balance is sufficient and wip token balance is insufficient", async () => {
+    it("should auto-wrap IP to WIP and handle ERC20 fees when ERC20 balance is sufficient but WIP balance is insufficient", async () => {
       const mintFees = [
         { token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 100n },
         { token: erc20Contract, address: mockAddress, amount: 100n },
@@ -486,7 +486,7 @@ describe("IpAccountBatchExecutor", () => {
       expect(result.txHash).equals(txHash);
     });
 
-    it("should throw error when erc20 token balance is sufficient and wip token balance is insufficient and autoWrapIp is false", async () => {
+    it("should reject when ERC20 balance is sufficient but WIP balance and IP balance are both insufficient for auto-wrapping", async () => {
       const mintFees = [
         { token: WIP_TOKEN_ADDRESS, address: mockAddress, amount: 1001n },
         { token: erc20Contract, address: mockAddress, amount: 100n },
