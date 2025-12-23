@@ -99,6 +99,27 @@ export class IpAccountBatchExecutor {
       data: encodedTxs.data,
     });
 
+    const isMulticall = options.options?.wipOptions?.useMulticallWhenPossible !== false;
+    if (!isMulticall) {
+      for (const [index, call] of callData.entries()) {
+        const value = call.value;
+        const txHash = await simulateAndWriteContract({
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
+          data: {
+            abi: ipAccountImplAbi,
+            address: this.ipId,
+            functionName: "execute",
+            args: [call.target, call.value, call.data, 0],
+            ...(value > 0n && { value }),
+          },
+        });
+        await waitTx(this.rpcClient, txHash.txHash);
+        if (index === callData.length - 1) {
+          return { txHash: txHash.txHash, receipt: txHash.receipt };
+        }
+      }
+    }
     const txHash = await simulateAndWriteContract({
       rpcClient: this.rpcClient,
       wallet: this.wallet,
@@ -110,7 +131,6 @@ export class IpAccountBatchExecutor {
         ...(depositValue > 0n && { value: depositValue }),
       },
     });
-
     await waitTx(this.rpcClient, txHash.txHash);
     return { txHash: txHash.txHash, receipt: txHash.receipt };
   }

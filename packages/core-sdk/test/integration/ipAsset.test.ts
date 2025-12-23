@@ -3962,6 +3962,41 @@ describe("IP Asset Functions", () => {
           amount: wipBalance,
         });
       });
+
+      it("should successfully give wip token with insufficient balance and sufficient erc20 token and useMulticallWhenPossible is false", async () => {
+        // 1. register a child ip
+        const tokenId = await getTokenId();
+        const childIpId = (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId!,
+          })
+        ).ipId!;
+        // 2. create parent ip and license terms for WIP
+        const parentIpIdAndLicenseTermsIdForWIP1 = await createParentIpAndLicenseTerms();
+        // 3. create parent ip and license terms for ERC20
+        const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
+          erc20Address[aeneid],
+        );
+        // 4. link derivative
+        const result = await client.ipAsset.linkDerivative({
+          childIpId: childIpId,
+          parentIpIds: [
+            parentIpIdAndLicenseTermsIdForWIP1.parentIpId,
+            parentIpIdAndLicenseTermsIdForERC20.parentIpId,
+          ],
+          licenseTermsIds: [
+            parentIpIdAndLicenseTermsIdForWIP1.licenseTermsId,
+            parentIpIdAndLicenseTermsIdForERC20.licenseTermsId,
+          ],
+          options: {
+            wipOptions: {
+              useMulticallWhenPossible: false,
+            },
+          },
+        });
+        expect(result.txHash).to.be.a("string");
+      });
     });
   });
 
