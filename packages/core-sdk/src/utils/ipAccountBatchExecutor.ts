@@ -40,7 +40,8 @@ export class IpAccountBatchExecutor {
     private readonly wallet: SimpleWalletClient,
     private readonly ipId: Address,
   ) {
-    this.erc20Token = new ERC20Client(rpcClient, wallet);
+    //erc20 address only available in aeneid
+    this.erc20Token = new ERC20Client(rpcClient, wallet, erc20Address[aeneid.id]);
     this.wipToken = new WipTokenClient(rpcClient, wallet);
     this.walletAddress = wallet.account!.address;
   }
