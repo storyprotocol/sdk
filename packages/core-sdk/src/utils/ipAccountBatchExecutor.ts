@@ -64,8 +64,6 @@ export class IpAccountBatchExecutor {
     const wipTotalFees = wipSpenders.reduce((acc, spender) => acc + (spender.amount || 0n), 0n);
     const erc20TotalFees = erc20Spenders.reduce((acc, spender) => acc + (spender.amount || 0n), 0n);
 
-    await this.validateWalletBalances(erc20TotalFees, wipTotalFees);
-
     const wipBalance = await this.wipToken.balanceOf(this.walletAddress);
     const callData: IpAccountImplExecuteBatchRequest["calls"] = [];
     let depositValue = 0n;
@@ -137,32 +135,6 @@ export class IpAccountBatchExecutor {
   }
 
   /**
-   * Validates that the wallet has sufficient balances for both ERC20 and WIP token fees.
-   */
-  private async validateWalletBalances(
-    erc20TotalFees: bigint,
-    wipTotalFees: bigint,
-  ): Promise<void> {
-    const erc20Balance = await this.erc20Token.balanceOf(this.walletAddress);
-    const ipBalance = await this.rpcClient.getBalance({ address: this.walletAddress });
-    if (erc20Balance < erc20TotalFees) {
-      throw new Error(
-        `Wallet does not have enough ERC20 tokens to pay for fees. ` +
-          `Required: ${getTokenAmountDisplay(erc20TotalFees)}, ` +
-          `Available: ${getTokenAmountDisplay(erc20Balance)}.`,
-      );
-    }
-
-    if (ipBalance < wipTotalFees) {
-      throw new Error(
-        `Wallet does not have enough IP tokens to wrap to WIP and pay for fees. ` +
-          `Required: ${getTokenAmountDisplay(wipTotalFees)}, ` +
-          `Available: ${getTokenAmountDisplay(ipBalance)}.`,
-      );
-    }
-  }
-
-  /**
    * Builds call data for transferring ERC20 tokens from wallet to IP account and approving spender.
    */
   private async buildErc20FeeCallData(
@@ -170,10 +142,19 @@ export class IpAccountBatchExecutor {
     spenderAddress: Address,
     options: WithERC20Options,
   ): Promise<IpAccountImplExecuteBatchRequest["calls"]> {
+    const erc20Balance = await this.erc20Token.balanceOf(this.walletAddress);
+    if (erc20Balance < totalFee) {
+      throw new Error(
+        `Wallet does not have enough ERC20 tokens to pay for fees. ` +
+          `Required: ${getTokenAmountDisplay(totalFee)}, ` +
+          `Available: ${getTokenAmountDisplay(erc20Balance)}.`,
+      );
+    }
     const autoApprove = options.options?.erc20Options?.enableAutoApprove !== false;
     if (!autoApprove) {
       return [];
     }
+    // erc20 address only available in aeneid
     const erc20ContractAddress = erc20Address[aeneid.id];
     const allowance = await this.erc20Token.allowance(this.walletAddress, this.ipId);
     if (allowance < totalFee) {
@@ -210,11 +191,20 @@ export class IpAccountBatchExecutor {
     const calls: IpAccountImplExecuteBatchRequest["calls"] = [];
     const autoApprove = options.options?.wipOptions?.enableAutoApprove !== false;
     const autoWrapIp = options.options?.wipOptions?.enableAutoWrapIp !== false;
+    const ipBalance = await this.rpcClient.getBalance({ address: this.walletAddress });
     if (!autoWrapIp) {
       throw new Error(
         `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
           totalFee,
         )}, balance: ${getTokenAmountDisplay(wipBalance, "WIP")}.`,
+      );
+    }
+
+    if (ipBalance < totalFee) {
+      throw new Error(
+        `Wallet does not have enough IP tokens to wrap to WIP and pay for fees. ` +
+          `Required: ${getTokenAmountDisplay(totalFee)}, ` +
+          `Available: ${getTokenAmountDisplay(ipBalance)}.`,
       );
     }
     calls.push({
@@ -243,11 +233,8 @@ export class IpAccountBatchExecutor {
     options: WithWipOptions,
   ): Promise<IpAccountImplExecuteBatchRequest["calls"]> {
     const autoApprove = options.options?.wipOptions?.enableAutoApprove !== false;
-    if (!autoApprove) {
-      return [];
-    }
     const allowance = await this.wipToken.allowance(this.walletAddress, this.ipId);
-    if (allowance < totalFee) {
+    if (autoApprove && allowance < totalFee) {
       // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
       await waitTx(this.rpcClient, await this.wipToken.approve(this.ipId, totalFee));
     }
@@ -260,7 +247,7 @@ export class IpAccountBatchExecutor {
       },
     ];
     const spenderAllowance = await this.wipToken.allowance(this.ipId, spenderAddress);
-    if (spenderAllowance < totalFee) {
+    if (autoApprove && spenderAllowance < totalFee) {
       calls.push({
         target: WIP_TOKEN_ADDRESS,
         value: 0n,

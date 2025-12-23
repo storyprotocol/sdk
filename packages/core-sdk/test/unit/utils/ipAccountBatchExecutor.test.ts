@@ -120,7 +120,7 @@ describe("IpAccountBatchExecutor", () => {
 
     it("should reject when wallet IP balance is insufficient to wrap into WIP for fees", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 1000n }];
-
+      setupWipStubs({ balance: 100n, allowance: 10n });
       await expect(
         ipAccountBatchExecutor.executeWithFees({ mintFees, spenderAddress, encodedTxs }),
       ).to.be.rejectedWith(
@@ -178,7 +178,7 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount({ callData, expectedCount: 1 }); // transaction only
+      expectCallCount({ callData, expectedCount: 2 }); // transaction only
       expect(approveMock.calledOnce).equals(false);
       expect(result.txHash).equals(txHash);
     });

@@ -401,8 +401,6 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       } else {
-        // mint fee instead of gas fee
-        // Calculate minting fees for the derivative
         const mintFees = await calculateDerivativeMintingFee({
           derivData: object,
           rpcClient: this.rpcClient,
