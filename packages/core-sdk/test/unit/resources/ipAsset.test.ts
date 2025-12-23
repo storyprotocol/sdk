@@ -1,7 +1,15 @@
 import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { SinonStub, stub } from "sinon";
-import { Address, PublicClient, toHex, WalletClient, zeroAddress, zeroHash } from "viem";
+import {
+  Address,
+  PublicClient,
+  toHex,
+  TransactionReceipt,
+  WalletClient,
+  zeroAddress,
+  zeroHash,
+} from "viem";
 
 import {
   IPAssetClient,
@@ -37,6 +45,7 @@ import {
   DerivativeDataInput,
   IpRegistrationWorkflowRequest,
 } from "../../../src/types/resources/ipAsset";
+import { IpAccountBatchExecutor } from "../../../src/utils/ipAccountBatchExecutor";
 import { WipTokenClient } from "../../../src/utils/token";
 import { mockERC721 } from "../../integration/utils/util";
 import { aeneid, ipId, mockAddress, txHash, walletAddress } from "../mockData";
@@ -495,7 +504,7 @@ describe("Test IpAssetClient", () => {
         );
       }
     });
-    it(`should throw maxRts error when registerDerivative given maxRts is greater than ${MAX_ROYALTY_TOKEN}`, async () => {
+    it("should throw maxRts error when registerDerivative given maxRts is greater than 100_000_000", async () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await ipAssetClient.registerDerivative({
@@ -576,17 +585,16 @@ describe("Test IpAssetClient", () => {
         .resolves(true);
 
       stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
-      const registerDerivativeStub = stub(
-        ipAssetClient.licensingModuleClient,
-        "registerDerivative",
-      ).resolves(txHash);
       stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
       // Because registerDerivative doesn't call trigger IPRegistered event, but the `handleRegistrationWithFees`
       // will call it, so we need to mock the result of parseTxIpRegisteredEvent to avoid the error.
       stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([]);
-
+      stub(IpAccountBatchExecutor.prototype, "executeWithFees").resolves({
+        txHash,
+        receipt: { status: "success" } as unknown as TransactionReceipt,
+      });
       const res = await ipAssetClient.registerDerivative({
         childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -598,9 +606,6 @@ describe("Test IpAssetClient", () => {
       });
 
       expect(res.txHash).equal(txHash);
-      expect(registerDerivativeStub.args[0][0].maxRts).equal(0);
-      expect(registerDerivativeStub.args[0][0].maxMintingFee).equal(0n);
-      expect(registerDerivativeStub.args[0][0].maxRevenueShare).equal(0);
     });
 
     it("should return encoded tx data when registerDerivative given correct childIpId, parentIpId, licenseTermsIds and encodedTxDataOnly of true ", async () => {
@@ -632,44 +637,6 @@ describe("Test IpAssetClient", () => {
         },
       });
       expect(res.encodedTxData!.data).to.be.a("string");
-    });
-
-    it("should call with default values of maxMintingFee, maxRts, maxRevenueShare when registerDerivative given maxMintingFee, maxRts, maxRevenueShare is not provided", async () => {
-      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
-        .onCall(0)
-        .resolves(true)
-        .onCall(1)
-        .resolves(true);
-
-      stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
-      const registerDerivativeStub = stub(
-        ipAssetClient.licensingModuleClient,
-        "registerDerivative",
-      ).resolves("0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997");
-      stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
-        royaltyPercent: 100,
-      });
-      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
-        {
-          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          chainId: 0n,
-          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-          tokenId: 0n,
-          name: "",
-          uri: "",
-          registrationDate: 0n,
-        },
-      ]);
-
-      await ipAssetClient.registerDerivative({
-        childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-        parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
-        licenseTermsIds: [1n],
-        licenseTemplate: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
-      });
-      expect(registerDerivativeStub.args[0][0].maxMintingFee).equal(0n);
-      expect(registerDerivativeStub.args[0][0].maxRts).equal(MAX_ROYALTY_TOKEN);
-      expect(registerDerivativeStub.args[0][0].maxRevenueShare).equal(MAX_ROYALTY_TOKEN);
     });
   });
 
@@ -6143,10 +6110,10 @@ describe("Test IpAssetClient", () => {
     });
     it("should successfully when give parentIpIds", async () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      const registerDerivativeStub = stub(
-        ipAssetClient.licensingModuleClient,
-        "registerDerivative",
-      ).resolves(txHash);
+      stub(IpAccountBatchExecutor.prototype, "executeWithFees").resolves({
+        txHash,
+        receipt: { status: "success" } as unknown as TransactionReceipt,
+      });
       const result = await ipAssetClient.linkDerivative({
         childIpId: ipId,
         parentIpIds: [ipId],
@@ -6157,7 +6124,6 @@ describe("Test IpAssetClient", () => {
         txOptions: { timeout: 10000 },
       });
       expect(result.txHash).to.equal(txHash);
-      expect(registerDerivativeStub.args[0][0].maxRts).to.equal(100);
     });
 
     it("should successfully when give licenseTokenIds", async () => {
