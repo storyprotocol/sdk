@@ -151,13 +151,10 @@ export class IpAccountBatchExecutor {
       );
     }
     const autoApprove = options.options?.erc20Options?.enableAutoApprove !== false;
-    if (!autoApprove) {
-      return [];
-    }
     // erc20 address only available in aeneid
     const erc20ContractAddress = erc20Address[aeneid.id];
     const allowance = await this.erc20Token.allowance(this.walletAddress, this.ipId);
-    if (allowance < totalFee) {
+    if (autoApprove && allowance < totalFee) {
       // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
       await waitTx(this.rpcClient, await this.erc20Token.approve(this.ipId, totalFee));
     }
@@ -169,7 +166,7 @@ export class IpAccountBatchExecutor {
       },
     ];
     const spenderAllowance = await this.erc20Token.allowance(this.ipId, spenderAddress);
-    if (spenderAllowance < totalFee) {
+    if (autoApprove && spenderAllowance < totalFee) {
       calls.push({
         target: erc20ContractAddress,
         value: 0n,

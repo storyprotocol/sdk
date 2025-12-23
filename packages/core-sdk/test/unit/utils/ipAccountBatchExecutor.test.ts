@@ -178,7 +178,7 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount({ callData, expectedCount: 2 }); // transaction only
+      expectCallCount({ callData, expectedCount: 2 });
       expect(approveMock.calledOnce).equals(false);
       expect(result.txHash).equals(txHash);
     });
@@ -272,7 +272,7 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount({ callData, expectedCount: 1 }); // transaction only
+      expectCallCount({ callData, expectedCount: 2 }); // transfer, transaction
       expect(approveMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
     });
