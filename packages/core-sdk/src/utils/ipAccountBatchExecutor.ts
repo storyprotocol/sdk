@@ -77,7 +77,7 @@ export class IpAccountBatchExecutor {
     // Build WIP fee call data if needed
     if (wipTotalFees > 0n) {
       if (wipBalance < wipTotalFees) {
-        const { calls, value } = this.buildWipDepositCallData(
+        const { calls, value } = await this.buildWipDepositCallData(
           spenderAddress,
           wipTotalFees,
           wipBalance,
@@ -144,7 +144,6 @@ export class IpAccountBatchExecutor {
   ): Promise<void> {
     const erc20Balance = await this.erc20Token.balanceOf(this.walletAddress);
     const ipBalance = await this.rpcClient.getBalance({ address: this.walletAddress });
-
     if (erc20Balance < erc20TotalFees) {
       throw new Error(
         `Wallet does not have enough ERC20 tokens to pay for fees. ` +
@@ -175,33 +174,38 @@ export class IpAccountBatchExecutor {
       return [];
     }
     const erc20ContractAddress = erc20Address[aeneid.id];
-
-    // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
-    await waitTx(this.rpcClient, await this.erc20Token.approve(this.ipId, totalFee));
-
-    return [
+    const allowance = await this.erc20Token.allowance(this.walletAddress, this.ipId);
+    if (allowance < totalFee) {
+      // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
+      await waitTx(this.rpcClient, await this.erc20Token.approve(this.ipId, totalFee));
+    }
+    const calls: IpAccountImplExecuteBatchRequest["calls"] = [
       {
         target: erc20ContractAddress,
         value: 0n,
         data: this.erc20Token.transferFromEncode(this.walletAddress, this.ipId, totalFee).data,
       },
-      {
+    ];
+    const spenderAllowance = await this.erc20Token.allowance(this.ipId, spenderAddress);
+    if (spenderAllowance < totalFee) {
+      calls.push({
         target: erc20ContractAddress,
         value: 0n,
         data: this.erc20Token.approveEncode(spenderAddress, maxUint256).data,
-      },
-    ];
+      });
+    }
+    return calls;
   }
 
   /**
    * Builds call data for depositing IP tokens to WIP and approving spender.
    */
-  private buildWipDepositCallData(
+  private async buildWipDepositCallData(
     spenderAddress: Address,
     totalFee: bigint,
     wipBalance: bigint,
     options: WithWipOptions,
-  ): { calls: IpAccountImplExecuteBatchRequest["calls"]; value: bigint } {
+  ): Promise<{ calls: IpAccountImplExecuteBatchRequest["calls"]; value: bigint }> {
     const calls: IpAccountImplExecuteBatchRequest["calls"] = [];
     const autoApprove = options.options?.wipOptions?.enableAutoApprove !== false;
     const autoWrapIp = options.options?.wipOptions?.enableAutoWrapIp !== false;
@@ -218,7 +222,8 @@ export class IpAccountBatchExecutor {
       data: this.wipToken.depositEncode().data,
     });
     const value = totalFee;
-    if (autoApprove) {
+    const allowance = await this.wipToken.allowance(this.ipId, spenderAddress);
+    if (autoApprove && allowance < totalFee) {
       calls.push({
         target: WIP_TOKEN_ADDRESS,
         value: 0n,
@@ -240,20 +245,27 @@ export class IpAccountBatchExecutor {
     if (!autoApprove) {
       return [];
     }
-    // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
-    await waitTx(this.rpcClient, await this.wipToken.approve(this.ipId, totalFee));
+    const allowance = await this.wipToken.allowance(this.walletAddress, this.ipId);
+    if (allowance < totalFee) {
+      // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
+      await waitTx(this.rpcClient, await this.wipToken.approve(this.ipId, totalFee));
+    }
 
-    return [
+    const calls: IpAccountImplExecuteBatchRequest["calls"] = [
       {
         target: WIP_TOKEN_ADDRESS,
         value: 0n,
         data: this.wipToken.transferFromEncode(this.walletAddress, this.ipId, totalFee).data,
       },
-      {
+    ];
+    const spenderAllowance = await this.wipToken.allowance(this.ipId, spenderAddress);
+    if (spenderAllowance < totalFee) {
+      calls.push({
         target: WIP_TOKEN_ADDRESS,
         value: 0n,
         data: this.wipToken.approveEncode(spenderAddress, maxUint256).data,
-      },
-    ];
+      });
+    }
+    return calls;
   }
 }
