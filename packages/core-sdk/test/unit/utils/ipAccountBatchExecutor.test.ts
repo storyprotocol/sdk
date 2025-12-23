@@ -10,7 +10,6 @@ import {
   IpAccountImplExecuteBatchRequest,
 } from "../../../src/abi/generated";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
-import { Fee } from "../../../src/types/utils/token";
 import { aeneid } from "../../../src/utils/chain";
 import * as contractUtils from "../../../src/utils/contract";
 import { IpAccountBatchExecutor } from "../../../src/utils/ipAccountBatchExecutor";
@@ -44,7 +43,13 @@ describe("IpAccountBatchExecutor", () => {
     ipAccountBatchExecutor = new IpAccountBatchExecutor(rpcClient, wallet, mockAddress);
   });
 
-  const setupErc20Stubs = (balance: bigint, allowance: bigint): { approveMock: SinonStub } => {
+  const setupErc20Stubs = ({
+    balance,
+    allowance,
+  }: {
+    balance: bigint;
+    allowance: bigint;
+  }): { approveMock: SinonStub } => {
     stub(ERC20Client.prototype, "balanceOf").resolves(balance);
     stub(ERC20Client.prototype, "allowance").resolves(allowance);
     return {
@@ -52,10 +57,13 @@ describe("IpAccountBatchExecutor", () => {
     };
   };
 
-  const setupWipStubs = (
-    balance: bigint,
-    allowance: bigint | bigint[],
-  ): { approveMock: SinonStub } => {
+  const setupWipStubs = ({
+    balance,
+    allowance,
+  }: {
+    balance: bigint;
+    allowance: bigint | bigint[];
+  }): { approveMock: SinonStub } => {
     stub(WipTokenClient.prototype, "balanceOf").resolves(balance);
     const allowanceStub = stub(WipTokenClient.prototype, "allowance");
     if (Array.isArray(allowance)) {
@@ -84,10 +92,13 @@ describe("IpAccountBatchExecutor", () => {
     (simulateStub.args[0] as [{ data: { args: [IpAccountImplExecuteBatchRequest["calls"]] } }])[0]
       .data.args[0];
 
-  const expectCallCount = (
-    callData: IpAccountImplExecuteBatchRequest["calls"],
-    expectedCount: number,
-  ): void => {
+  const expectCallCount = ({
+    callData,
+    expectedCount,
+  }: {
+    callData: IpAccountImplExecuteBatchRequest["calls"];
+    expectedCount: number;
+  }): void => {
     expect(callData.length).equals(expectedCount);
   };
 
@@ -136,7 +147,7 @@ describe("IpAccountBatchExecutor", () => {
   describe("ERC20 token fee handling", () => {
     it("should execute batch with transfer, approve, and transaction calls when ERC20 balance is sufficient", async () => {
       const mintFees = [{ token: erc20Contract, amount: 100n }];
-      const { approveMock } = setupErc20Stubs(100n, 10n);
+      const { approveMock } = setupErc20Stubs({ balance: 100n, allowance: 10n });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -147,7 +158,7 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 3); // transfer, approve, transaction
+      expectCallCount({ callData, expectedCount: 3 }); // transfer, approve, transaction
       expect(callData[0].target).equals(erc20Contract);
       expect(approveMock.callCount).equals(1);
       expect(result.txHash).equals(txHash);
@@ -155,7 +166,7 @@ describe("IpAccountBatchExecutor", () => {
 
     it("should skip approval and transfer calls when auto-approve is disabled", async () => {
       const mintFees = [{ token: erc20Contract, amount: 100n }];
-      const { approveMock } = setupErc20Stubs(100n, 10n);
+      const { approveMock } = setupErc20Stubs({ balance: 100n, allowance: 10n });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -167,14 +178,14 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 1); // transaction only
+      expectCallCount({ callData, expectedCount: 1 }); // transaction only
       expect(approveMock.calledOnce).equals(false);
       expect(result.txHash).equals(txHash);
     });
 
     it("should skip fee handling and only execute transaction when fee amount is zero", async () => {
       const mintFees = [{ token: erc20Contract, amount: 0n }];
-      const { approveMock } = setupErc20Stubs(100n, 10n);
+      const { approveMock } = setupErc20Stubs({ balance: 100n, allowance: 10n });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -184,7 +195,7 @@ describe("IpAccountBatchExecutor", () => {
       });
 
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 1); // transaction only
+      expectCallCount({ callData, expectedCount: 1 }); // transaction only
       expect(approveMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
     });
@@ -193,7 +204,7 @@ describe("IpAccountBatchExecutor", () => {
   describe("WIP token fee handling", () => {
     it("should execute batch with approve, transfer, and transaction calls when WIP balance is sufficient but allowances are insufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
-      const { approveMock } = setupWipStubs(100n, 10n);
+      const { approveMock } = setupWipStubs({ balance: 100n, allowance: 10n });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -204,7 +215,7 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 3); // approve, transfer, transaction
+      expectCallCount({ callData, expectedCount: 3 }); // approve, transfer, transaction
       expect(callData[0].target).equals(WIP_TOKEN_ADDRESS);
       expect(callData[0].value).equals(0n);
       expect(approveMock.callCount).equals(1);
@@ -213,7 +224,7 @@ describe("IpAccountBatchExecutor", () => {
 
     it("should execute batch with approve, transfer, and transaction calls when WIP balance and IP account allowance are sufficient but spender allowance is insufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
-      const { approveMock } = setupWipStubs(100n, [100n, 0n]);
+      const { approveMock } = setupWipStubs({ balance: 100n, allowance: [100n, 0n] });
       const simulateStub = setupExecuteBatchTransaction();
 
       await ipAccountBatchExecutor.executeWithFees({
@@ -225,12 +236,12 @@ describe("IpAccountBatchExecutor", () => {
 
       const callData = getCallData(simulateStub);
       expect(approveMock.callCount).equals(0);
-      expectCallCount(callData, 3); // approve, transfer, transaction
+      expectCallCount({ callData, expectedCount: 3 }); // approve, transfer, transaction
     });
 
     it("should execute batch with only transfer and transaction calls when WIP balance and both allowances are sufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
-      const { approveMock } = setupWipStubs(100n, 100n);
+      const { approveMock } = setupWipStubs({ balance: 100n, allowance: 100n });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -242,14 +253,14 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 2); // transfer, transaction
+      expectCallCount({ callData, expectedCount: 2 }); // transfer, transaction
       expect(approveMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
     });
 
     it("should skip approval and transfer calls when auto-approve is disabled", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
-      const { approveMock } = setupWipStubs(100n, 10n);
+      const { approveMock } = setupWipStubs({ balance: 100n, allowance: 10n });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -261,14 +272,14 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 1); // transaction only
+      expectCallCount({ callData, expectedCount: 1 }); // transaction only
       expect(approveMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
     });
 
     it("should auto-wrap IP tokens to WIP via deposit when WIP balance is insufficient but allowances are sufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
-      const { approveMock } = setupWipStubs(0n, 100n);
+      const { approveMock } = setupWipStubs({ balance: 0n, allowance: 100n });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -280,7 +291,7 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 2); // deposit, transaction
+      expectCallCount({ callData, expectedCount: 2 }); // deposit, transaction
       expect(callData[0].value).equals(100n);
       expect(approveMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
@@ -288,7 +299,7 @@ describe("IpAccountBatchExecutor", () => {
 
     it("should auto-wrap IP and add approve call when WIP balance is insufficient, wallet-to-IP-account allowance is insufficient, but spender allowance is sufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
-      const { approveMock } = setupWipStubs(0n, [10n, 100n]);
+      const { approveMock } = setupWipStubs({ balance: 0n, allowance: [10n, 100n] });
       const simulateStub = setupExecuteBatchTransaction();
 
       await ipAccountBatchExecutor.executeWithFees({
@@ -298,13 +309,13 @@ describe("IpAccountBatchExecutor", () => {
       });
 
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 3); // deposit, approve, transaction
+      expectCallCount({ callData, expectedCount: 3 }); // deposit, approve, transaction
       expect(approveMock.callCount).equals(0);
     });
 
     it("should auto-wrap IP without approve call when WIP balance is insufficient, wallet-to-IP-account allowance is sufficient, but spender allowance is insufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
-      const { approveMock } = setupWipStubs(0n, [100n, 0n]);
+      const { approveMock } = setupWipStubs({ balance: 0n, allowance: [100n, 0n] });
       const simulateStub = setupExecuteBatchTransaction();
 
       await ipAccountBatchExecutor.executeWithFees({
@@ -314,13 +325,13 @@ describe("IpAccountBatchExecutor", () => {
       });
 
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 2); // deposit, transaction
+      expectCallCount({ callData, expectedCount: 2 }); // deposit, transaction
       expect(approveMock.callCount).equals(0);
     });
 
     it("should skip fee handling and only execute transaction when fee amount is zero", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 0n }];
-      const { approveMock } = setupWipStubs(100n, 100n);
+      const { approveMock } = setupWipStubs({ balance: 100n, allowance: 100n });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -331,14 +342,14 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(simulateStub.calledOnce).equals(true);
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 1); // transaction only
+      expectCallCount({ callData, expectedCount: 1 }); // transaction only
       expect(approveMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
     });
 
     it("should call multiple times when wip balance is sufficient and useMulticallWhenPossible is false and allowances are insufficient", async () => {
       const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
-      const { approveMock } = setupWipStubs(100n, [10n, 10n]);
+      const { approveMock } = setupWipStubs({ balance: 100n, allowance: [10n, 10n] });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -348,22 +359,82 @@ describe("IpAccountBatchExecutor", () => {
         options: { wipOptions: { useMulticallWhenPossible: false } },
       });
 
-      expect(simulateStub.calledTwice).equals(true);
-      const callData = getCallData(simulateStub);
-      expectCallCount(callData, 2); // deposit, transaction
+      expect(simulateStub.callCount).equals(3);
+      expect(approveMock.callCount).equals(1);
+      expect(result.txHash).equals(txHash);
+    });
+
+    it("should call multiple times when wip balance is sufficient and useMulticallWhenPossible is false and allowances are sufficient", async () => {
+      const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
+      const { approveMock } = setupWipStubs({ balance: 100n, allowance: [100n, 100n] });
+      const simulateStub = setupExecuteBatchTransaction();
+
+      const result = await ipAccountBatchExecutor.executeWithFees({
+        mintFees,
+        spenderAddress,
+        encodedTxs,
+        options: { wipOptions: { useMulticallWhenPossible: false } },
+      });
+
+      expect(simulateStub.callCount).equals(2);
       expect(approveMock.callCount).equals(0);
+      expect(result.txHash).equals(txHash);
+    });
+
+    it("should call multiple times when wip balance is insufficient and useMulticallWhenPossible is false and allowances are sufficient", async () => {
+      const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
+      const { approveMock } = setupWipStubs({ balance: 10n, allowance: [100n, 100n] });
+      const simulateStub = setupExecuteBatchTransaction();
+
+      const result = await ipAccountBatchExecutor.executeWithFees({
+        mintFees,
+        spenderAddress,
+        encodedTxs,
+        options: { wipOptions: { useMulticallWhenPossible: false } },
+      });
+
+      expect(simulateStub.callCount).equals(2);
+      expect(approveMock.callCount).equals(0);
+      expect(result.txHash).equals(txHash);
+    });
+
+    it("should call multiple times when wip balance is insufficient and useMulticallWhenPossible is false and allowances are insufficient", async () => {
+      const mintFees = [{ token: WIP_TOKEN_ADDRESS, amount: 100n }];
+      const { approveMock } = setupWipStubs({ balance: 100n, allowance: [10n, 10n] });
+      const simulateStub = setupExecuteBatchTransaction();
+
+      const result = await ipAccountBatchExecutor.executeWithFees({
+        mintFees,
+        spenderAddress,
+        encodedTxs,
+        options: { wipOptions: { useMulticallWhenPossible: false } },
+      });
+
+      expect(simulateStub.callCount).equals(3);
+      expect(approveMock.callCount).equals(1);
       expect(result.txHash).equals(txHash);
     });
   });
   describe("Combined ERC20 and WIP token fee handling", () => {
-    const setupCombinedStubs = (
-      erc20Balance: bigint,
-      wipBalance: bigint,
-      erc20Allowance: bigint,
-      wipAllowance: bigint | bigint[],
-    ): { approveErc20Mock: SinonStub; approveWipMock: SinonStub } => {
-      const { approveMock: approveErc20Mock } = setupErc20Stubs(erc20Balance, erc20Allowance);
-      const { approveMock: approveWipMock } = setupWipStubs(wipBalance, wipAllowance);
+    const setupCombinedStubs = ({
+      erc20Balance,
+      wipBalance,
+      erc20Allowance,
+      wipAllowance,
+    }: {
+      erc20Balance: bigint;
+      wipBalance: bigint;
+      erc20Allowance: bigint;
+      wipAllowance: bigint | bigint[];
+    }): { approveErc20Mock: SinonStub; approveWipMock: SinonStub } => {
+      const { approveMock: approveErc20Mock } = setupErc20Stubs({
+        balance: erc20Balance,
+        allowance: erc20Allowance,
+      });
+      const { approveMock: approveWipMock } = setupWipStubs({
+        balance: wipBalance,
+        allowance: wipAllowance,
+      });
       return { approveErc20Mock, approveWipMock };
     };
 
@@ -372,7 +443,12 @@ describe("IpAccountBatchExecutor", () => {
         { token: erc20Contract, amount: 100n },
         { token: WIP_TOKEN_ADDRESS, amount: 100n },
       ];
-      const { approveErc20Mock, approveWipMock } = setupCombinedStubs(100n, 100n, 10n, 10n);
+      const { approveErc20Mock, approveWipMock } = setupCombinedStubs({
+        erc20Balance: 100n,
+        wipBalance: 100n,
+        erc20Allowance: 10n,
+        wipAllowance: 10n,
+      });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -386,7 +462,7 @@ describe("IpAccountBatchExecutor", () => {
       // erc20: transfer, approve
       // wip: approve, transfer
       // transaction
-      expectCallCount(callData, 5);
+      expectCallCount({ callData, expectedCount: 5 });
       expect(callData[0].target).equals(erc20Contract);
       expect(callData[1].target).equals(erc20Contract);
       expect(callData[2].target).equals(WIP_TOKEN_ADDRESS);
@@ -402,7 +478,12 @@ describe("IpAccountBatchExecutor", () => {
         { token: erc20Contract, amount: 100n },
         { token: WIP_TOKEN_ADDRESS, amount: 100n },
       ];
-      setupCombinedStubs(0n, 100n, 10n, 10n);
+      setupCombinedStubs({
+        erc20Balance: 0n,
+        wipBalance: 100n,
+        erc20Allowance: 10n,
+        wipAllowance: 10n,
+      });
 
       await expect(
         ipAccountBatchExecutor.executeWithFees({ mintFees, spenderAddress, encodedTxs }),
@@ -416,7 +497,12 @@ describe("IpAccountBatchExecutor", () => {
         { token: erc20Contract, amount: 100n },
         { token: WIP_TOKEN_ADDRESS, amount: 101n },
       ];
-      setupCombinedStubs(100n, 0n, 10n, 10n);
+      setupCombinedStubs({
+        erc20Balance: 100n,
+        wipBalance: 0n,
+        erc20Allowance: 10n,
+        wipAllowance: 10n,
+      });
 
       await expect(
         ipAccountBatchExecutor.executeWithFees({ mintFees, spenderAddress, encodedTxs }),
@@ -430,7 +516,12 @@ describe("IpAccountBatchExecutor", () => {
         { token: WIP_TOKEN_ADDRESS, amount: 100n },
         { token: erc20Contract, amount: 100n },
       ];
-      const { approveErc20Mock, approveWipMock } = setupCombinedStubs(100n, 10n, 10n, 10n);
+      const { approveErc20Mock, approveWipMock } = setupCombinedStubs({
+        erc20Balance: 100n,
+        wipBalance: 10n,
+        erc20Allowance: 10n,
+        wipAllowance: 10n,
+      });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -444,7 +535,7 @@ describe("IpAccountBatchExecutor", () => {
       // erc20: transfer, approve
       // wip: deposit, approve
       // transaction
-      expectCallCount(callData, 5);
+      expectCallCount({ callData, expectedCount: 5 });
       expect(callData[0].target).equals(erc20Contract);
       expect(callData[1].target).equals(erc20Contract);
       expect(callData[2].target).equals(WIP_TOKEN_ADDRESS);
@@ -461,7 +552,12 @@ describe("IpAccountBatchExecutor", () => {
         { token: WIP_TOKEN_ADDRESS, amount: 100n },
         { token: erc20Contract, amount: 100n },
       ];
-      const { approveErc20Mock, approveWipMock } = setupCombinedStubs(101n, 10n, 100n, 100n);
+      const { approveErc20Mock, approveWipMock } = setupCombinedStubs({
+        erc20Balance: 101n,
+        wipBalance: 10n,
+        erc20Allowance: 100n,
+        wipAllowance: 100n,
+      });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -475,7 +571,7 @@ describe("IpAccountBatchExecutor", () => {
       // erc20: transfer
       // wip: deposit
       // transaction
-      expectCallCount(callData, 3);
+      expectCallCount({ callData, expectedCount: 3 });
       expect(callData[0].target).equals(erc20Contract);
       expect(callData[1].target).equals(WIP_TOKEN_ADDRESS);
       expect(callData[2].target).equals(mockAddress);
@@ -489,7 +585,12 @@ describe("IpAccountBatchExecutor", () => {
         { token: WIP_TOKEN_ADDRESS, amount: 100n },
         { token: erc20Contract, amount: 0n },
       ];
-      const { approveErc20Mock, approveWipMock } = setupCombinedStubs(0n, 100n, 100n, [100n, 0n]);
+      const { approveErc20Mock, approveWipMock } = setupCombinedStubs({
+        erc20Balance: 0n,
+        wipBalance: 100n,
+        erc20Allowance: 100n,
+        wipAllowance: [100n, 0n],
+      });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -501,7 +602,7 @@ describe("IpAccountBatchExecutor", () => {
       const callData = getCallData(simulateStub);
       // wip: approve, transfer
       // transaction
-      expectCallCount(callData, 3);
+      expectCallCount({ callData, expectedCount: 3 });
       expect(callData[0].target).equals(WIP_TOKEN_ADDRESS);
       expect(callData[2].target).equals(mockAddress);
       expect(approveWipMock.callCount).equals(0);
@@ -514,7 +615,12 @@ describe("IpAccountBatchExecutor", () => {
         { token: WIP_TOKEN_ADDRESS, amount: 100n },
         { token: erc20Contract, amount: 0n },
       ];
-      const { approveErc20Mock, approveWipMock } = setupCombinedStubs(0n, 10n, 10n, [100n, 0n]);
+      const { approveErc20Mock, approveWipMock } = setupCombinedStubs({
+        erc20Balance: 0n,
+        wipBalance: 10n,
+        erc20Allowance: 10n,
+        wipAllowance: [100n, 0n],
+      });
       const simulateStub = setupExecuteBatchTransaction();
 
       const result = await ipAccountBatchExecutor.executeWithFees({
@@ -527,7 +633,7 @@ describe("IpAccountBatchExecutor", () => {
       const callData = getCallData(simulateStub);
       // wip: deposit
       // transaction
-      expectCallCount(callData, 2);
+      expectCallCount({ callData, expectedCount: 2 });
       expect(callData[0].target).equals(WIP_TOKEN_ADDRESS);
       expect(callData[1].target).equals(mockAddress);
       expect(approveWipMock.callCount).equals(0);
@@ -550,8 +656,68 @@ describe("IpAccountBatchExecutor", () => {
 
       expect(result.txHash).equals(txHash);
       const callData = getCallData(simulateStub);
-      expectCallCount(callData, 1); // transaction only
+      expectCallCount({ callData, expectedCount: 1 }); // transaction only
       expect(callData[0].target).equals(mockAddress);
+      expect(result.txHash).equals(txHash);
+    });
+
+    it("should success when erc20 is sufficient and WIP is sufficient and allowances are sufficient and useMulticallWhenPossible is false", async () => {
+      const mintFees = [
+        { token: WIP_TOKEN_ADDRESS, amount: 100n },
+        { token: erc20Contract, amount: 100n },
+      ];
+      const { approveErc20Mock, approveWipMock } = setupCombinedStubs({
+        erc20Balance: 100n,
+        wipBalance: 100n,
+        erc20Allowance: 100n,
+        wipAllowance: 100n,
+      });
+      const simulateStub = setupExecuteBatchTransaction();
+
+      const result = await ipAccountBatchExecutor.executeWithFees({
+        mintFees,
+        spenderAddress,
+        encodedTxs,
+        options: { wipOptions: { useMulticallWhenPossible: false } },
+      });
+
+      expect(result.txHash).equals(txHash);
+      // erc20: transfer
+      // wip: deposit
+      // transaction
+      expect(simulateStub.callCount).equals(3);
+      expect(approveErc20Mock.callCount).equals(0);
+      expect(approveWipMock.callCount).equals(0);
+      expect(result.txHash).equals(txHash);
+    });
+
+    it("should success when erc20 is sufficient and WIP is insufficient and allowances are insufficient and useMulticallWhenPossible is false", async () => {
+      const mintFees = [
+        { token: WIP_TOKEN_ADDRESS, amount: 100n },
+        { token: erc20Contract, amount: 100n },
+      ];
+      const { approveErc20Mock, approveWipMock } = setupCombinedStubs({
+        erc20Balance: 100n,
+        wipBalance: 10n,
+        erc20Allowance: 10n,
+        wipAllowance: [10n, 0n],
+      });
+      const simulateStub = setupExecuteBatchTransaction();
+
+      const result = await ipAccountBatchExecutor.executeWithFees({
+        mintFees,
+        spenderAddress,
+        encodedTxs,
+        options: { wipOptions: { useMulticallWhenPossible: false } },
+      });
+
+      expect(result.txHash).equals(txHash);
+      // erc20: transfer approve
+      // wip: deposit,approve
+      // transaction
+      expect(simulateStub.callCount).equals(5);
+      expect(approveErc20Mock.callCount).equals(1);
+      expect(approveWipMock.callCount).equals(0);
       expect(result.txHash).equals(txHash);
     });
   });
