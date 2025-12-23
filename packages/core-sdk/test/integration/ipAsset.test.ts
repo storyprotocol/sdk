@@ -3775,7 +3775,7 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe.only("Link Derivative", () => {
+  describe("Link Derivative", () => {
     const createParentIpAndLicenseTerms = async (
       token: Address = WIP_TOKEN_ADDRESS,
     ): Promise<{ parentIpId: Address; licenseTermsId: bigint }> => {
