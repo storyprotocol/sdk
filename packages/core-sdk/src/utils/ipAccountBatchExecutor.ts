@@ -114,6 +114,8 @@ export class IpAccountBatchExecutor {
           },
         });
         await waitTx(this.rpcClient, txHash.txHash);
+        // Only return txHash and receipt for the main user transaction (last in the batch)
+        // All previous calls are for setup (e.g., approvals/deposits) and do not require a return value
         if (index === callData.length - 1) {
           return { txHash: txHash.txHash, receipt: txHash.receipt };
         }
@@ -156,7 +158,7 @@ export class IpAccountBatchExecutor {
     const allowance = await this.erc20Token.allowance(this.walletAddress, this.ipId);
     if (autoApprove && allowance < totalFee) {
       // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
-      await waitTx(this.rpcClient, await this.erc20Token.approve(this.ipId, totalFee));
+      await waitTx(this.rpcClient, await this.erc20Token.approve(this.ipId, maxUint256));
     }
     const calls: IpAccountImplExecuteBatchRequest["calls"] = [
       {
@@ -233,7 +235,7 @@ export class IpAccountBatchExecutor {
     const allowance = await this.wipToken.allowance(this.walletAddress, this.ipId);
     if (autoApprove && allowance < totalFee) {
       // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
-      await waitTx(this.rpcClient, await this.wipToken.approve(this.ipId, totalFee));
+      await waitTx(this.rpcClient, await this.wipToken.approve(this.ipId, maxUint256));
     }
 
     const calls: IpAccountImplExecuteBatchRequest["calls"] = [

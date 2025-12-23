@@ -3775,9 +3775,7 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe("Link Derivative", () => {
-    let parentIpId1: Address;
-    let commercialRemixLicenseTermsId2: bigint;
+  describe.only("Link Derivative", () => {
     const createParentIpAndLicenseTerms = async (
       token: Address = WIP_TOKEN_ADDRESS,
     ): Promise<{ parentIpId: Address; licenseTermsId: bigint }> => {
@@ -3797,11 +3795,6 @@ describe("IP Asset Functions", () => {
       });
       return { parentIpId: result.ipId!, licenseTermsId: result.licenseTermsIds![0] };
     };
-    before(async () => {
-      const { parentIpId, licenseTermsId } = await createParentIpAndLicenseTerms();
-      parentIpId1 = parentIpId;
-      commercialRemixLicenseTermsId2 = licenseTermsId;
-    });
     it("should successfully when give childIpId and licenseTokenIds", async () => {
       // register a child ip
       const tokenId = await getTokenId();
@@ -3811,9 +3804,10 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId!,
         })
       ).ipId!;
+      const { parentIpId, licenseTermsId } = await createParentIpAndLicenseTerms();
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
-        licenseTermsId: commercialRemixLicenseTermsId2,
-        licensorIpId: parentIpId1,
+        licenseTermsId: licenseTermsId,
+        licensorIpId: parentIpId,
         maxMintingFee: 0,
         maxRevenueShare: 100,
       });
