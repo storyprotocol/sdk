@@ -13,7 +13,7 @@
     "test:integration": "turbo run test:integration --no-cache"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.26.2",
+    "@changesets/cli": "2.29.6",
     "turbo": "^1.10.13"
   },
   "engines": {
