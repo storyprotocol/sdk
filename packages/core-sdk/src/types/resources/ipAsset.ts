@@ -280,7 +280,7 @@ export type BatchRegisterDerivativeRequest = {
    */
   deadline?: DeadlineInput;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
-};
+} & WithErc20AndWipOptions;
 
 export type BatchRegisterDerivativeResponse = {
   txHash: Hash;
