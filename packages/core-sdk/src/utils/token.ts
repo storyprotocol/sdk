@@ -7,6 +7,7 @@ export interface TokenClient {
   allowance(owner: string, spender: string): Promise<bigint>;
   approve(spender: string, value: bigint): Promise<Hash>;
   approveEncode(spender: Address, value: bigint): EncodedTxData;
+  transferFromEncode(from: Address, to: Address, value: bigint): EncodedTxData;
 }
 
 export class ERC20Client implements TokenClient {
@@ -30,6 +31,10 @@ export class ERC20Client implements TokenClient {
 
   approveEncode(spender: Address, value: bigint): EncodedTxData {
     return this.ercClient.approveEncode({ spender, value });
+  }
+
+  transferFromEncode(from: Address, to: Address, value: bigint): EncodedTxData {
+    return this.ercClient.transferFromEncode({ from, to, value });
   }
 
   // The method only will work in test environment
@@ -65,6 +70,10 @@ export class WipTokenClient implements TokenClient {
 
   depositEncode(): EncodedTxData {
     return this.wipClient.depositEncode();
+  }
+
+  transferFromEncode(from: Address, to: Address, value: bigint): EncodedTxData {
+    return this.wipClient.transferFromEncode({ from, to, amount: value });
   }
 
   get address(): Address {

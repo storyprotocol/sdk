@@ -18,6 +18,8 @@ import {
   DerivativeWorkflowsRegisterIpAndMakeDerivativeRequest,
   DerivativeWorkflowsRegisterIpAndMakeDerivativeWithLicenseTokensRequest,
   EncodedTxData,
+  erc20Address,
+  Erc20Client,
   ipAccountImplAbi,
   IpAccountImplClient,
   IpAssetRegistryClient,
@@ -111,6 +113,7 @@ import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
+import { IpAccountBatchExecutor } from "../utils/ipAccountBatchExecutor";
 import { PILFlavor } from "../utils/pilFlavor";
 import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
@@ -151,6 +154,7 @@ export class IPAssetClient {
   public spgNftClient: SpgnftImplReadOnlyClient;
   public totalLicenseTokenLimitHookClient: TotalLicenseTokenLimitHookClient;
   public licenseTokenClient: LicenseTokenClient;
+  public erc20Client: Erc20Client;
 
   private readonly rpcClient: PublicClient;
   private readonly wallet: SimpleWalletClient;
@@ -179,6 +183,7 @@ export class IPAssetClient {
     this.spgNftClient = new SpgnftImplReadOnlyClient(rpcClient);
     this.totalLicenseTokenLimitHookClient = new TotalLicenseTokenLimitHookClient(rpcClient, wallet);
     this.licenseTokenClient = new LicenseTokenClient(rpcClient, wallet);
+    this.erc20Client = new Erc20Client(rpcClient, wallet, erc20Address[chainId]);
     this.rpcClient = rpcClient;
     this.wallet = wallet;
     this.chainId = chainId;
@@ -396,23 +401,23 @@ export class IPAssetClient {
       if (request.txOptions?.encodedTxDataOnly) {
         return { encodedTxData };
       } else {
-        const contractCall = (): Promise<Hash> => {
-          return this.licensingModuleClient.registerDerivative(object);
-        };
-        return this.handleRegistrationWithFees({
-          sender: this.walletAddress,
+        const mintFees = await calculateDerivativeMintingFee({
           derivData: object,
-          contractCall,
-          txOptions: request.txOptions,
-          encodedTxs: [encodedTxData],
-          spgSpenderAddress: this.royaltyModuleEventClient.address,
-          options: {
-            ...request.options,
-            wipOptions: {
-              ...request.options?.wipOptions,
-              useMulticallWhenPossible: false,
-            },
-          },
+          rpcClient: this.rpcClient,
+          wallet: this.wallet,
+          chainId: this.chainId,
+          sender: this.walletAddress,
+        });
+        const batchExecutor = new IpAccountBatchExecutor(
+          this.rpcClient,
+          this.wallet,
+          request.childIpId,
+        );
+        return batchExecutor.executeWithFees({
+          mintFees,
+          spenderAddress: this.royaltyModuleEventClient.address,
+          encodedTxs: encodedTxData,
+          options: request.options,
         });
       }
     } catch (error) {
