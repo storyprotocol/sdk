@@ -419,6 +419,7 @@ export class IPAssetClient {
           spenderAddress: this.royaltyModuleEventClient.address,
           encodedTxs: encodedTxData,
           options: request.options,
+          txOptions: request.txOptions,
         });
       }
     } catch (error) {
