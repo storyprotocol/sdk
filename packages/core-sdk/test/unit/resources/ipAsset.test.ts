@@ -6161,4 +6161,227 @@ describe("Test IpAssetClient", () => {
       );
     });
   });
+
+  describe("Batch Register Derivatives", () => {
+    it("should throw error when child ip is not registered", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
+      try {
+        await ipAssetClient.batchRegisterDerivatives({
+          args: [{ childIpId: ipId, parentIpIds: [ipId], licenseTermsIds: [1n] }],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          `Failed to batch register derivatives: Failed to register derivative: The child IP with id ${ipId} is not registered.`,
+        );
+      }
+    });
+
+    it("should throw error when parent ip is not registered", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+        .onCall(0)
+        .resolves(true)
+        .onCall(1)
+        .resolves(false);
+      try {
+        await ipAssetClient.batchRegisterDerivatives({
+          args: [
+            {
+              childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: [1n],
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to batch register derivatives: Failed to register derivative: The parent IP with id 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 is not registered.",
+        );
+      }
+    });
+
+    it("should throw error when parentIpIds length does not match licenseTermsIds length", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      try {
+        await ipAssetClient.batchRegisterDerivatives({
+          args: [
+            {
+              childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: [1n, 2n],
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to batch register derivatives: Failed to register derivative: The number of parent IP IDs must match the number of license terms IDs.",
+        );
+      }
+    });
+
+    it("should throw error when maxMintingFee is less than 0", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      try {
+        await ipAssetClient.batchRegisterDerivatives({
+          args: [
+            {
+              childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: [1n],
+              maxMintingFee: -1,
+              maxRts: 100,
+              maxRevenueShare: 0,
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to batch register derivatives: Failed to register derivative: The maxMintingFee must be greater than 0.",
+        );
+      }
+    });
+
+    it("should throw error when maxRts is greater than MAX_ROYALTY_TOKEN", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      try {
+        await ipAssetClient.batchRegisterDerivatives({
+          args: [
+            {
+              childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: [1n],
+              maxMintingFee: 0n,
+              maxRts: 1000000001,
+              maxRevenueShare: 0,
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          `Failed to batch register derivatives: Failed to register derivative: The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`,
+        );
+      }
+    });
+
+    it("should throw error when maxRevenueShare is less than royalty percent", async () => {
+      stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100000000,
+      });
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+      try {
+        await ipAssetClient.batchRegisterDerivatives({
+          args: [
+            {
+              childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: [1n],
+              maxMintingFee: 0n,
+              maxRts: 0,
+              maxRevenueShare: 1,
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to batch register derivatives: Failed to register derivative: The royalty percent for the parent IP with id 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 is greater than the maximum revenue share 1000000.",
+        );
+      }
+    });
+
+    it("should throw error when license terms are not attached to parent ip", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(
+        false,
+      );
+      stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      try {
+        await ipAssetClient.batchRegisterDerivatives({
+          args: [
+            {
+              childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: [1n],
+              maxMintingFee: 0n,
+              maxRts: 0,
+              maxRevenueShare: 0,
+            },
+          ],
+        });
+      } catch (err) {
+        expect((err as Error).message).equal(
+          "Failed to batch register derivatives: Failed to register derivative: License terms id 1 must be attached to the parent ipId 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 before registering derivative.",
+        );
+      }
+    });
+
+    it("should return txHashes when batchRegisterDerivatives given correct args", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+      stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      stub(IpAccountBatchExecutor.prototype, "executeWithFees").resolves({
+        txHash,
+        receipt: { status: "success" } as unknown as TransactionReceipt,
+      });
+      const result = await ipAssetClient.batchRegisterDerivatives({
+        args: [
+          {
+            childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+            parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+            licenseTermsIds: [1n],
+            maxMintingFee: 0n,
+            maxRts: 0,
+            maxRevenueShare: 0,
+          },
+        ],
+      });
+
+      expect(result).to.be.an("array");
+      expect(result.length).to.equal(1);
+      expect(result[0]).to.equal(txHash);
+    });
+
+    it("should return multiple txHashes when batchRegisterDerivatives given multiple args", async () => {
+      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
+      stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+        royaltyPercent: 100,
+      });
+      stub(IpAccountBatchExecutor.prototype, "executeWithFees").resolves({
+        txHash,
+        receipt: { status: "success" } as unknown as TransactionReceipt,
+      });
+      const result = await ipAssetClient.batchRegisterDerivatives({
+        args: [
+          {
+            childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+            parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+            licenseTermsIds: [1n],
+            maxMintingFee: 0n,
+            maxRts: 0,
+            maxRevenueShare: 0,
+          },
+          {
+            childIpId: "0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4",
+            parentIpIds: ["0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c"],
+            licenseTermsIds: [1n],
+            maxMintingFee: 0n,
+            maxRts: 0,
+            maxRevenueShare: 0,
+          },
+        ],
+      });
+
+      expect(result).to.be.an("array");
+      expect(result.length).to.equal(2);
+      expect(result[0]).to.equal(txHash);
+      expect(result[1]).to.equal(txHash);
+    });
+  });
 });
