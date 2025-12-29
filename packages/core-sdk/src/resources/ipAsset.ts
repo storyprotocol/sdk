@@ -450,14 +450,7 @@ export class IPAssetClient {
 
         // Validate and transform derivative data (same logic as registerDerivative)
         const derivativeData = await validateDerivativeData({
-          derivativeDataInput: {
-            parentIpIds: arg.parentIpIds,
-            licenseTermsIds: arg.licenseTermsIds,
-            licenseTemplate: arg.licenseTemplate,
-            maxMintingFee: arg.maxMintingFee,
-            maxRts: arg.maxRts,
-            maxRevenueShare: arg.maxRevenueShare,
-          },
+          derivativeDataInput: arg,
           rpcClient: this.rpcClient,
           wallet: this.wallet,
           chainId: this.chainId,

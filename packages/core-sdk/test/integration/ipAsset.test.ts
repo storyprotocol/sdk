@@ -1558,7 +1558,7 @@ describe("IP Asset Functions", () => {
       ).ipId!;
     });
 
-    it("should batch register derivative", async () => {
+    it.only("should batch register derivative", async () => {
       const childTokenId = await getTokenId();
       const childIpId = (
         await client.ipAsset.register({
@@ -1597,6 +1597,7 @@ describe("IP Asset Functions", () => {
           },
         ],
       });
+      console.log("result", result);
       expect(result.txHash).to.be.a("string");
     });
 

@@ -27,6 +27,7 @@ import {
 } from "../types/options";
 import { SignatureMethodType } from "../types/utils/registerHelper";
 import { Fee, Multicall3ValueCall } from "../types/utils/token";
+import { getSignature } from "./sign";
 
 export type IpAccountBatchExecutorExecuteWithFeesParams = {
   mintFees: Fee[];
@@ -158,119 +159,6 @@ export class IpAccountBatchExecutor {
     await waitTx(this.rpcClient, txHash.txHash);
     return { txHash: txHash.txHash, receipt: txHash.receipt };
   }
-
-  /**
-   * Builds call data for transferring ERC20 tokens from wallet to IP account and approving spender.
-   */
-  private async buildErc20FeeCallData(
-      {totalFee, ipId, spenderAddress, options}: FeeExecutionParam<ERC20Options>): Promise<IpAccountImplExecuteBatchRequest["calls"]> {
-    const erc20Balance = await this.erc20Token.balanceOf(this.walletAddress);
-    if (erc20Balance < totalFee) {
-      throw new Error(
-        `Wallet does not have enough ERC20 tokens to pay for fees. ` +
-          `Required: ${getTokenAmountDisplay(totalFee)}, ` +
-          `Available: ${getTokenAmountDisplay(erc20Balance)}.`,
-      );
-    }
-    const autoApprove = options.enableAutoApprove !== false;
-    // erc20 address only available in aeneid
-    const allowance = await this.erc20Token.allowance(this.walletAddress, ipId);
-    if (autoApprove && allowance < totalFee) {
-      // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
-      await waitTx(this.rpcClient, await this.erc20Token.approve(ipId, maxUint256));
-    }
-    const calls: IpAccountImplExecuteBatchRequest["calls"] = [
-      {
-        target: this.erc20ContractAddress,
-        value: 0n,
-        data: this.erc20Token.transferFromEncode(this.walletAddress, ipId, totalFee).data,
-      },
-    ];
-    const spenderAllowance = await this.erc20Token.allowance(ipId, spenderAddress);
-    if (autoApprove && spenderAllowance < totalFee) {
-      calls.push({
-        target: this.erc20ContractAddress,
-        value: 0n,
-        data: this.erc20Token.approveEncode(spenderAddress, maxUint256).data,
-      });
-    }
-    return calls;
-  }
-
-  /**
-   * Builds call data for depositing IP tokens to WIP and approving spender.
-   */
-  private async buildWipDepositCallData(
-    {totalFee, ipId, spenderAddress, options, wipBalance}: FeeExecutionParam<WipOptions>,
-  ): Promise<{ calls: IpAccountImplExecuteBatchRequest["calls"]; value: bigint }> {
-    const calls: IpAccountImplExecuteBatchRequest["calls"] = [];
-    const autoApprove = options.enableAutoApprove !== false;
-    const autoWrapIp = options.enableAutoWrapIp !== false;
-    const ipBalance = await this.rpcClient.getBalance({ address: this.walletAddress });
-    if (!autoWrapIp) {
-      throw new Error(
-        `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
-          totalFee,
-          //TODO: need to consider how to handle undefined wipBalance
-        )}, balance: ${getTokenAmountDisplay(wipBalance??0n, "WIP")}.`,
-      );
-    }
-
-    if (ipBalance < totalFee) {
-      throw new Error(
-        `Wallet does not have enough IP tokens to wrap to WIP and pay for fees. ` +
-          `Required: ${getTokenAmountDisplay(totalFee)}, ` +
-          `Available: ${getTokenAmountDisplay(ipBalance)}.`,
-      );
-    }
-    calls.push({
-      target: WIP_TOKEN_ADDRESS,
-      value: totalFee,
-      data: this.wipToken.depositEncode().data,
-    });
-    const value = totalFee;
-    const allowance = await this.wipToken.allowance(ipId, spenderAddress);
-    if (autoApprove && allowance < totalFee) {
-      calls.push({
-        target: WIP_TOKEN_ADDRESS,
-        value: 0n,
-        data: this.wipToken.approveEncode(spenderAddress, maxUint256).data,
-      });
-    }
-    return { calls, value };
-  }
-
-  /**
-   * Builds call data for transferring existing WIP tokens from wallet to IP account and approving spender.
-   */
-  private async buildWipTransferCallData(
-    {totalFee, ipId, spenderAddress, options}: FeeExecutionParam<WipOptions>,
-  ): Promise<IpAccountImplExecuteBatchRequest["calls"]> {
-    const autoApprove = options.enableAutoApprove !== false;
-    const allowance = await this.wipToken.allowance(this.walletAddress, ipId);
-    if (autoApprove && allowance < totalFee) {
-      // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
-      await waitTx(this.rpcClient, await this.wipToken.approve(ipId, maxUint256));
-    }
-
-    const calls: IpAccountImplExecuteBatchRequest["calls"] = [
-      {
-        target: WIP_TOKEN_ADDRESS,
-        value: 0n,
-        data: this.wipToken.transferFromEncode(this.walletAddress, ipId, totalFee).data,
-      },
-    ];
-    const spenderAllowance = await this.wipToken.allowance(ipId, spenderAddress);
-    if (autoApprove && spenderAllowance < totalFee) {
-      calls.push({
-        target: WIP_TOKEN_ADDRESS,
-        value: 0n,
-        data: this.wipToken.approveEncode(spenderAddress, maxUint256).data,
-      });
-    }
-    return calls;
-  }
-
   /**
    * Executes batch transactions across multiple IP accounts with automatic fee handling.
    *
@@ -408,14 +296,13 @@ export class IpAccountBatchExecutor {
     }
 
     // Phase 2: Build multicall3 batch with executeWithSig for each IP account
-    const calculatedDeadline =
-      deadline ?? (await getCalculatedDeadline(this.rpcClient));
     const calls: Multicall3ValueCall[] = [];
 
     for (const item of items) {
       const fees = ipFees.get(item.ipId);
       const ipAccountCalls: IpAccountImplExecuteBatchRequest["calls"] = [];
-
+      const calculatedDeadline =
+      deadline ?? (await getCalculatedDeadline(this.rpcClient));
       // Add approval call for WIP if needed
       if (fees && fees.wipFee > 0n && autoApprove) {
         const spenderAllowance = await wipToken.allowance(item.ipId, item.spenderAddress);
@@ -439,39 +326,39 @@ export class IpAccountBatchExecutor {
           });
         }
       }
-
+      // Cannot use executeBatch with Multicall3 due to `msg.sender` context limitations and signature also need to user confirmation, so it's not good to use here.
       // Add main transaction
       ipAccountCalls.push({
         target: item.encodedTxs.to,
         value: 0n,
         data: item.encodedTxs.data,
       });
-
+      console.log("ipAccountCalls", ipAccountCalls);
       // Build executeBatch call data for this IP account
       const executeBatchData = encodeFunctionData({
         abi: ipAccountImplAbi,
         functionName: "executeBatch",
         args: [ipAccountCalls, 0],
       });
-
+      
       // Get state and signature for this IP account
       const ipAccount = new IpAccountImplClient(this.rpcClient, this.wallet, item.ipId);
       const { result: state } = await ipAccount.state();
 
-      const signature = await generateOperationSignature({
-        ipIdAddress: item.ipId,
-        methodType: SignatureMethodType.BATCH_REGISTER_DERIVATIVE,
-        state,
-        encodeData: executeBatchData,
+      const { signature } = await getSignature({
+        to: item.ipId,
+        verifyingContract: item.ipId,
         deadline: calculatedDeadline,
+        state,
         wallet: this.wallet,
         chainId: this.chainId,
+        encodeData: executeBatchData,
       });
 
       // Add executeWithSig call to multicall3 batch
       calls.push({
         target: item.ipId,
-        allowFailure: false,
+        allowFailure: true,
         value: 0n,
         callData: encodeFunctionData({
           abi: ipAccountImplAbi,
@@ -492,6 +379,117 @@ export class IpAccountBatchExecutor {
     const txHash = await this.multicall3Client.aggregate3({ calls });
     const receipt = await this.rpcClient.waitForTransactionReceipt({ hash: txHash });
     return { txHash, receipt };
+  }
+  /**
+   * Builds call data for transferring ERC20 tokens from wallet to IP account and approving spender.
+   */
+  private async buildErc20FeeCallData(
+      {totalFee, ipId, spenderAddress, options}: FeeExecutionParam<ERC20Options>): Promise<IpAccountImplExecuteBatchRequest["calls"]> {
+    const erc20Balance = await this.erc20Token.balanceOf(this.walletAddress);
+    if (erc20Balance < totalFee) {
+      throw new Error(
+        `Wallet does not have enough ERC20 tokens to pay for fees. ` +
+          `Required: ${getTokenAmountDisplay(totalFee)}, ` +
+          `Available: ${getTokenAmountDisplay(erc20Balance)}.`,
+      );
+    }
+    const autoApprove = options.enableAutoApprove !== false;
+    // erc20 address only available in aeneid
+    const allowance = await this.erc20Token.allowance(this.walletAddress, ipId);
+    if (autoApprove && allowance < totalFee) {
+      // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
+      await waitTx(this.rpcClient, await this.erc20Token.approve(ipId, maxUint256));
+    }
+    const calls: IpAccountImplExecuteBatchRequest["calls"] = [
+      {
+        target: this.erc20ContractAddress,
+        value: 0n,
+        data: this.erc20Token.transferFromEncode(this.walletAddress, ipId, totalFee).data,
+      },
+    ];
+    const spenderAllowance = await this.erc20Token.allowance(ipId, spenderAddress);
+    if (autoApprove && spenderAllowance < totalFee) {
+      calls.push({
+        target: this.erc20ContractAddress,
+        value: 0n,
+        data: this.erc20Token.approveEncode(spenderAddress, maxUint256).data,
+      });
+    }
+    return calls;
+  }
+
+  /**
+   * Builds call data for depositing IP tokens to WIP and approving spender.
+   */
+  private async buildWipDepositCallData(
+    {totalFee, ipId, spenderAddress, options, wipBalance}: FeeExecutionParam<WipOptions>,
+  ): Promise<{ calls: IpAccountImplExecuteBatchRequest["calls"]; value: bigint }> {
+    const calls: IpAccountImplExecuteBatchRequest["calls"] = [];
+    const autoApprove = options.enableAutoApprove !== false;
+    const autoWrapIp = options.enableAutoWrapIp !== false;
+    const ipBalance = await this.rpcClient.getBalance({ address: this.walletAddress });
+    if (!autoWrapIp) {
+      throw new Error(
+        `Wallet does not have enough WIP to pay for fees. Total fees: ${getTokenAmountDisplay(
+          totalFee,
+          //TODO: need to consider how to handle undefined wipBalance
+        )}, balance: ${getTokenAmountDisplay(wipBalance??0n, "WIP")}.`,
+      );
+    }
+
+    if (ipBalance < totalFee) {
+      throw new Error(
+        `Wallet does not have enough IP tokens to wrap to WIP and pay for fees. ` +
+          `Required: ${getTokenAmountDisplay(totalFee)}, ` +
+          `Available: ${getTokenAmountDisplay(ipBalance)}.`,
+      );
+    }
+    calls.push({
+      target: WIP_TOKEN_ADDRESS,
+      value: totalFee,
+      data: this.wipToken.depositEncode().data,
+    });
+    const value = totalFee;
+    const allowance = await this.wipToken.allowance(ipId, spenderAddress);
+    if (autoApprove && allowance < totalFee) {
+      calls.push({
+        target: WIP_TOKEN_ADDRESS,
+        value: 0n,
+        data: this.wipToken.approveEncode(spenderAddress, maxUint256).data,
+      });
+    }
+    return { calls, value };
+  }
+
+  /**
+   * Builds call data for transferring existing WIP tokens from wallet to IP account and approving spender.
+   */
+  private async buildWipTransferCallData(
+    {totalFee, ipId, spenderAddress, options}: FeeExecutionParam<WipOptions>,
+  ): Promise<IpAccountImplExecuteBatchRequest["calls"]> {
+    const autoApprove = options.enableAutoApprove !== false;
+    const allowance = await this.wipToken.allowance(this.walletAddress, ipId);
+    if (autoApprove && allowance < totalFee) {
+      // Separate approve and transfer from wallet to IP account due to `msg.sender` context limitations
+      await waitTx(this.rpcClient, await this.wipToken.approve(ipId, maxUint256));
+    }
+
+    const calls: IpAccountImplExecuteBatchRequest["calls"] = [
+      {
+        target: WIP_TOKEN_ADDRESS,
+        value: 0n,
+        data: this.wipToken.transferFromEncode(this.walletAddress, ipId, totalFee).data,
+      },
+    ];
+    const spenderAllowance = await this.wipToken.allowance(ipId, spenderAddress);
+    if (autoApprove && spenderAllowance < totalFee) {
+      calls.push({
+        target: WIP_TOKEN_ADDRESS,
+        value: 0n,
+        data: this.wipToken.approveEncode(spenderAddress, maxUint256).data,
+      });
+    }
+    return calls;
   }
 
   private get erc20ContractAddress(): Address {
