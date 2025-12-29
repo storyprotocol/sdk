@@ -20,6 +20,8 @@ import {
   EncodedTxData,
   erc20Address,
   Erc20Client,
+  ipAccountImplAbi,
+  IpAccountImplClient,
   IpAssetRegistryClient,
   LicenseAttachmentWorkflowsClient,
   LicenseAttachmentWorkflowsMintAndRegisterIpAndAttachPilTermsRequest,
@@ -27,6 +29,7 @@ import {
   LicenseRegistryReadOnlyClient,
   LicenseTokenClient,
   LicenseTokenReadOnlyClient,
+  licensingModuleAbi,
   LicensingModuleClient,
   Multicall3Client,
   PiLicenseTemplateClient,
@@ -46,7 +49,7 @@ import {
   TotalLicenseTokenLimitHookClient,
   WrappedIpClient,
 } from "../abi/generated";
-import { LicenseTermsIdInput } from "../types/common";
+import { LicenseTermsIdInput, RevShareType } from "../types/common";
 import { ChainIds } from "../types/config";
 import { TransactionResponse } from "../types/options";
 import {
@@ -110,10 +113,7 @@ import { handleError } from "../utils/errors";
 import { contractCallWithFees } from "../utils/feeUtils";
 import { generateOperationSignature } from "../utils/generateOperationSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
-import {
-  IpAccountBatchExecutor,
-  IpAccountBatchExecutorExecuteWithFeesParams,
-} from "../utils/ipAccountBatchExecutor";
+import { IpAccountBatchExecutor } from "../utils/ipAccountBatchExecutor";
 import { PILFlavor } from "../utils/pilFlavor";
 import { handleMulticall } from "../utils/registrationUtils/registerHelper";
 import {
@@ -132,6 +132,7 @@ import {
   transferDistributeRoyaltyTokensRequest,
   transformRegistrationRequest,
 } from "../utils/registrationUtils/transformRegistrationRequest";
+import { getRevenueShare } from "../utils/royalty";
 import { setMaxLicenseTokens } from "../utils/setMaxLicenseTokens";
 import { validateAddress, waitTx } from "../utils/utils";
 
@@ -407,16 +408,14 @@ export class IPAssetClient {
           chainId: this.chainId,
           sender: this.walletAddress,
         });
-        // Use IpAccountBatchExecutor to meet the `verifyPermission` permission check from the contract side instead of using the `contractCallWithFees` function directly.
         const batchExecutor = new IpAccountBatchExecutor(
           this.rpcClient,
           this.wallet,
-          this.chainId,
+          request.childIpId,
         );
         return batchExecutor.executeWithFees({
           mintFees,
           spenderAddress: this.royaltyModuleEventClient.address,
-          ipId: request.childIpId,
           encodedTxs: encodedTxData,
           options: request.options,
         });
@@ -428,72 +427,80 @@ export class IPAssetClient {
 
   /**
    * Batch registers a derivative directly with parent IP's license terms.
-   *
-   * Uses {@link IpAccountBatchExecutor.executeMultipleWithFees} to handle fee payments
-   * and batch all IP account operations via multicall3 with signatures.
    */
   public async batchRegisterDerivative(
     request: BatchRegisterDerivativeRequest,
   ): Promise<BatchRegisterDerivativeResponse> {
     try {
-      const items: Omit<IpAccountBatchExecutorExecuteWithFeesParams, "options">[] = [];
-      const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
-
+      const contracts = [];
+      const licenseModuleAddress = validateAddress(this.licensingModuleClient.address);
       for (const arg of request.args) {
-        const childIpId = validateAddress(arg.childIpId);
-
-        // Check if child IP is registered
-        const isChildIpIdRegistered = await this.isRegistered(childIpId);
-        if (!isChildIpIdRegistered) {
-          throw new Error(`The child IP with id ${childIpId} is not registered.`);
+        try {
+          await this.registerDerivative({
+            ...arg,
+            txOptions: {
+              encodedTxDataOnly: true,
+            },
+          });
+        } catch (error) {
+          throw new Error(
+            (error as Error).message.replace("Failed to register derivative:", "").trim(),
+          );
         }
+        const calculatedDeadline = await getCalculatedDeadline(this.rpcClient, request.deadline);
 
-        // Validate and transform derivative data (same logic as registerDerivative)
-        const derivativeData = await validateDerivativeData({
-          derivativeDataInput: arg,
-          rpcClient: this.rpcClient,
+        const ipAccount = new IpAccountImplClient(
+          this.rpcClient,
+          this.wallet,
+          validateAddress(arg.childIpId),
+        );
+        const data = encodeFunctionData({
+          abi: licensingModuleAbi,
+          functionName: "registerDerivative",
+          args: [
+            arg.childIpId,
+            arg.parentIpIds,
+            arg.licenseTermsIds.map((id) => BigInt(id)),
+            arg.licenseTemplate || this.licenseTemplateAddress,
+            zeroAddress,
+            BigInt(arg.maxMintingFee ?? 0),
+            validateMaxRts(arg.maxRts),
+            getRevenueShare(arg.maxRevenueShare ?? 100, RevShareType.MAX_REVENUE_SHARE),
+          ],
+        });
+        const { result: state } = await ipAccount.state();
+        const signature = await generateOperationSignature({
+          ipIdAddress: arg.childIpId,
+          methodType: SignatureMethodType.BATCH_REGISTER_DERIVATIVE,
+          state,
+          encodeData: data,
+          deadline: calculatedDeadline,
           wallet: this.wallet,
           chainId: this.chainId,
         });
-
-        const derivDataWithChild = {
-          childIpId,
-          ...derivativeData,
-        };
-
-        // Encode transaction data
-        const encodedTxData =
-          this.licensingModuleClient.registerDerivativeEncode(derivDataWithChild);
-
-        // Calculate minting fees (same logic as registerDerivative)
-        const mintFees = await calculateDerivativeMintingFee({
-          derivData: derivDataWithChild,
-          rpcClient: this.rpcClient,
-          wallet: this.wallet,
-          chainId: this.chainId,
-          sender: this.walletAddress,
-        });
-
-        items.push({
-          ipId: childIpId,
-          mintFees,
-          spenderAddress: validateAddress(this.royaltyModuleEventClient.address),
-          encodedTxs: encodedTxData,
+        contracts.push({
+          target: arg.childIpId,
+          allowFailure: false,
+          callData: encodeFunctionData({
+            abi: ipAccountImplAbi,
+            functionName: "executeWithSig",
+            args: [
+              licenseModuleAddress,
+              BigInt(0),
+              data,
+              this.wallet.account!.address,
+              calculatedDeadline,
+              signature,
+            ],
+          }),
         });
       }
-
-      const batchExecutor = new IpAccountBatchExecutor(
-        this.rpcClient,
-        this.wallet,
-        this.chainId,
-      );
-      const result = await batchExecutor.executeMultipleWithFees({
-        items,
-        deadline: calculatedDeadline,
-        options: request.options,
+      const txHash = await this.multicall3Client.aggregate3({ calls: contracts });
+      await this.rpcClient.waitForTransactionReceipt({
+        ...request.txOptions,
+        hash: txHash,
       });
-
-      return { txHash: result.txHash };
+      return { txHash };
     } catch (error) {
       return handleError(error, "Failed to batch register derivative");
     }
