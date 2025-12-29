@@ -25,7 +25,13 @@ import {
   RevShareInput,
   TokenIdInput,
 } from "../common";
-import { ERC20Options, TxOptions, WipOptions, WithErc20AndWipOptions } from "../options";
+import {
+  ERC20Options,
+  TxOptions,
+  WipOptions,
+  WithErc20AndWipOptions,
+  WithTxOptions,
+} from "../options";
 import { LicenseTerms, LicenseTermsDataInput } from "./license";
 import { TokenSpender } from "../utils/token";
 
@@ -281,6 +287,11 @@ export type BatchRegisterDerivativeRequest = {
   deadline?: DeadlineInput;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
+
+export type BatchRegisterDerivativesRequest = {
+  args: Array<DerivativeDataInput & { childIpId: Address }>;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+} & WithErc20AndWipOptions;
 
 export type BatchRegisterDerivativeResponse = {
   txHash: Hash;

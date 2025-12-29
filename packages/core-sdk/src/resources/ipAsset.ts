@@ -62,6 +62,7 @@ import {
   BatchMintAndRegisterIpResponse,
   BatchRegisterDerivativeRequest,
   BatchRegisterDerivativeResponse,
+  BatchRegisterDerivativesRequest,
   BatchRegisterIpAssetsWithOptimizedWorkflowsRequest,
   BatchRegisterIpAssetsWithOptimizedWorkflowsResponse,
   BatchRegisterRequest,
@@ -426,7 +427,45 @@ export class IPAssetClient {
   }
 
   /**
+   * Batch registers a derivative directly with parent IP's license terms, without needing license tokens,
+   * and attaches the license terms of the parent IPs to the derivative IP.
+   * The license terms must be attached to the parent IP before calling this function.
+   * All IPs attached default license terms by default.
+   * The derivative IP owner must be the caller or an authorized operator.
+   *
+   * @remarks
+   * This method supports automatic fee handling for both ERC20 and WIP tokens.
+   * The fees are paid from the wallet address.
+   * The transaction will be executed in the same order as the input arguments.
+   */
+  public async batchRegisterDerivatives({
+    args,
+    options,
+    txOptions,
+  }: BatchRegisterDerivativesRequest): Promise<Hash[]> {
+    try {
+      const txHashes: Hash[] = [];
+      for (const arg of args) {
+        const txHash = await this.registerDerivative({
+          ...arg,
+          options,
+          txOptions,
+        });
+        // txHash must be non-undefined, otherwise throw an error
+        txHashes.push(txHash.txHash!);
+      }
+      return txHashes;
+    } catch (error) {
+      return handleError(error, "Failed to batch register derivatives");
+    }
+  }
+
+  /**
+   * @deprecated This method is deprecated. Please use the {@link batchRegisterDerivatives} instead.
    * Batch registers a derivative directly with parent IP's license terms.
+   * This method will be removed soon.
+   *
+   * @remarks This method does not support automatic fee handling for both ERC20 and WIP tokens.
    */
   public async batchRegisterDerivative(
     request: BatchRegisterDerivativeRequest,
