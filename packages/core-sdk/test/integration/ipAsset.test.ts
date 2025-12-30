@@ -4031,7 +4031,7 @@ describe("IP Asset Functions", () => {
         licenseTermsData: [
           {
             terms: PILFlavor.commercialRemix({
-              defaultMintingFee: 100n,
+              defaultMintingFee: 10n,
               commercialRevShare: 10,
               currency: WIP_TOKEN_ADDRESS,
             }),
@@ -4067,6 +4067,9 @@ describe("IP Asset Functions", () => {
                 currency: WIP_TOKEN_ADDRESS,
               }),
             },
+            {
+              licenseTermsId: licenseTermsIdFor10ERC20,
+            },
           ],
           royaltyShares: [
             {
@@ -4084,11 +4087,7 @@ describe("IP Asset Functions", () => {
           nft: { type: "mint", spgNftContract: spgContractWith10ERC20 },
           licenseTermsData: [
             {
-              terms: PILFlavor.commercialRemix({
-                defaultMintingFee: 100n,
-                commercialRevShare: 10,
-                currency: erc20Address[aeneid],
-              }),
+              licenseTermsId: licenseTermsIdFor10ERC20,
             },
           ],
         });
@@ -4184,6 +4183,9 @@ describe("IP Asset Functions", () => {
                 commercialRevShare: 10,
                 currency: WIP_TOKEN_ADDRESS,
               }),
+            },
+            {
+              licenseTermsId: licenseTermsIdFor100WIP,
             },
           ],
           royaltyShares: [
