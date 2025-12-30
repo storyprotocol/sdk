@@ -6171,7 +6171,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to batch register derivatives: Failed to register derivative: The child IP with id ${ipId} is not registered.`,
+          `Failed to batch register derivatives at index 0: Failed to register derivative: The child IP with id ${ipId} is not registered.`,
         );
       }
     });
@@ -6181,6 +6181,8 @@ describe("Test IpAssetClient", () => {
         .onCall(0)
         .resolves(true)
         .onCall(1)
+        .resolves(true)
+        .onCall(2)
         .resolves(false);
       try {
         await ipAssetClient.batchRegisterDerivatives({
@@ -6190,11 +6192,16 @@ describe("Test IpAssetClient", () => {
               parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
               licenseTermsIds: [1n],
             },
+            {
+              childIpId: ipId,
+              parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
+              licenseTermsIds: [1n],
+            },
           ],
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch register derivatives: Failed to register derivative: The parent IP with id 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 is not registered.",
+          `Failed to batch register derivatives at index 1: Failed to register derivative: The parent IP with id ${ipId} is not registered.`,
         );
       }
     });
@@ -6216,7 +6223,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch register derivatives: Failed to register derivative: The number of parent IP IDs must match the number of license terms IDs.",
+          "Failed to batch register derivatives at index 0: Failed to register derivative: The number of parent IP IDs must match the number of license terms IDs.",
         );
       }
     });
@@ -6238,7 +6245,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch register derivatives: Failed to register derivative: The maxMintingFee must be greater than 0.",
+          "Failed to batch register derivatives at index 0: Failed to register derivative: The maxMintingFee must be greater than 0.",
         );
       }
     });
@@ -6260,7 +6267,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          `Failed to batch register derivatives: Failed to register derivative: The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`,
+          `Failed to batch register derivatives at index 0: Failed to register derivative: The maxRts must be greater than 0 and less than ${MAX_ROYALTY_TOKEN}.`,
         );
       }
     });
@@ -6286,7 +6293,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch register derivatives: Failed to register derivative: The royalty percent for the parent IP with id 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 is greater than the maximum revenue share 1000000.",
+          "Failed to batch register derivatives at index 0: Failed to register derivative: The royalty percent for the parent IP with id 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 is greater than the maximum revenue share 1000000.",
         );
       }
     });
@@ -6314,7 +6321,7 @@ describe("Test IpAssetClient", () => {
         });
       } catch (err) {
         expect((err as Error).message).equal(
-          "Failed to batch register derivatives: Failed to register derivative: License terms id 1 must be attached to the parent ipId 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 before registering derivative.",
+          "Failed to batch register derivatives at index 0: Failed to register derivative: License terms id 1 must be attached to the parent ipId 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 before registering derivative.",
         );
       }
     });

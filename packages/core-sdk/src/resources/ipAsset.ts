@@ -438,27 +438,29 @@ export class IPAssetClient {
    * This method supports automatic fee handling for both ERC20 and WIP tokens.
    * The fees are paid from the wallet address.
    * The transaction will be executed in the same order as the input arguments.
+   * If a request fails, previous transactions will not be reverted.
    */
   public async batchRegisterDerivatives({
     requests,
     options,
     txOptions,
   }: BatchRegisterDerivativesRequest): Promise<Hash[]> {
-    try {
-      const txHashes: Hash[] = [];
-      for (const arg of requests) {
-        const txHash = await this.registerDerivative({
-          ...arg,
+    const txHashes: Hash[] = [];
+    let index = 0;
+    while (index < requests.length) {
+      try {
+        const result = await this.registerDerivative({
+          ...requests[index],
           options,
           txOptions,
         });
-        // txHash must be non-undefined, otherwise throw an error
-        txHashes.push(txHash.txHash!);
+        txHashes.push(result.txHash!);
+        index++;
+      } catch (error) {
+        return handleError(error, `Failed to batch register derivatives at index ${index}`);
       }
-      return txHashes;
-    } catch (error) {
-      return handleError(error, "Failed to batch register derivatives");
     }
+    return txHashes;
   }
 
   /**
