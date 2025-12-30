@@ -6167,7 +6167,7 @@ describe("Test IpAssetClient", () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(false);
       try {
         await ipAssetClient.batchRegisterDerivatives({
-          args: [{ childIpId: ipId, parentIpIds: [ipId], licenseTermsIds: [1n] }],
+          requests: [{ childIpId: ipId, parentIpIds: [ipId], licenseTermsIds: [1n] }],
         });
       } catch (err) {
         expect((err as Error).message).equal(
@@ -6184,7 +6184,7 @@ describe("Test IpAssetClient", () => {
         .resolves(false);
       try {
         await ipAssetClient.batchRegisterDerivatives({
-          args: [
+          requests: [
             {
               childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
               parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -6206,7 +6206,7 @@ describe("Test IpAssetClient", () => {
       });
       try {
         await ipAssetClient.batchRegisterDerivatives({
-          args: [
+          requests: [
             {
               childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
               parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -6225,7 +6225,7 @@ describe("Test IpAssetClient", () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await ipAssetClient.batchRegisterDerivatives({
-          args: [
+          requests: [
             {
               childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
               parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -6247,7 +6247,7 @@ describe("Test IpAssetClient", () => {
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       try {
         await ipAssetClient.batchRegisterDerivatives({
-          args: [
+          requests: [
             {
               childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
               parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -6273,7 +6273,7 @@ describe("Test IpAssetClient", () => {
       stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(true);
       try {
         await ipAssetClient.batchRegisterDerivatives({
-          args: [
+          requests: [
             {
               childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
               parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -6301,7 +6301,7 @@ describe("Test IpAssetClient", () => {
       });
       try {
         await ipAssetClient.batchRegisterDerivatives({
-          args: [
+          requests: [
             {
               childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
               parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -6330,7 +6330,7 @@ describe("Test IpAssetClient", () => {
         receipt: { status: "success" } as unknown as TransactionReceipt,
       });
       const result = await ipAssetClient.batchRegisterDerivatives({
-        args: [
+        requests: [
           {
             childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
@@ -6358,7 +6358,7 @@ describe("Test IpAssetClient", () => {
         receipt: { status: "success" } as unknown as TransactionReceipt,
       });
       const result = await ipAssetClient.batchRegisterDerivatives({
-        args: [
+        requests: [
           {
             childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],

@@ -289,7 +289,7 @@ export type BatchRegisterDerivativeRequest = {
 };
 
 export type BatchRegisterDerivativesRequest = {
-  args: Array<DerivativeDataInput & { childIpId: Address }>;
+  requests: Array<DerivativeDataInput & { childIpId: Address }>;
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 } & WithErc20AndWipOptions;
 

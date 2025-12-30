@@ -440,13 +440,13 @@ export class IPAssetClient {
    * The transaction will be executed in the same order as the input arguments.
    */
   public async batchRegisterDerivatives({
-    args,
+    requests,
     options,
     txOptions,
   }: BatchRegisterDerivativesRequest): Promise<Hash[]> {
     try {
       const txHashes: Hash[] = [];
-      for (const arg of args) {
+      for (const arg of requests) {
         const txHash = await this.registerDerivative({
           ...arg,
           options,
@@ -463,8 +463,21 @@ export class IPAssetClient {
 
   /**
    * @deprecated This method is deprecated. Please use the {@link batchRegisterDerivatives} instead.
-   * Batch registers a derivative directly with parent IP's license terms.
    * This method will be removed soon.
+   * Batch registers a derivative directly with parent IP's license terms.
+   *
+   * @example Migration Example
+   * ```typescript
+   * // Before (deprecated):
+   * await client.ipAsset.batchRegisterDerivative({
+   *   args: [{ childIpId: '0x...', parentIpIds: ['0x...'], licenseTermsIds: [1n] }],
+   * });
+   *
+   * // After (recommended):
+   * await client.ipAsset.batchRegisterDerivatives({
+   *   requests: [{ childIpId: '0x...', parentIpIds: ['0x...'], licenseTermsIds: [1n] }],
+   * });
+   * ```
    *
    * @remarks This method does not support automatic fee handling for both ERC20 and WIP tokens.
    */

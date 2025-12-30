@@ -4215,7 +4215,7 @@ describe("IP Asset Functions", () => {
         const { parentIpId: parentIpId2, licenseTermsId: licenseTermsId2 } =
           await createParentIpAndLicenseTerms(client, erc20Address[aeneid]);
         const result = await client.ipAsset.batchRegisterDerivatives({
-          args: [
+          requests: [
             {
               childIpId: childIpId1,
               parentIpIds: [parentIpId1, parentIpId2],
@@ -4353,24 +4353,26 @@ describe("IP Asset Functions", () => {
       it("should successfully when batch register derivatives", async () => {
         const tokenId1 = await getTokenId();
         const tokenId2 = await getTokenId();
-        const childIpId1 = (
-          await client.ipAsset.register({
-            nftContract: mockERC721,
-            tokenId: tokenId1!,
-          })
-        ).ipId!;
-        const childIpId2 = (
-          await client.ipAsset.register({
-            nftContract: mockERC721,
-            tokenId: tokenId2!,
-          })
-        ).ipId!;
+        const registerResponse = await client.ipAsset.batchRegister({
+          args: [
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId1!,
+            },
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId2!,
+            },
+          ],
+        });
+        const childIpId1 = registerResponse.results![0]?.ipId;
+        const childIpId2 = registerResponse.results![1]?.ipId;
         const { parentIpId: parentIpId1, licenseTermsId: licenseTermsId1 } =
           await createParentIpAndLicenseTerms(client, WIP_TOKEN_ADDRESS);
         const { parentIpId: parentIpId2, licenseTermsId: licenseTermsId2 } =
           await createParentIpAndLicenseTerms(client, WIP_TOKEN_ADDRESS);
         const result = await client.ipAsset.batchRegisterDerivatives({
-          args: [
+          requests: [
             {
               childIpId: childIpId1,
               parentIpIds: [parentIpId1, parentIpId2],
@@ -4450,7 +4452,7 @@ describe("IP Asset Functions", () => {
         const { parentIpId: parentIpId2, licenseTermsId: licenseTermsId2 } =
           await createParentIpAndLicenseTerms(client, WIP_TOKEN_ADDRESS);
         const result = await client.ipAsset.batchRegisterDerivatives({
-          args: [
+          requests: [
             {
               childIpId: childIpId1,
               parentIpIds: [parentIpId1, parentIpId2],
