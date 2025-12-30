@@ -218,10 +218,28 @@ export type RegisterPilTermsAndAttachResponse = {
   maxLicenseTokensTxHashes?: Hash[];
 };
 
-export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
-  /** Programmable IP License */
-  terms: T;
-  licensingConfig?: C;
+/**
+ * The data of the license and its configuration to be attached to the IP.
+ *
+ * You must provide either `licenseTermsId` or `terms`:
+ * - `licenseTermsId`: Use an existing pre-registered license terms
+ * - `terms`: Register new license terms and attach
+ *
+ * If both are provided, `terms` takes priority and new terms will be registered.
+ */
+export type LicenseTermsDataInput = {
+  /**
+   * Full license terms to register and attach.
+   * Use this to create new license terms.
+   */
+  terms?: LicenseTermsInput;
+  /**
+   * The ID of pre-registered license terms to attach.
+   * Use this when the license terms already exist on-chain.
+   */
+  licenseTermsId?: LicenseTermsIdInput;
+  /** The licensing configuration for the license. */
+  licensingConfig?: LicensingConfigInput;
   /**
    * The max number of license tokens that can be minted from this license term.
    *
