@@ -4,6 +4,7 @@ import {
   IpAssetRegistryClient,
   LicenseRegistryReadOnlyClient,
   piLicenseTemplateAddress,
+  PiLicenseTemplateReadOnlyClient,
   RoyaltyModuleReadOnlyClient,
   SpgnftImplReadOnlyClient,
   totalLicenseTokenLimitHookAddress,
@@ -50,28 +51,39 @@ export const validateLicenseTermsData = async (
   const processedLicenseTermsData: LicenseTermsData[] = [];
   const maxLicenseTokens: bigint[] = [];
   for (let i = 0; i < licenseTermsData.length; i++) {
-    const licenseTerm = PILFlavor.validateLicenseTerms(licenseTermsData[i].terms, chainId);
-    licenseTerm.commercialRevShare = getRevenueShare(licenseTerm.commercialRevShare);
-    const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
-    if (validateAddress(licenseTerm.royaltyPolicy) !== zeroAddress) {
-      const isWhitelistedArbitrationPolicy =
-        await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyPolicy({
-          royaltyPolicy: licenseTerm.royaltyPolicy,
-        });
-      if (!isWhitelistedArbitrationPolicy) {
-        throw new Error(`The royalty policy ${licenseTerm.royaltyPolicy} is not whitelisted.`);
+    let licenseTerm: LicenseTerms;
+    const licenseTermsDataInput = licenseTermsData[i];
+    if (licenseTermsDataInput.terms) {
+      licenseTerm = PILFlavor.validateLicenseTerms(licenseTermsDataInput.terms, chainId);
+      licenseTerm.commercialRevShare = getRevenueShare(licenseTerm.commercialRevShare);
+      const royaltyModuleReadOnlyClient = new RoyaltyModuleReadOnlyClient(rpcClient);
+      if (validateAddress(licenseTerm.royaltyPolicy) !== zeroAddress) {
+        const isWhitelistedArbitrationPolicy =
+          await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyPolicy({
+            royaltyPolicy: licenseTerm.royaltyPolicy,
+          });
+        if (!isWhitelistedArbitrationPolicy) {
+          throw new Error(`The royalty policy ${licenseTerm.royaltyPolicy} is not whitelisted.`);
+        }
       }
-    }
 
-    if (validateAddress(licenseTerm.currency) !== zeroAddress) {
-      const isWhitelistedRoyaltyToken = await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken(
-        {
-          token: licenseTerm.currency,
-        },
-      );
-      if (!isWhitelistedRoyaltyToken) {
-        throw new Error(`The currency token ${licenseTerm.currency} is not whitelisted.`);
+      if (validateAddress(licenseTerm.currency) !== zeroAddress) {
+        const isWhitelistedRoyaltyToken =
+          await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken({
+            token: licenseTerm.currency,
+          });
+        if (!isWhitelistedRoyaltyToken) {
+          throw new Error(`The currency token ${licenseTerm.currency} is not whitelisted.`);
+        }
       }
+    } else if (licenseTermsDataInput.licenseTermsId !== undefined) {
+      const piLicenseTemplateReadOnlyClient = new PiLicenseTemplateReadOnlyClient(rpcClient);
+      const response = await piLicenseTemplateReadOnlyClient.getLicenseTerms({
+        selectedLicenseTermsId: BigInt(licenseTermsDataInput.licenseTermsId),
+      });
+      licenseTerm = response.terms;
+    } else {
+      throw new Error("Either terms or licenseTermsId must be provided.");
     }
 
     const licensingConfig = validateLicenseConfig(licenseTermsData[i].licensingConfig);

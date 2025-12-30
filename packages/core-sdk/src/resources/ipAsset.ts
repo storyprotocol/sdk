@@ -684,15 +684,21 @@ export class IPAssetClient {
       // Due to emit event log by sequence, we need to get license terms id from request.args
       for (let j = 0; j < request.args.length; j++) {
         const licenseTerms: LicenseTerms[] = [];
+        const licenseTermsIds: bigint[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
         for (let i = 0; i < licenseTermsData.length; i++) {
-          const licenseTerm = PILFlavor.validateLicenseTerms(
-            licenseTermsData[i].terms,
-            this.chainId,
-          );
-          licenseTerms.push(licenseTerm);
+          const licenseTermsDataInput = licenseTermsData[i];
+          if (licenseTermsDataInput.terms) {
+            const licenseTerm = PILFlavor.validateLicenseTerms(
+              licenseTermsDataInput.terms,
+              this.chainId,
+            );
+            licenseTerms.push(licenseTerm);
+          } else if (licenseTermsDataInput.licenseTermsId !== undefined) {
+            licenseTermsIds.push(BigInt(licenseTermsDataInput.licenseTermsId));
+          }
         }
-        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
+        licenseTermsIds.push(...(await this.getLicenseTermsId(licenseTerms)));
         results[j].licenseTermsIds = licenseTermsIds;
         const maxLicenseTokensTxHashes = await setMaxLicenseTokens({
           maxLicenseTokensData: licenseTermsData,
