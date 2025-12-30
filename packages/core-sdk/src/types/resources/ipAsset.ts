@@ -282,6 +282,11 @@ export type BatchRegisterDerivativeRequest = {
   txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
 };
 
+export type BatchRegisterDerivativesRequest = {
+  requests: Array<DerivativeDataInput & { childIpId: Address }>;
+  txOptions?: Omit<TxOptions, "encodedTxDataOnly">;
+} & WithErc20AndWipOptions;
+
 export type BatchRegisterDerivativeResponse = {
   txHash: Hash;
 };

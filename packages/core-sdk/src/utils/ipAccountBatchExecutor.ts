@@ -15,6 +15,7 @@ import {
 import { WIP_TOKEN_ADDRESS } from "../constants/common";
 import {
   TransactionResponse,
+  TxOptions,
   WithErc20AndWipOptions,
   WithERC20Options,
   WithWipOptions,
@@ -25,6 +26,7 @@ export type IpAccountBatchExecutorExecuteWithFeesParams = {
   mintFees: Fee[];
   spenderAddress: Address;
   encodedTxs: EncodedTxData;
+  txOptions?: TxOptions;
 } & WithErc20AndWipOptions;
 
 /**
@@ -132,10 +134,9 @@ export class IpAccountBatchExecutor {
         ...(depositValue > 0n && { value: depositValue }),
       },
     });
-    await waitTx(this.rpcClient, txHash.txHash);
+    await waitTx(this.rpcClient, txHash.txHash, options.txOptions);
     return { txHash: txHash.txHash, receipt: txHash.receipt };
   }
-
   /**
    * Builds call data for transferring ERC20 tokens from wallet to IP account and approving spender.
    */
