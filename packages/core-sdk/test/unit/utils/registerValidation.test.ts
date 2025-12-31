@@ -37,6 +37,7 @@ describe("validateLicenseTermsData", () => {
   };
   let isWhitelistedRoyaltyPolicyStub: SinonStub;
   let isWhitelistedRoyaltyTokenStub: SinonStub;
+  let existsStub: SinonStub;
 
   beforeEach(() => {
     rpcClient = createMockPublicClient();
@@ -48,6 +49,7 @@ describe("validateLicenseTermsData", () => {
       RoyaltyModuleReadOnlyClient.prototype,
       "isWhitelistedRoyaltyToken",
     );
+    existsStub = stub(PiLicenseTemplateReadOnlyClient.prototype, "exists").resolves(true);
     stub(PiLicenseTemplateReadOnlyClient.prototype, "getLicenseTerms").resolves({
       terms: mockLicenseTerms,
     });
@@ -124,6 +126,12 @@ describe("validateLicenseTermsData", () => {
     await expect(validateLicenseTermsData([{}], rpcClient, aeneid)).to.be.rejectedWith(
       "Either terms or licenseTermsId must be provided.",
     );
+  });
+  it("should throw error when license terms id does not exist", async () => {
+    existsStub.resolves(false);
+    await expect(
+      validateLicenseTermsData([{ licenseTermsId: 999 }], rpcClient, aeneid),
+    ).to.be.rejectedWith("The license terms id 999 is not exist.");
   });
   it("should throw error when mintingFee is less than 0 in licensingConfig", async () => {
     await expect(

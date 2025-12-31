@@ -78,6 +78,14 @@ export const validateLicenseTermsData = async (
       }
     } else if (licenseTermsDataInput.licenseTermsId !== undefined) {
       const piLicenseTemplateReadOnlyClient = new PiLicenseTemplateReadOnlyClient(rpcClient);
+      const isExist = await piLicenseTemplateReadOnlyClient.exists({
+        licenseTermsId: BigInt(licenseTermsDataInput.licenseTermsId),
+      });
+      if (!isExist) {
+        throw new Error(
+          `The license terms id ${licenseTermsDataInput.licenseTermsId} is not exist.`,
+        );
+      }
       const response = await piLicenseTemplateReadOnlyClient.getLicenseTerms({
         selectedLicenseTermsId: BigInt(licenseTermsDataInput.licenseTermsId),
       });

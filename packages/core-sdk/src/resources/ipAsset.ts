@@ -681,7 +681,7 @@ export class IPAssetClient {
           licenseTermsIds: [],
         }));
 
-      // Get license terms id and set max license tokens mapping relationship by the sequence of the request.args
+      // Get license terms id and max license tokens mapping relationship by the sequence of the request.args
       for (let j = 0; j < request.args.length; j++) {
         const licenseTerms: LicenseTerms[] = [];
         const termsIndexes: number[] = [];
@@ -702,8 +702,8 @@ export class IPAssetClient {
           }
         }
         const resolvedIds = await this.getLicenseTermsId(licenseTerms);
-        termsIndexes.forEach((index, k) => {
-          licenseTermsIds[index] = resolvedIds[k];
+        termsIndexes.forEach((value, index) => {
+          licenseTermsIds[value] = resolvedIds[index];
         });
         const filteredLicenseTermsIds = licenseTermsIds.filter((id): id is bigint => id !== null);
         results[j].licenseTermsIds = filteredLicenseTermsIds;
