@@ -4066,6 +4066,7 @@ describe("IP Asset Functions", () => {
                 commercialRevShare: 10,
                 currency: WIP_TOKEN_ADDRESS,
               }),
+              licenseTermsId: licenseTermsIdFor10ERC20,
             },
             {
               licenseTermsId: licenseTermsIdFor10ERC20,
