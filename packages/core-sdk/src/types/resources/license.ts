@@ -218,10 +218,53 @@ export type RegisterPilTermsAndAttachResponse = {
   maxLicenseTokensTxHashes?: Hash[];
 };
 
-export type LicenseTermsDataInput<T = LicenseTermsInput, C = LicensingConfigInput> = {
-  /** Programmable IP License */
-  terms: T;
-  licensingConfig?: C;
+/**
+ * The data of the license and its configuration to be attached to the IP.
+ *
+ * You must provide either `licenseTermsId` or `terms`:
+ * - `licenseTermsId`: Use an existing pre-registered license terms
+ * - `terms`: Register new license terms and attach
+ *
+ * If both are provided, `terms` takes priority and new terms will be registered.
+ */
+export type LicenseTermsDataInput = {
+  /**
+   * Full license terms object to register and attach.
+   * Use this to create and attach new license terms in a single workflow.
+   *
+   * For convenient and robust creation of license terms, utilize the {@link PILFlavor} factory helpers.
+   * These pre-validated, best-practice recipes ensure you generate valid, well-structured license terms
+   * for the most common commercial remixing, commercial use, non-commercial social remixing, and creative commons attribution scenarios.
+   *
+   * Most workflows should leverage these strongly-typed helpers for
+   * optimal compatibility, validation, and future-proofing of your on-chain ecosystem integrations.
+   *
+   * Supported templates include but are not limited to:
+   * - {@link PILFlavor.commercialRemix} for commercial remixing license terms
+   * - {@link PILFlavor.commercialUse} for commercial use license terms
+   * - {@link PILFlavor.nonComSocialRemixing} for non-commercial social remixing license terms
+   * - {@link PILFlavor.creativeCommonsAttribution} for creative commons attribution(CC-BY) license terms
+   *
+   * @example
+   * ```typescript
+   * // Example: Creating standardized commercial remix license terms
+   * const licenseTerms = PILFlavor.commercialRemix({
+   *   commercialRevShare: 50, // 50%
+   *   currency: "0x...",
+   *   royaltyPolicy: "0x...",
+   * });
+   * ```
+   *
+   * If both `terms` and `licenseTermsId` are specified, `terms` takes precedence and new license terms will be registered on-chain.
+   */
+  terms?: LicenseTermsInput;
+  /**
+   * The ID of pre-registered license terms to attach.
+   * Use this when the license terms already exist on-chain.
+   */
+  licenseTermsId?: LicenseTermsIdInput;
+  /** The licensing configuration for the license. */
+  licensingConfig?: LicensingConfigInput;
   /**
    * The max number of license tokens that can be minted from this license term.
    *

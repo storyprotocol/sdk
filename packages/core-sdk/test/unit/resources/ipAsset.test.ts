@@ -28,6 +28,7 @@ import {
   LicenseRegistryReadOnlyClient,
   LicensingModuleClient,
   PiLicenseTemplateClient,
+  PiLicenseTemplateReadOnlyClient,
   RoyaltyModuleEventClient,
   RoyaltyModuleReadOnlyClient,
   royaltyPolicyLapAddress,
@@ -2126,7 +2127,6 @@ describe("Test IpAssetClient", () => {
               ipMetadataURI: "",
               ipMetadataHash: toHex(0, { size: 32 }),
             },
-
             licenseTermsData: [
               {
                 terms: licenseTerms,
@@ -2177,6 +2177,106 @@ describe("Test IpAssetClient", () => {
           licenseTermsIds: [5n],
           spgNftContract: "0x1daAE3197Bc469Cbd97B917aa460a12dD95c6627c",
           tokenId: 2n,
+        },
+      ]);
+    });
+
+    it("should return txHash and ipId when batchMintAndRegisterIpAssetWithPilTerms given correct args with license terms id", async () => {
+      stub(ipAssetClient.licenseAttachmentWorkflowsClient, "multicall").resolves(txHash);
+      stub(ipAssetClient.ipAssetRegistryClient, "parseTxIpRegisteredEvent").returns([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 1n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+        {
+          ipId: ipId,
+          chainId: 0n,
+          tokenContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          tokenId: 2n,
+          name: "",
+          uri: "",
+          registrationDate: 0n,
+        },
+      ]);
+      stub(ipAssetClient.licenseTemplateClient, "getLicenseTermsId")
+        .onFirstCall()
+        .resolves({
+          selectedLicenseTermsId: 5n,
+        })
+        .onSecondCall()
+        .resolves({
+          selectedLicenseTermsId: 6n,
+        })
+        .onThirdCall()
+        .resolves({
+          selectedLicenseTermsId: 7n,
+        });
+      stub(PiLicenseTemplateReadOnlyClient.prototype, "getLicenseTerms").resolves({
+        terms: licenseTerms,
+      });
+      const result = await ipAssetClient.batchMintAndRegisterIpAssetWithPilTerms({
+        args: [
+          {
+            spgNftContract,
+            ipMetadata: {
+              ipMetadataURI: "",
+              ipMetadataHash: toHex(0, { size: 32 }),
+            },
+            licenseTermsData: [
+              {
+                terms: licenseTerms,
+                licensingConfig,
+                maxLicenseTokens: 100,
+              },
+              {
+                terms: licenseTerms,
+                licensingConfig,
+              },
+              {
+                licenseTermsId: 6n,
+                maxLicenseTokens: 100,
+              },
+            ],
+            allowDuplicates: false,
+          },
+          {
+            spgNftContract,
+            licenseTermsData: [
+              {
+                licenseTermsId: 7n,
+              },
+              {
+                licenseTermsId: 8n,
+                maxLicenseTokens: 100,
+              },
+              {
+                terms: PILFlavor.nonCommercialSocialRemixing(),
+                maxLicenseTokens: 100,
+              },
+            ],
+          },
+        ],
+      });
+      expect(result.txHash).to.equal(txHash);
+      expect(result.results).to.deep.equal([
+        {
+          ipId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          licenseTermsIds: [5n, 6n, 6n],
+          tokenId: 1n,
+          spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          maxLicenseTokensTxHashes: [txHash, txHash],
+        },
+        {
+          ipId: ipId,
+          licenseTermsIds: [7n, 8n, 7n],
+          tokenId: 2n,
+          spgNftContract: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          maxLicenseTokensTxHashes: [txHash, txHash],
         },
       ]);
     });
