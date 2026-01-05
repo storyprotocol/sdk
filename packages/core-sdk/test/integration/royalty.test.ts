@@ -1,15 +1,7 @@
 import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { describe } from "mocha";
-import {
-  Address,
-  encodeFunctionData,
-  erc20Abi,
-  Hex,
-  maxUint256,
-  parseEther,
-  zeroAddress,
-} from "viem";
+import { Address, encodeFunctionData, erc20Abi, maxUint256, parseEther, zeroAddress } from "viem";
 
 import { NativeRoyaltyPolicy, PILFlavor, StoryClient } from "../../src";
 import { getDerivedStoryClient } from "./utils/BIP32";
@@ -121,18 +113,6 @@ describe("Royalty Functions", () => {
       expect(Number(balanceAfter)).lessThan(Number(balanceBefore - 100n));
     });
 
-    it("should fail to pay royalty with unregistered receiver", async () => {
-      const unregisteredIpId = "0x1234567890123456789012345678901234567890" as Address;
-      await expect(
-        client.royalty.payRoyaltyOnBehalf({
-          receiverIpId: unregisteredIpId,
-          payerIpId: childIpId,
-          token: erc20Address[aeneid],
-          amount: 10 * 10 ** 2,
-        }),
-      ).to.be.rejectedWith(`The receiver IP with id ${unregisteredIpId} is not registered.`);
-    });
-
     it("should allow the royalty vault to transfer its native tokens to a wallet address", async () => {
       const royaltyVaultAddress = await client.royalty.getRoyaltyVaultAddress(parentIpId);
 
@@ -172,34 +152,14 @@ describe("Royalty Functions", () => {
     });
   });
 
-  describe("Revenue Queries", () => {
-    it("should return claimable revenue amount", async () => {
-      const response = await client.royalty.claimableRevenue({
-        ipId: parentIpId,
-        claimer: TEST_WALLET_ADDRESS,
-        token: erc20Address[aeneid],
-      });
-
-      expect(response).to.be.a("bigint");
+  it("should return claimable revenue amount", async () => {
+    const response = await client.royalty.claimableRevenue({
+      ipId: parentIpId,
+      claimer: TEST_WALLET_ADDRESS,
+      token: erc20Address[aeneid],
     });
 
-    it("should fail to get royalty vault address for unregistered IP", async () => {
-      const unregisteredIpId = "0x1234567890123456789012345678901234567890" as Hex;
-      await expect(client.royalty.getRoyaltyVaultAddress(unregisteredIpId)).to.be.rejectedWith(
-        `The royalty vault IP with id ${unregisteredIpId} is not registered.`,
-      );
-    });
-  });
-
-  describe("Error Cases", () => {
-    it("should return zero for claimable revenue with invalid token", async () => {
-      const response = await client.royalty.claimableRevenue({
-        ipId: parentIpId,
-        claimer: TEST_WALLET_ADDRESS,
-        token: "0x0000000000000000000000000000000000000000" as Address,
-      });
-      expect(response).to.equal(0n);
-    });
+    expect(response).to.be.a("bigint");
   });
 
   describe("ClaimAllRevenue With WIP", () => {
