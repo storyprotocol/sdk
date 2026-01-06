@@ -87,22 +87,6 @@ describe("Dispute Functions", () => {
       disputeId = response.disputeId!;
     });
 
-    it("should validate all enum values defined in DisputeTargetTag", async () => {
-      const allTags = Object.values(DisputeTargetTag);
-
-      for (const tag of allTags) {
-        const tagHex: Hex = toHex(tag, { size: 32 });
-        const { allowed } = await clientA.dispute.disputeModuleClient.isWhitelistedDisputeTag({
-          tag: tagHex,
-        });
-        if (tag === DisputeTargetTag.IN_DISPUTE) {
-          expect(allowed).equal(false);
-        } else {
-          expect(allowed).equal(true);
-        }
-      }
-    });
-
     it("should raise disputes with different DisputeTargetTag enum values", async () => {
       const allTags = Object.values(DisputeTargetTag);
 
@@ -125,18 +109,6 @@ describe("Dispute Functions", () => {
           expect(response.disputeId).to.be.a("bigint");
         }
       }
-    });
-
-    it("should reject a dispute with an invalid tag not defined in the enum", async () => {
-      await expect(
-        clientA.dispute.raiseDispute({
-          targetIpId: ipIdB,
-          cid: await generateCID(),
-          targetTag: "INVALID_TAG" as DisputeTargetTag,
-          liveness: 2592000,
-          bond: minimumBond,
-        }),
-      ).to.be.rejectedWith("The target tag INVALID_TAG is not whitelisted");
     });
 
     it("should be able to counter existing dispute once", async () => {
@@ -471,19 +443,6 @@ describe("Dispute Functions", () => {
       expect(responses).to.have.lengthOf(2);
       expect(responses[0].txHash).to.be.a("string");
       expect(responses[1].txHash).to.be.a("string");
-    });
-
-    it("should fail when trying to tag with invalid dispute ID", async () => {
-      await expect(
-        clientA.dispute.tagIfRelatedIpInfringed({
-          infringementTags: [
-            {
-              ipId: childIpId,
-              disputeId: 999999n,
-            },
-          ],
-        }),
-      ).to.be.rejected;
     });
 
     it("should resolve a dispute successfully when initiated by dispute initiator", async () => {

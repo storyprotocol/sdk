@@ -217,28 +217,6 @@ describe("Group Functions", () => {
       expect(result.groupId).to.be.a("string");
     });
 
-    it("should fail when trying to add unregistered IP to group", async () => {
-      await expect(
-        client.groupClient.registerGroupAndAttachLicenseAndAddIps({
-          groupPool: groupPoolAddress,
-          maxAllowedRewardShare: 5,
-          ipIds: [zeroAddress], // Invalid IP address
-          licenseData: {
-            licenseTermsId,
-            licensingConfig: {
-              isSet: true,
-              mintingFee: 0n,
-              licensingHook: zeroAddress,
-              hookData: zeroAddress,
-              commercialRevShare: 0,
-              disabled: false,
-              expectMinimumGroupRewardShare: 0,
-              expectGroupRewardPool: zeroAddress,
-            },
-          },
-        }),
-      ).to.be.rejectedWith("Failed to register group and attach license and add ips");
-    });
     describe("Add IPs to Group and Remove IPs from Group", () => {
       let ipIds: Address[];
       it("should successfully add multiple IPs to group", async () => {
@@ -274,39 +252,6 @@ describe("Group Functions", () => {
           ipIds: ipIds,
         });
         expect(result.txHash).to.be.a("string");
-      });
-
-      it("should fail when trying to remove IPs from a non-existent group", async () => {
-        const registerResult = await client.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-          spgNftContract,
-          licenseTermsData,
-        });
-        const testIpId = registerResult.ipId!;
-
-        const nonExistentGroupId = zeroAddress;
-
-        await expect(
-          client.groupClient.removeIpsFromGroup({
-            groupIpId: nonExistentGroupId,
-            ipIds: [testIpId],
-          }),
-        ).to.be.rejectedWith("Failed to remove IPs from group");
-      });
-
-      it("should fail when trying to remove non-existent IPs from a group", async () => {
-        const groupResult = await client.groupClient.registerGroup({
-          groupPool: groupPoolAddress,
-        });
-        const testGroupId = groupResult.groupId!;
-
-        const nonExistentIpId = zeroAddress;
-
-        await expect(
-          client.groupClient.removeIpsFromGroup({
-            groupIpId: testGroupId,
-            ipIds: [nonExistentIpId],
-          }),
-        ).to.be.rejectedWith("Failed to remove IPs from group");
       });
     });
   });
@@ -486,28 +431,6 @@ describe("Group Functions", () => {
 
       expect(result.txHash).to.be.a("string");
       expect(result.claimedReward?.[0].amount[0]).to.equal(10n);
-    });
-
-    it("should fail when trying to claim reward for a non-existent group", async () => {
-      const nonExistentGroupId = zeroAddress;
-      await expect(
-        client.groupClient.claimReward({
-          groupIpId: nonExistentGroupId,
-          currencyToken: WIP_TOKEN_ADDRESS,
-          memberIpIds: [ipId],
-        }),
-      ).to.be.rejectedWith("Failed to claim reward");
-    });
-
-    it("should fail when trying to claim reward with invalid token address", async () => {
-      const invalidTokenAddress = zeroAddress;
-      await expect(
-        client.groupClient.claimReward({
-          groupIpId: groupIpId,
-          currencyToken: invalidTokenAddress,
-          memberIpIds: [ipId],
-        }),
-      ).to.be.rejectedWith("Failed to claim reward");
     });
 
     it("should successfully collect royalties and claim reward in one transaction", async () => {

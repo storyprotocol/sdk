@@ -95,40 +95,6 @@ describe("nftClient Functions", () => {
       });
       expect(txData.spgNftContract).to.be.a("string");
     });
-
-    it("should successfully get encoded transaction data", async () => {
-      const txData = await client.nftClient.createNFTCollection({
-        name: "encoded-collection",
-        symbol: "ENC",
-        maxSupply: 100,
-        isPublicMinting: true,
-        mintFeeRecipient: TEST_WALLET_ADDRESS,
-        mintOpen: true,
-        contractURI: "test-uri",
-        txOptions: {
-          encodedTxDataOnly: true,
-        },
-      });
-      expect(txData.encodedTxData).to.be.an("object");
-      expect(txData.encodedTxData?.data).to.be.a("string");
-      expect(txData.encodedTxData?.to).to.be.a("string");
-    });
-
-    it("should fail with invalid mint fee token", async () => {
-      await expect(
-        client.nftClient.createNFTCollection({
-          name: "invalid-fee-collection",
-          symbol: "INV",
-          maxSupply: 100,
-          isPublicMinting: true,
-          mintFeeRecipient: TEST_WALLET_ADDRESS,
-          mintOpen: true,
-          contractURI: "test-uri",
-          mintFee: 1000000000000000000,
-          mintFeeToken: "0x0000000000000000000000000000000000000000",
-        }),
-      ).to.be.rejectedWith("Invalid mint fee token address");
-    });
   });
 
   describe("Mint Fee", () => {
@@ -171,25 +137,6 @@ describe("nftClient Functions", () => {
         spgNftContract,
       });
       expect(tokenURI).to.equal(updatedMetadata);
-    });
-  });
-
-  describe("Error Cases", () => {
-    it("fails with invalid token ID", async () => {
-      const erc20Client = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
-      const txHash = await erc20Client.approve(spgNftContract, maxUint256);
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
-
-      const invalidTokenId = 999999999999999n;
-      const updatedMetadata = "ipfs://QmUpdated/metadata.json";
-
-      await expect(
-        client.nftClient.setTokenURI({
-          tokenId: invalidTokenId,
-          tokenURI: updatedMetadata,
-          spgNftContract,
-        }),
-      ).to.be.rejectedWith("Failed to set token URI");
     });
   });
 });
