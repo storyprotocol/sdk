@@ -17,10 +17,14 @@ Please make sure to read and observe our [Code of Conduct](/CODE_OF_CONDUCT.md).
 This section provides the instructions on how to build Story Protocol SDK from source code.
 
 #### Prerequisite
-
+Navigate to project root directory(/sdk/) and execute blow command.
+- Use the Node version specified in the project's .nvmrc file. (Ensure that nvm is installed correctly in your environment.)
+  - nvm install
+  - nvm use
 - Install PNPM: Execute `npm install -g pnpm`
 - Install TypeScript: Run `pnpm add typescript -D`
 - Install Yalc: Use `npm install -g yalc`
+- Install dependencies: `pnpm install`
 
 #### Steps for Using Yalc for Local Testing of Core-SDK
 
