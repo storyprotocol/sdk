@@ -432,7 +432,9 @@ export class GroupClient {
       }
 
       if (currencyTokens.some((token) => !allowedCurrenciesByChain[this.chainId].includes(token))) {
-        throw new Error(`Currency token ${currencyTokens} is not allowed on chain ${this.chainId}.`);
+        throw new Error(
+          `Currency token ${currencyTokens.toString()} is not allowed on chain ${this.chainId}.`,
+        );
       }
 
       const collectAndClaimParams = {

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { zeroAddress } from "viem";
+import { Address, zeroAddress } from "viem";
 
 import { NativeRoyaltyPolicy, PILFlavor } from "../../../src";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
@@ -181,7 +181,7 @@ describe("PILFlavor", () => {
       expect(() =>
         PILFlavor.commercialUse({
           defaultMintingFee: 100n,
-          currency: invalidAddress as any,
+          currency: invalidAddress as unknown as Address,
           chainId: "aeneid",
         }),
       ).to.throw(`Currency token ${invalidAddress} is not allowed on chain aeneid.`);
@@ -191,7 +191,7 @@ describe("PILFlavor", () => {
       expect(() =>
         PILFlavor.commercialUse({
           defaultMintingFee: 100n,
-          currency: invalidAddress as any,
+          currency: invalidAddress as unknown as Address,
           chainId: "mainnet",
         }),
       ).to.throw(`Currency token ${invalidAddress} is not allowed on chain mainnet.`);
@@ -328,7 +328,7 @@ describe("PILFlavor", () => {
       expect(() =>
         PILFlavor.commercialRemix({
           defaultMintingFee: 100n,
-          currency: invalidAddress as any,
+          currency: invalidAddress as unknown as Address,
           commercialRevShare: 10,
           chainId: "aeneid",
         }),
@@ -339,7 +339,7 @@ describe("PILFlavor", () => {
       expect(() =>
         PILFlavor.commercialRemix({
           defaultMintingFee: 100n,
-          currency: invalidAddress as any,
+          currency: invalidAddress as unknown as Address,
           commercialRevShare: 10,
           chainId: "mainnet",
         }),
@@ -457,7 +457,7 @@ describe("PILFlavor", () => {
       expect(() =>
         PILFlavor.creativeCommonsAttribution({
           royaltyPolicy: NativeRoyaltyPolicy.LAP,
-          currency: invalidAddress as any,
+          currency: invalidAddress as unknown as Address,
           chainId: "aeneid",
         }),
       ).to.throw(`Currency token ${invalidAddress} is not allowed on chain aeneid.`);
@@ -467,7 +467,7 @@ describe("PILFlavor", () => {
       expect(() =>
         PILFlavor.creativeCommonsAttribution({
           royaltyPolicy: NativeRoyaltyPolicy.LAP,
-          currency: invalidAddress as any,
+          currency: invalidAddress as unknown as Address,
           chainId: "mainnet",
         }),
       ).to.throw(`Currency token ${invalidAddress} is not allowed on chain mainnet.`);

@@ -4,8 +4,8 @@ import * as viem from "viem";
 import { generatePrivateKey } from "viem/accounts";
 
 import { ArbitrationPolicyUmaClient } from "../../../src/abi/generated";
-import { getAssertionDetails, getMinimumBond, getOov3Contract, settleAssertion } from "../../../src/utils/oov3";
 import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
+import { getAssertionDetails, getMinimumBond, getOov3Contract, settleAssertion } from "../../../src/utils/oov3";
 import { invalidAddress, mockAddress, mockERC20, nonWhitelistedToken, txHash } from "../mockData";
 import { createMockPublicClient, createMockWithAddress } from "../testUtils";
 
@@ -38,26 +38,26 @@ describe("oov3", () => {
 
   describe("TSSDK-135(Add validation for inputs currency and currencyToken.) getMinimumBond", () => {
     it("should allow MERC20 on aeneid (chain.id = 1315) and call readContract", async () => {
-      rpcClient.chain = { id: 1315 } as any;
+      rpcClient.chain = { id: 1315 } as unknown as viem.Chain;
       const readContractStub = (rpcClient.readContract = stub().resolves(123n));
-      const bond = await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, mockERC20 as any);
+      const bond = await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, mockERC20);
       expect(bond).to.equal(123n);
       expect(readContractStub.callCount).to.equal(1);
     });
 
     it("should allow WIP on mainnet (chain.id = 1514) and call readContract", async () => {
-      rpcClient.chain = { id: 1514 } as any;
+      rpcClient.chain = { id: 1514 } as unknown as viem.Chain;
       const readContractStub = (rpcClient.readContract = stub().resolves(1n));
-      const bond = await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, WIP_TOKEN_ADDRESS as any);
+      const bond = await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, WIP_TOKEN_ADDRESS);
       expect(bond).to.equal(1n);
       expect(readContractStub.callCount).to.equal(1);
     });
 
     it("should reject MERC20 on mainnet (chain.id = 1514) and not call readContract", async () => {
-      rpcClient.chain = { id: 1514 } as any;
+      rpcClient.chain = { id: 1514 } as unknown as viem.Chain;
       const readContractStub = (rpcClient.readContract = stub().resolves(123n));
       try {
-        await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, mockERC20 as any);
+        await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, mockERC20);
         expect.fail("Expected getMinimumBond to throw");
       } catch (err) {
         expect((err as Error).message).to.equal(
@@ -68,10 +68,10 @@ describe("oov3", () => {
     });
 
     it("should reject non-whitelisted token on aeneid (chain.id = 1315)", async () => {
-      rpcClient.chain = { id: 1315 } as any;
+      rpcClient.chain = { id: 1315 } as unknown as viem.Chain;
       const readContractStub = (rpcClient.readContract = stub().resolves(1n));
       try {
-        await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, nonWhitelistedToken as any);
+        await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, nonWhitelistedToken);
         expect.fail("Expected getMinimumBond to throw");
       } catch (err) {
         expect((err as Error).message).to.equal(
@@ -82,10 +82,14 @@ describe("oov3", () => {
     });
 
     it("should reject invalid address token on mainnet (expected: whitelist error)", async () => {
-      rpcClient.chain = { id: 1514 } as any;
+      rpcClient.chain = { id: 1514 } as unknown as viem.Chain;
       const readContractStub = (rpcClient.readContract = stub().resolves(1n));
       try {
-        await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, invalidAddress as any);
+        await getMinimumBond(
+          rpcClient,
+          arbitrationPolicyUmaClient,
+          invalidAddress as unknown as viem.Address,
+        );
         expect.fail("Expected getMinimumBond to throw");
       } catch (err) {
         expect((err as Error).message).to.equal(
@@ -96,17 +100,17 @@ describe("oov3", () => {
     });
 
     it("should default to aeneid when rpcClient.chain is undefined", async () => {
-      rpcClient.chain = undefined as any;
+      rpcClient.chain = undefined;
       rpcClient.readContract = stub().resolves(1n);
-      const bond = await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, mockERC20 as any);
+      const bond = await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, mockERC20);
       expect(bond).to.equal(1n);
     });
 
     it("should default to aeneid when rpcClient.chain is undefined and reject non-whitelisted token", async () => {
-      rpcClient.chain = undefined as any;
+      rpcClient.chain = undefined;
       const readContractStub = (rpcClient.readContract = stub().resolves(1n));
       try {
-        await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, nonWhitelistedToken as any);
+        await getMinimumBond(rpcClient, arbitrationPolicyUmaClient, nonWhitelistedToken);
         expect.fail("Expected getMinimumBond to throw");
       } catch (err) {
         expect((err as Error).message).to.equal(

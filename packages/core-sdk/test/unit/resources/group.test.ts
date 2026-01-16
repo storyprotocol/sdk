@@ -594,7 +594,7 @@ describe("Test IpAssetClient", () => {
       stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
-        currencyTokens: [invalidAddress as any],
+        currencyTokens: [invalidAddress as unknown as Address],
         memberIpIds: [mockAddress],
       });
       await expect(result).to.be.rejectedWith(
@@ -652,7 +652,7 @@ describe("Test IpAssetClient", () => {
       const wallet = createMockWalletClient();
       const mainnetGroupClient = new GroupClient(rpc, wallet, 1514);
       stub(mainnetGroupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      const tokens = [invalidAddress as any] as unknown as Address[];
+      const tokens = [invalidAddress as unknown as Address];
       const result = mainnetGroupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
         currencyTokens: tokens,
