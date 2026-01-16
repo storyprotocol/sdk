@@ -3,7 +3,7 @@ import { privateKeyToAccount } from "viem/accounts";
 
 import { aeneid } from "./chain";
 import { handleError } from "./errors";
-import { chainStringToViemChain } from "./utils";
+import { allowedCurrenciesByChain, chainStringToViemChain } from "./utils";
 import { ArbitrationPolicyUmaClient } from "../abi/generated";
 import { ASSERTION_ABI } from "../abi/oov3Abi";
 import { DisputeId } from "../types/resources/dispute";
@@ -35,6 +35,10 @@ export const getMinimumBond = async (
   arbitrationPolicyUmaClient: ArbitrationPolicyUmaClient,
   currency: Address,
 ): Promise<bigint> => {
+  const chainId = (rpcClient.chain?.id ?? "aeneid") as keyof typeof allowedCurrenciesByChain;
+  if (!allowedCurrenciesByChain[chainId].includes(currency)) {
+    throw new Error(`Currency token ${currency} is not allowed on chain ${String(chainId)}.`);
+  }
   const oov3Contract = await getOov3Contract(arbitrationPolicyUmaClient);
   return await rpcClient.readContract({
     address: oov3Contract,

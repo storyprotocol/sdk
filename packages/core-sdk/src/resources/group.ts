@@ -59,7 +59,7 @@ import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
 import { getRevenueShare } from "../utils/royalty";
 import { getDeadline, getPermissionSignature } from "../utils/sign";
 import { waitForTxReceipt } from "../utils/txOptions";
-import { validateAddress, validateAddresses } from "../utils/utils";
+import { allowedCurrenciesByChain, validateAddress, validateAddresses } from "../utils/utils";
 import { validateLicenseConfig } from "../utils/validateLicenseConfig";
 
 export class GroupClient {
@@ -430,6 +430,11 @@ export class GroupClient {
       if (currencyTokens.some((token) => token === zeroAddress)) {
         throw new Error("Currency token cannot be the zero address.");
       }
+
+      if (currencyTokens.some((token) => !allowedCurrenciesByChain[this.chainId].includes(token))) {
+        throw new Error(`Currency token ${currencyTokens} is not allowed on chain ${this.chainId}.`);
+      }
+
       const collectAndClaimParams = {
         groupIpId: validateAddress(groupIpId),
         currencyTokens: validateAddresses(currencyTokens),
@@ -527,6 +532,9 @@ export class GroupClient {
     memberIpIds,
   }: GetClaimableRewardRequest): Promise<bigint[]> {
     try {
+      if (!allowedCurrenciesByChain[this.chainId].includes(currencyToken)) {
+        throw new Error(`Currency token ${currencyToken} is not allowed on chain ${this.chainId}.`);
+      }
       const claimableReward = await this.groupingModuleClient.getClaimableReward({
         groupId: validateAddress(groupIpId),
         ipIds: validateAddresses(memberIpIds),
@@ -576,6 +584,9 @@ export class GroupClient {
     txOptions,
   }: ClaimRewardRequest): Promise<ClaimRewardResponse> {
     try {
+      if (!allowedCurrenciesByChain[this.chainId].includes(currencyToken)) {
+        throw new Error(`Currency token ${currencyToken} is not allowed on chain ${this.chainId}.`);
+      }
       const claimRewardParam: GroupingModuleClaimRewardRequest = {
         groupId: validateAddress(groupIpId),
         ipIds: validateAddresses(memberIpIds),
@@ -608,6 +619,10 @@ export class GroupClient {
     txOptions,
   }: CollectRoyaltiesRequest): Promise<CollectRoyaltiesResponse> {
     try {
+      if (!allowedCurrenciesByChain[this.chainId].includes(currencyToken)) {
+        throw new Error(`Currency token ${currencyToken} is not allowed on chain ${this.chainId}.`);
+      }
+
       const collectRoyaltiesParam: GroupingModuleCollectRoyaltiesRequest = {
         groupId: validateAddress(groupIpId),
         token: validateAddress(currencyToken),

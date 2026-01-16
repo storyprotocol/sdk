@@ -91,6 +91,27 @@ export const chainStringToViemChain = function (chainId: SupportedChainIds): Cha
   }
 };
 
+/**
+ * White list of allowed currency tokens for each supported chain.
+ * Keys are SupportedChainIds (chain name or chain id), values are arrays of addresses (string).
+ */
+export const allowedCurrenciesByChain = {
+  aeneid: [
+    "0x1514000000000000000000000000000000000000" as Address, // WIP
+    "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E" as Address, // MERC20
+  ],
+  1315: [
+    "0x1514000000000000000000000000000000000000" as Address, // WIP
+    "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E" as Address, // MERC20
+  ],
+  mainnet: [
+    "0x1514000000000000000000000000000000000000" as Address, // WIP
+  ],
+  1514: [
+    "0x1514000000000000000000000000000000000000" as Address, // WIP
+  ],
+} as const satisfies Record<SupportedChainIds, readonly Address[]>;
+
 export const chain: Record<SupportedChainIds, ChainIds> = {
   aeneid: 1315,
   1315: 1315,

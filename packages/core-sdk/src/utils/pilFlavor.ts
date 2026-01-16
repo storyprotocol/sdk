@@ -2,6 +2,7 @@ import { zeroAddress } from "viem";
 
 import { PILFlavorError } from "./errors";
 import { royaltyPolicyInputToAddress } from "./royalty";
+import { allowedCurrenciesByChain } from "./utils";
 import { SupportedChainIds } from "../types/config";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
@@ -127,6 +128,12 @@ export class PILFlavor {
     chainId,
     override,
   }: CommercialUseRequest): LicenseTerms => {
+    const resolvedChainId: SupportedChainIds = chainId ?? "aeneid";
+    if (currency !== zeroAddress && !allowedCurrenciesByChain[resolvedChainId].includes(currency)) {
+      throw new Error(
+        `Currency token ${currency} is not allowed on chain ${String(resolvedChainId)}.`,
+      );
+    }
     return this.validateLicenseTerms(
       {
         ...this._commercialUse,
@@ -135,7 +142,7 @@ export class PILFlavor {
         royaltyPolicy,
         ...override,
       },
-      chainId,
+      resolvedChainId,
     );
   };
 
@@ -151,6 +158,12 @@ export class PILFlavor {
     chainId,
     override,
   }: CommercialRemixRequest): LicenseTerms => {
+    const resolvedChainId: SupportedChainIds = chainId ?? "aeneid";
+    if (currency !== zeroAddress && !allowedCurrenciesByChain[resolvedChainId].includes(currency)) {
+      throw new Error(
+        `Currency token ${currency} is not allowed on chain ${String(resolvedChainId)}.`,
+      );
+    }
     return this.validateLicenseTerms(
       {
         ...this._commercialRemix,
@@ -160,7 +173,7 @@ export class PILFlavor {
         royaltyPolicy,
         ...override,
       },
-      chainId,
+      resolvedChainId,
     );
   };
 
@@ -174,6 +187,12 @@ export class PILFlavor {
     chainId,
     override,
   }: CreativeCommonsAttributionRequest): LicenseTerms => {
+    const resolvedChainId: SupportedChainIds = chainId ?? "aeneid";
+    if (currency !== zeroAddress && !allowedCurrenciesByChain[resolvedChainId].includes(currency)) {
+      throw new Error(
+        `Currency token ${currency} is not allowed on chain ${String(resolvedChainId)}.`,
+      );
+    }
     return this.validateLicenseTerms(
       {
         ...this._creativeCommonsAttribution,
@@ -181,7 +200,7 @@ export class PILFlavor {
         royaltyPolicy,
         ...override,
       },
-      chainId,
+      resolvedChainId,
     );
   };
 
