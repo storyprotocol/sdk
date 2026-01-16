@@ -21,6 +21,12 @@ This section provides the instructions on how to build Story Protocol SDK from s
 - Install PNPM: Execute `npm install -g pnpm`
 - Install TypeScript: Run `pnpm add typescript -D`
 - Install Yalc: Use `npm install -g yalc`
+- Install dependencies: `pnpm install`
+- Install pre-commit (to enable git hooks):
+  - Option A (Homebrew): `brew install pre-commit`
+  - Option B (pipx): `brew install pipx && pipx ensurepath && pipx install pre-commit`
+- Enable git hooks: `pre-commit install`
+  - Verify: confirm `./.git/hooks/pre-commit` exists, or run `pre-commit --version`
 
 #### Steps for Using Yalc for Local Testing of Core-SDK
 

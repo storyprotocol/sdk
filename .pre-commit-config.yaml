@@ -4,3 +4,12 @@ repos:
     hooks:
       - id: gitleaks
         args: ['--verbose', '--redact']
+
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint (pnpm lint)
+        entry: node scripts/precommit-eslint-core-sdk.mjs
+        language: system
+        pass_filenames: true
+        files: ^packages/core-sdk/.*\.(ts|tsx|js|jsx|mjs|cjs)$

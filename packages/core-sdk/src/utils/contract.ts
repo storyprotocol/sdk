@@ -15,4 +15,5 @@ export const simulateAndWriteContract = async ({
   const txHash = await wallet.writeContract(request as WriteContractParameters);
   const receipt = await rpcClient.waitForTransactionReceipt({ hash: txHash });
   return { txHash, receipt };
+  
 };
