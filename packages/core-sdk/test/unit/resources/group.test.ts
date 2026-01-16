@@ -5,8 +5,9 @@ import { Address, PublicClient, WalletClient, zeroAddress, zeroHash } from "viem
 
 import { GroupClient } from "../../../src";
 import { IpAccountImplClient } from "../../../src/abi/generated";
+import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
 import { LicenseDataInput } from "../../../src/types/resources/group";
-import { mockAddress, txHash, walletAddress } from "../mockData";
+import { invalidAddress, ipId, mockAddress, mockERC20, nonWhitelistedToken, txHash, walletAddress } from "../mockData";
 import { createMockPublicClient, createMockWalletClient } from "../testUtils";
 
 use(chaiAsPromised);
@@ -523,7 +524,7 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test groupClient.collectAndDistributeGroupRoyalties", () => {
+  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) Test groupClient.collectAndDistributeGroupRoyalties", () => {
     it("throws if group ipId is not registered", async () => {
       stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
@@ -587,6 +588,109 @@ describe("Test IpAssetClient", () => {
       await expect(result).to.be.rejectedWith(
         "Failed to collect and distribute group royalties: At least one currency token is required.",
       );
+    });
+
+    it("throws if currency token address is invalid on aeneid (1315)", async () => {
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const result = groupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: [invalidAddress as any],
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to collect and distribute group royalties: Currency token ${invalidAddress} is not allowed on chain 1315.`,
+      );
+    });
+
+    it("throws if currency token is not allowed on aeneid (1315)", async () => {
+      stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const tokens = [nonWhitelistedToken] as unknown as Address[];
+      const result = groupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: tokens,
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to collect and distribute group royalties: Currency token ${tokens.toString()} is not allowed on chain 1315.`,
+      );
+    });
+
+    it("throws if MERC20 is not allowed on mainnet (1514)", async () => {
+      const rpc = createMockPublicClient();
+      const wallet = createMockWalletClient();
+      const mainnetGroupClient = new GroupClient(rpc, wallet, 1514);
+      stub(mainnetGroupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const tokens = [mockERC20] as unknown as Address[];
+      const result = mainnetGroupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: tokens,
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to collect and distribute group royalties: Currency token ${tokens.toString()} is not allowed on chain 1514.`,
+      );
+    });
+
+    it("throws if non-whitelisted token is not allowed on mainnet (1514)", async () => {
+      const rpc = createMockPublicClient();
+      const wallet = createMockWalletClient();
+      const mainnetGroupClient = new GroupClient(rpc, wallet, 1514);
+      stub(mainnetGroupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const tokens = [nonWhitelistedToken] as unknown as Address[];
+      const result = mainnetGroupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: tokens,
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to collect and distribute group royalties: Currency token ${tokens.toString()} is not allowed on chain 1514.`,
+      );
+    });
+
+    it("throws if invalid address token is not allowed on mainnet (1514) (expected: whitelist error)", async () => {
+      const rpc = createMockPublicClient();
+      const wallet = createMockWalletClient();
+      const mainnetGroupClient = new GroupClient(rpc, wallet, 1514);
+      stub(mainnetGroupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      const tokens = [invalidAddress as any] as unknown as Address[];
+      const result = mainnetGroupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: tokens,
+        memberIpIds: [mockAddress],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to collect and distribute group royalties: Currency token ${tokens.toString()} is not allowed on chain 1514.`,
+      );
+    });
+
+    it("allows WIP on mainnet (1514)", async () => {
+      const rpc = createMockPublicClient();
+      const wallet = createMockWalletClient();
+      const mainnetGroupClient = new GroupClient(rpc, wallet, 1514);
+      stub(mainnetGroupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
+      stub(mainnetGroupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward").resolves(txHash);
+      stub(
+        mainnetGroupClient.groupingModuleEventClient,
+        "parseTxCollectedRoyaltiesToGroupPoolEvent",
+      ).returns([
+        { groupId: mockAddress, amount: 1n, token: WIP_TOKEN_ADDRESS, pool: mockAddress },
+      ]);
+      stub(mainnetGroupClient.royaltyModuleEventClient, "parseTxRoyaltyPaidEvent").returns([
+        {
+          receiverIpId: mockAddress,
+          amount: 1n,
+          token: WIP_TOKEN_ADDRESS,
+          amountAfterFee: 1n,
+          payerIpId: mockAddress,
+          sender: mockAddress,
+        },
+      ]);
+      const result = await mainnetGroupClient.collectAndDistributeGroupRoyalties({
+        groupIpId: mockAddress,
+        currencyTokens: [WIP_TOKEN_ADDRESS],
+        memberIpIds: [mockAddress],
+      });
+      expect(result.txHash).equal(txHash);
     });
 
     it("returns txHash given correct args", async () => {
@@ -720,7 +824,114 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test groupClient.getClaimableReward", () => {
+  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) Test groupClient.getClaimableReward", () => {
+    it("should reject when currencyToken is not allowed on aeneid (1315)", async () => {
+      const getClaimableRewardStub = stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = groupClient.getClaimableReward({
+        groupIpId: ipId,
+        currencyToken: nonWhitelistedToken,
+        memberIpIds: [ipId],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to get claimable reward: Currency token ${nonWhitelistedToken} is not allowed on chain 1315.`,
+      );
+      expect(getClaimableRewardStub.callCount).equals(0);
+    });
+
+    it("should reject when currencyToken is invalid address on aeneid (expected: whitelist error)", async () => {
+      const getClaimableRewardStub = stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = groupClient.getClaimableReward({
+        groupIpId: ipId,
+        currencyToken: invalidAddress,
+        memberIpIds: [ipId],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to get claimable reward: Currency token ${invalidAddress} is not allowed on chain 1315.`,
+      );
+      expect(getClaimableRewardStub.callCount).equals(0);
+    });
+
+    it("should allow WIP on aeneid (1315)", async () => {
+      stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = await groupClient.getClaimableReward({
+        groupIpId: ipId,
+        currencyToken: WIP_TOKEN_ADDRESS,
+        memberIpIds: [ipId],
+      });
+      expect(result).to.deep.equal([10n]);
+    });
+
+    it("should allow MERC20 on aeneid (1315)", async () => {
+      stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = await groupClient.getClaimableReward({
+        groupIpId: ipId,
+        currencyToken: mockERC20,
+        memberIpIds: [ipId],
+      });
+      expect(result).to.deep.equal([10n]);
+    });
+
+    it("should allow WIP on mainnet (1514)", async () => {
+      const rpc = createMockPublicClient();
+      const wallet = createMockWalletClient();
+      const mainnetGroupClient = new GroupClient(rpc, wallet, 1514);
+      stub(mainnetGroupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = await mainnetGroupClient.getClaimableReward({
+        groupIpId: ipId,
+        currencyToken: WIP_TOKEN_ADDRESS,
+        memberIpIds: [ipId],
+      });
+      expect(result).to.deep.equal([10n]);
+    });
+
+    it("should reject MERC20 on mainnet (1514)", async () => {
+      const rpc = createMockPublicClient();
+      const wallet = createMockWalletClient();
+      const mainnetGroupClient = new GroupClient(rpc, wallet, 1514);
+      const getClaimableRewardStub = stub(mainnetGroupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = mainnetGroupClient.getClaimableReward({
+        groupIpId: ipId,
+        currencyToken: mockERC20,
+        memberIpIds: [ipId],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to get claimable reward: Currency token ${mockERC20} is not allowed on chain 1514.`,
+      );
+      expect(getClaimableRewardStub.callCount).equals(0);
+    });
+
+    it("should reject non-whitelisted token on mainnet (1514)", async () => {
+      const rpc = createMockPublicClient();
+      const wallet = createMockWalletClient();
+      const mainnetGroupClient = new GroupClient(rpc, wallet, 1514);
+      const getClaimableRewardStub = stub(mainnetGroupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = mainnetGroupClient.getClaimableReward({
+        groupIpId: ipId,
+        currencyToken: nonWhitelistedToken,
+        memberIpIds: [ipId],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to get claimable reward: Currency token ${nonWhitelistedToken} is not allowed on chain 1514.`,
+      );
+      expect(getClaimableRewardStub.callCount).equals(0);
+    });
+
+    it("should reject invalid address token on mainnet (1514) (expected: whitelist error)", async () => {
+      const rpc = createMockPublicClient();
+      const wallet = createMockWalletClient();
+      const mainnetGroupClient = new GroupClient(rpc, wallet, 1514);
+      const getClaimableRewardStub = stub(mainnetGroupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
+      const result = mainnetGroupClient.getClaimableReward({
+        groupIpId: ipId,
+        currencyToken: invalidAddress,
+        memberIpIds: [ipId],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to get claimable reward: Currency token ${invalidAddress} is not allowed on chain 1514.`,
+      );
+      expect(getClaimableRewardStub.callCount).equals(0);
+    });
+
     it("should throw error when call fail", async () => {
       stub(groupClient.groupingModuleClient, "getClaimableReward").rejects(new Error("rpc error"));
       const result = groupClient.getClaimableReward({
@@ -762,7 +973,33 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test groupClient.claimReward", () => {
+  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) Test groupClient.claimReward", () => {
+    it("should reject when currencyToken is not allowed (aeneid)", async () => {
+      const claimRewardStub = stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
+      const result = groupClient.claimReward({
+        groupIpId: ipId,
+        currencyToken: nonWhitelistedToken,
+        memberIpIds: [ipId],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to claim reward: Currency token ${nonWhitelistedToken} is not allowed on chain 1315.`,
+      );
+      expect(claimRewardStub.callCount).equals(0);
+    });
+
+    it("should reject when currencyToken is invalid address (expected: whitelist error)", async () => {
+      const claimRewardStub = stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
+      const result = groupClient.claimReward({
+        groupIpId: ipId,
+        currencyToken: invalidAddress,
+        memberIpIds: [ipId],
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to claim reward: Currency token ${invalidAddress} is not allowed on chain 1315.`,
+      );
+      expect(claimRewardStub.callCount).equals(0);
+    });
+
     it("should throw error when call fail", async () => {
       stub(groupClient.groupingModuleClient, "claimReward").rejects(new Error("rpc error"));
       const result = groupClient.claimReward({
@@ -818,7 +1055,19 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("Test groupClient.collectRoyalties", () => {
+  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) Test groupClient.collectRoyalties", () => {
+    it("should reject when currencyToken is not allowed (aeneid)", async () => {
+      const collectRoyaltiesStub = stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
+      const result = groupClient.collectRoyalties({
+        groupIpId: mockAddress,
+        currencyToken: nonWhitelistedToken,
+      });
+      await expect(result).to.be.rejectedWith(
+        `Failed to collect royalties: Currency token ${nonWhitelistedToken} is not allowed on chain 1315.`,
+      );
+      expect(collectRoyaltiesStub.callCount).equals(0);
+    });
+
     it("should throw error when call fails", async () => {
       stub(groupClient.groupingModuleClient, "collectRoyalties").rejects(new Error("rpc error"));
 
