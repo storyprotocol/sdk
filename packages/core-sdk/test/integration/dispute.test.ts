@@ -50,6 +50,7 @@ describe("Dispute Functions", () => {
       publicClient,
       new ArbitrationPolicyUmaClient(publicClient, walletClient),
       WIP_TOKEN_ADDRESS,
+      aeneid,
     );
 
     const txData = await clientA.nftClient.createNFTCollection({

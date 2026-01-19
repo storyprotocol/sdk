@@ -1,8 +1,9 @@
 import { expect } from "chai";
-import { zeroAddress } from "viem";
+import { Address, zeroAddress } from "viem";
 
 import { NativeRoyaltyPolicy, PILFlavor } from "../../../src";
-import { mockAddress } from "../mockData";
+import { WIP_TOKEN_ADDRESS } from "../../../src/constants/common";
+import { invalidAddress, mockAddress, mockERC20, nonWhitelistedToken } from "../mockData";
 
 describe("PILFlavor", () => {
   describe("nonCommercialSocialRemixing", () => {
@@ -118,6 +119,83 @@ describe("PILFlavor", () => {
         uri: "https://github.com/piplabs/pil-document/blob/9a1f803fcf8101a8a78f1dcc929e6014e144ab56/off-chain-terms/CommercialUse.json",
       });
     });
+
+    it("should allow MERC20 on aeneid (1315)", () => {
+      const pil = PILFlavor.commercialUse({
+        defaultMintingFee: 100n,
+        currency: mockERC20,
+        chainId: "aeneid",
+      });
+      expect(pil.currency).to.equal(mockERC20);
+    });
+
+    it("should reject MERC20 on mainnet (1514)", () => {
+      expect(() =>
+        PILFlavor.commercialUse({
+          defaultMintingFee: 100n,
+          currency: mockERC20,
+          chainId: "mainnet",
+        }),
+      ).to.throw(`Currency token ${mockERC20} is not allowed on chain mainnet.`);
+    });
+
+    it("should reject non-whitelisted token on aeneid", () => {
+      expect(() =>
+        PILFlavor.commercialUse({
+          defaultMintingFee: 100n,
+          currency: nonWhitelistedToken,
+          chainId: "aeneid",
+        }),
+      ).to.throw(`Currency token ${nonWhitelistedToken} is not allowed on chain aeneid.`);
+    });
+
+    it("should allow WIP on aeneid (1315)", () => {
+      const pil = PILFlavor.commercialUse({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+        chainId: "aeneid",
+      });
+      expect(pil.currency).to.equal(WIP_TOKEN_ADDRESS);
+    });
+
+    it("should allow WIP on mainnet (1514)", () => {
+      const pil = PILFlavor.commercialUse({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+        chainId: "mainnet",
+      });
+      expect(pil.currency).to.equal(WIP_TOKEN_ADDRESS);
+    });
+
+    it("should reject non-whitelisted token on mainnet", () => {
+      expect(() =>
+        PILFlavor.commercialUse({
+          defaultMintingFee: 100n,
+          currency: nonWhitelistedToken,
+          chainId: "mainnet",
+        }),
+      ).to.throw(`Currency token ${nonWhitelistedToken} is not allowed on chain mainnet.`);
+    });
+
+    it("should reject invalid address on aeneid (expected: whitelist error)", () => {
+      expect(() =>
+        PILFlavor.commercialUse({
+          defaultMintingFee: 100n,
+          currency: invalidAddress as unknown as Address,
+          chainId: "aeneid",
+        }),
+      ).to.throw(`Currency token ${invalidAddress} is not allowed on chain aeneid.`);
+    });
+
+    it("should reject invalid address on mainnet (expected: whitelist error)", () => {
+      expect(() =>
+        PILFlavor.commercialUse({
+          defaultMintingFee: 100n,
+          currency: invalidAddress as unknown as Address,
+          chainId: "mainnet",
+        }),
+      ).to.throw(`Currency token ${invalidAddress} is not allowed on chain mainnet.`);
+    });
   });
 
   describe("commercialRemix", () => {
@@ -182,6 +260,91 @@ describe("PILFlavor", () => {
         uri: "https://github.com/piplabs/pil-document/blob/ad67bb632a310d2557f8abcccd428e4c9c798db1/off-chain-terms/CommercialRemix.json",
       });
     });
+
+    it("should allow MERC20 on aeneid (1315)", () => {
+      const pil = PILFlavor.commercialRemix({
+        defaultMintingFee: 100n,
+        currency: mockERC20,
+        commercialRevShare: 10,
+        chainId: "aeneid",
+      });
+      expect(pil.currency).to.equal(mockERC20);
+    });
+
+    it("should reject MERC20 on mainnet (1514)", () => {
+      expect(() =>
+        PILFlavor.commercialRemix({
+          defaultMintingFee: 100n,
+          currency: mockERC20,
+          commercialRevShare: 10,
+          chainId: "mainnet",
+        }),
+      ).to.throw(`Currency token ${mockERC20} is not allowed on chain mainnet.`);
+    });
+
+    it("should reject non-whitelisted token on aeneid", () => {
+      expect(() =>
+        PILFlavor.commercialRemix({
+          defaultMintingFee: 100n,
+          currency: nonWhitelistedToken,
+          commercialRevShare: 10,
+          chainId: "aeneid",
+        }),
+      ).to.throw(`Currency token ${nonWhitelistedToken} is not allowed on chain aeneid.`);
+    });
+
+    it("should allow WIP on aeneid (1315)", () => {
+      const pil = PILFlavor.commercialRemix({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+        commercialRevShare: 10,
+        chainId: "aeneid",
+      });
+      expect(pil.currency).to.equal(WIP_TOKEN_ADDRESS);
+    });
+
+    it("should allow WIP on mainnet (1514)", () => {
+      const pil = PILFlavor.commercialRemix({
+        defaultMintingFee: 100n,
+        currency: WIP_TOKEN_ADDRESS,
+        commercialRevShare: 10,
+        chainId: "mainnet",
+      });
+      expect(pil.currency).to.equal(WIP_TOKEN_ADDRESS);
+    });
+
+    it("should reject non-whitelisted token on mainnet", () => {
+      expect(() =>
+        PILFlavor.commercialRemix({
+          defaultMintingFee: 100n,
+          currency: nonWhitelistedToken,
+          commercialRevShare: 10,
+          chainId: "mainnet",
+        }),
+      ).to.throw(`Currency token ${nonWhitelistedToken} is not allowed on chain mainnet.`);
+    });
+
+    it("should reject invalid address on aeneid (expected: whitelist error)", () => {
+      expect(() =>
+        PILFlavor.commercialRemix({
+          defaultMintingFee: 100n,
+          currency: invalidAddress as unknown as Address,
+          commercialRevShare: 10,
+          chainId: "aeneid",
+        }),
+      ).to.throw(`Currency token ${invalidAddress} is not allowed on chain aeneid.`);
+    });
+
+    it("should reject invalid address on mainnet (expected: whitelist error)", () => {
+      expect(() =>
+        PILFlavor.commercialRemix({
+          defaultMintingFee: 100n,
+          currency: invalidAddress as unknown as Address,
+          commercialRevShare: 10,
+          chainId: "mainnet",
+        }),
+      ).to.throw(`Currency token ${invalidAddress} is not allowed on chain mainnet.`);
+    });
   });
 
   describe("creativeCommonsAttribution", () => {
@@ -241,6 +404,73 @@ describe("PILFlavor", () => {
         currency: mockAddress,
         uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
       });
+    });
+
+    it("should allow MERC20 on aeneid (1315)", () => {
+      const pil = PILFlavor.creativeCommonsAttribution({
+        royaltyPolicy: NativeRoyaltyPolicy.LAP,
+        currency: mockERC20,
+        chainId: "aeneid",
+      });
+      expect(pil.currency).to.equal(mockERC20);
+    });
+
+    it("should reject MERC20 on mainnet (1514)", () => {
+      expect(() =>
+        PILFlavor.creativeCommonsAttribution({
+          royaltyPolicy: NativeRoyaltyPolicy.LAP,
+          currency: mockERC20,
+          chainId: "mainnet",
+        }),
+      ).to.throw(`Currency token ${mockERC20} is not allowed on chain mainnet.`);
+    });
+
+    it("should allow WIP on aeneid (1315)", () => {
+      const pil = PILFlavor.creativeCommonsAttribution({
+        royaltyPolicy: NativeRoyaltyPolicy.LAP,
+        currency: WIP_TOKEN_ADDRESS,
+        chainId: "aeneid",
+      });
+      expect(pil.currency).to.equal(WIP_TOKEN_ADDRESS);
+    });
+
+    it("should allow WIP on mainnet (1514)", () => {
+      const pil = PILFlavor.creativeCommonsAttribution({
+        royaltyPolicy: NativeRoyaltyPolicy.LAP,
+        currency: WIP_TOKEN_ADDRESS,
+        chainId: "mainnet",
+      });
+      expect(pil.currency).to.equal(WIP_TOKEN_ADDRESS);
+    });
+
+    it("should reject non-whitelisted token on mainnet", () => {
+      expect(() =>
+        PILFlavor.creativeCommonsAttribution({
+          royaltyPolicy: NativeRoyaltyPolicy.LAP,
+          currency: nonWhitelistedToken,
+          chainId: "mainnet",
+        }),
+      ).to.throw(`Currency token ${nonWhitelistedToken} is not allowed on chain mainnet.`);
+    });
+
+    it("should reject invalid address on aeneid (expected: whitelist error)", () => {
+      expect(() =>
+        PILFlavor.creativeCommonsAttribution({
+          royaltyPolicy: NativeRoyaltyPolicy.LAP,
+          currency: invalidAddress as unknown as Address,
+          chainId: "aeneid",
+        }),
+      ).to.throw(`Currency token ${invalidAddress} is not allowed on chain aeneid.`);
+    });
+
+    it("should reject invalid address on mainnet (expected: whitelist error)", () => {
+      expect(() =>
+        PILFlavor.creativeCommonsAttribution({
+          royaltyPolicy: NativeRoyaltyPolicy.LAP,
+          currency: invalidAddress as unknown as Address,
+          chainId: "mainnet",
+        }),
+      ).to.throw(`Currency token ${invalidAddress} is not allowed on chain mainnet.`);
     });
   });
 

@@ -10,6 +10,7 @@ import {
   Hex,
   isAddress,
   PublicClient,
+  zeroAddress,
 } from "viem";
 
 import { aeneid, mainnet } from "./chain";
@@ -88,6 +89,62 @@ export const chainStringToViemChain = function (chainId: SupportedChainIds): Cha
       return mainnet;
     default:
       throw new Error(`ChainId ${String(chainId)} not supported`);
+  }
+};
+
+/**
+ * White list of allowed currency tokens for each supported chain.
+ * Keys are SupportedChainIds (chain name or chain id), values are arrays of addresses (string).
+ */
+const allowedCurrenciesByChain = {
+  aeneid: [
+    "0x1514000000000000000000000000000000000000" as Address, // WIP
+    "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E" as Address, // MERC20
+  ],
+  1315: [
+    "0x1514000000000000000000000000000000000000" as Address, // WIP
+    "0xF2104833d386a2734a4eB3B8ad6FC6812F29E38E" as Address, // MERC20
+  ],
+  mainnet: [
+    "0x1514000000000000000000000000000000000000" as Address, // WIP
+  ],
+  1514: [
+    "0x1514000000000000000000000000000000000000" as Address, // WIP
+  ],
+} as const satisfies Record<SupportedChainIds, readonly Address[]>;
+
+export const getAllowedCurrencies = (chainId: SupportedChainIds): readonly Address[] => {
+  return allowedCurrenciesByChain[chainId];
+};
+
+/**
+ * Validate that a currency token is allowed on a given chain.
+ *
+ * - If `currency` is the zero address, it's treated as "no currency" and allowed.
+ * - Otherwise, it must exist in the allowed currency whitelist for the chain.
+ *
+ * Throws an Error with a consistent message used across the SDK.
+ */
+export const assertCurrencyAllowed = (currency: Address, chainId: SupportedChainIds): void => {
+  if (currency === zeroAddress) return;
+  if (!getAllowedCurrencies(chainId).includes(currency)) {
+    throw new Error(`Currency token ${currency} is not allowed on chain ${String(chainId)}.`);
+  }
+};
+
+/**
+ * Validate that all currency tokens are allowed on a given chain.
+ * Throws an Error with the same message shape previously used by callers that
+ * validated arrays (e.g. group royalties distribution).
+ */
+export const assertCurrenciesAllowed = (
+  currencies: readonly Address[],
+  chainId: SupportedChainIds,
+): void => {
+  if (currencies.length === 0) return;
+  // Keep legacy error message behavior (stringify the full list) for compatibility.
+  if (currencies.some((c) => c !== zeroAddress && !getAllowedCurrencies(chainId).includes(c))) {
+    throw new Error(`Currency token ${currencies.toString()} is not allowed on chain ${String(chainId)}.`);
   }
 };
 

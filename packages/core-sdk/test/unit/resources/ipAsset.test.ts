@@ -72,7 +72,8 @@ const licenseTerms: LicenseTerms = {
   derivativesApproval: false,
   derivativesReciprocal: true,
   derivativeRevCeiling: BigInt(0),
-  currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+  // Use a whitelisted currency token for chain 1315 (aeneid) tests.
+  currency: WIP_TOKEN_ADDRESS,
   uri: "",
 };
 

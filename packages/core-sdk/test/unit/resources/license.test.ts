@@ -31,7 +31,8 @@ use(chaiAsPromised);
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
 const licenseTerms: LicenseTerms = {
   defaultMintingFee: 1513n,
-  currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+  // Use a whitelisted currency token for chain 1315 (aeneid) tests.
+  currency: WIP_TOKEN_ADDRESS,
   royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
   transferable: false,
   expiration: 0n,
@@ -100,7 +101,7 @@ describe("Test LicenseClient", () => {
           ...licenseTerms,
           commercialUse: true,
           defaultMintingFee: 1,
-          currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          currency: WIP_TOKEN_ADDRESS,
           commercialRevShare: 101,
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
@@ -117,7 +118,7 @@ describe("Test LicenseClient", () => {
           ...licenseTerms,
           commercialUse: true,
           defaultMintingFee: 1,
-          currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          currency: WIP_TOKEN_ADDRESS,
           commercialRevShare: -1,
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
@@ -186,7 +187,7 @@ describe("Test LicenseClient", () => {
         ...licenseTerms,
         commercialUse: true,
         defaultMintingFee: 1,
-        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        currency: WIP_TOKEN_ADDRESS,
         commercialRevShare: 90,
         royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
@@ -227,7 +228,7 @@ describe("Test LicenseClient", () => {
         uri: "",
         commercialUse: true,
         defaultMintingFee: 1,
-        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        currency: WIP_TOKEN_ADDRESS,
         commercialRevShare: 90,
       });
 
@@ -257,7 +258,7 @@ describe("Test LicenseClient", () => {
         ...licenseTerms,
         commercialUse: true,
         defaultMintingFee: 1,
-        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        currency: WIP_TOKEN_ADDRESS,
         commercialRevShare: 90,
         royaltyPolicy: NativeRoyaltyPolicy.LRP,
       });

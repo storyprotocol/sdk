@@ -13,7 +13,7 @@ import { RoyaltyClient } from "../../../src/resources/royalty";
 import { NativeRoyaltyPolicy } from "../../../src/types/resources/royalty";
 import { ERC20Client, WipTokenClient } from "../../../src/utils/token";
 import { aeneid } from "../../integration/utils/util";
-import { ipId, mockAddress, txHash, walletAddress } from "../mockData";
+import { ipId, mockAddress, mockERC20, txHash, walletAddress } from "../mockData";
 import {
   createMockPublicClient,
   createMockWalletClient,
@@ -300,7 +300,7 @@ describe("Test RoyaltyClient", () => {
 
       stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent").returns([
         {
-          token: mockAddress,
+          token: mockERC20,
           amount: 1n,
           claimer: ipId,
         },
@@ -313,7 +313,7 @@ describe("Test RoyaltyClient", () => {
         claimer: ipId,
         childIpIds: [ipId],
         royaltyPolicies: [mockAddress],
-        currencyTokens: [mockAddress],
+        currencyTokens: [mockERC20],
       });
       expect(withdrawStub.callCount).equals(0);
     });
@@ -586,9 +586,9 @@ describe("Test RoyaltyClient", () => {
       stub(royaltyClient.ipAssetRegistryClient, "isRegistered").resolves(true);
 
       stub(royaltyClient.ipRoyaltyVaultImplEventClient, "parseTxRevenueTokenClaimedEvent").returns([
-        { token: mockAddress, amount: 1n, claimer: walletAddress },
+        { token: mockERC20, amount: 1n, claimer: walletAddress },
         { token: WIP_TOKEN_ADDRESS, amount: 0n, claimer: walletAddress },
-        { token: mockAddress, amount: 1n, claimer: walletAddress },
+        { token: mockERC20, amount: 1n, claimer: walletAddress },
       ]);
       const withdrawStub = stub(royaltyClient.wrappedIpClient, "withdraw").resolves(txHash);
 
@@ -618,7 +618,7 @@ describe("Test RoyaltyClient", () => {
         ],
       });
       expect(result.claimedTokens).to.be.deep.equal([
-        { token: mockAddress, amount: 2n, claimer: walletAddress },
+        { token: mockERC20, amount: 2n, claimer: walletAddress },
         { token: WIP_TOKEN_ADDRESS, amount: 0n, claimer: walletAddress },
       ]);
       expect(executeBatchStub.callCount).equals(1);
