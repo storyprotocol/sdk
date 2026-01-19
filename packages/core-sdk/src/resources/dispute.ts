@@ -64,7 +64,7 @@ export class DisputeClient {
         throw new Error(`Liveness must be between ${minLiveness} and ${maxLiveness}.`);
       }
       const [minimumBond, maximumBond] = await Promise.all([
-        getMinimumBond(this.rpcClient, this.arbitrationPolicyUmaClient, WIP_TOKEN_ADDRESS),
+        getMinimumBond(this.rpcClient, this.arbitrationPolicyUmaClient, WIP_TOKEN_ADDRESS, this.chainId),
         this.arbitrationPolicyUmaClient.maxBonds({
           token: WIP_TOKEN_ADDRESS,
         }),

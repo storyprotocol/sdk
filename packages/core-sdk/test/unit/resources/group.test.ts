@@ -524,7 +524,7 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) Test groupClient.collectAndDistributeGroupRoyalties", () => {
+  describe("Test groupClient.collectAndDistributeGroupRoyalties", () => {
     it("throws if group ipId is not registered", async () => {
       stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(false);
 
@@ -824,7 +824,7 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) Test groupClient.getClaimableReward", () => {
+  describe("Test groupClient.getClaimableReward", () => {
     it("should reject when currencyToken is not allowed on aeneid (1315)", async () => {
       const getClaimableRewardStub = stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
       const result = groupClient.getClaimableReward({
@@ -973,7 +973,7 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) Test groupClient.claimReward", () => {
+  describe("Test groupClient.claimReward", () => {
     it("should reject when currencyToken is not allowed (aeneid)", async () => {
       const claimRewardStub = stub(groupClient.groupingModuleClient, "claimReward").resolves(txHash);
       const result = groupClient.claimReward({
@@ -1055,7 +1055,7 @@ describe("Test IpAssetClient", () => {
     });
   });
 
-  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) Test groupClient.collectRoyalties", () => {
+  describe("Test groupClient.collectRoyalties", () => {
     it("should reject when currencyToken is not allowed (aeneid)", async () => {
       const collectRoyaltiesStub = stub(groupClient.groupingModuleClient, "collectRoyalties").resolves(txHash);
       const result = groupClient.collectRoyalties({

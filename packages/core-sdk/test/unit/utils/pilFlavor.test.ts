@@ -60,7 +60,7 @@ describe("PILFlavor", () => {
     });
   });
 
-  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) commercialUse", () => {
+  describe("commercialUse", () => {
     it("should get commercial use PIL when royaltyPolicy is not provided", () => {
       const pil = PILFlavor.commercialUse({
         defaultMintingFee: 100n,
@@ -198,7 +198,7 @@ describe("PILFlavor", () => {
     });
   });
 
-  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) commercialRemix", () => {
+  describe("commercialRemix", () => {
     it("should get commercial remix PIL when royaltyPolicy is not provided", () => {
       const pil = PILFlavor.commercialRemix({
         defaultMintingFee: 100n,
@@ -347,7 +347,7 @@ describe("PILFlavor", () => {
     });
   });
 
-  describe("TSSDK-135(Add validation for inputs currency and currencyToken.) creativeCommonsAttribution", () => {
+  describe("creativeCommonsAttribution", () => {
     it("should get creative commons attribution PIL ", () => {
       const pil = PILFlavor.creativeCommonsAttribution({
         royaltyPolicy: NativeRoyaltyPolicy.LAP,
