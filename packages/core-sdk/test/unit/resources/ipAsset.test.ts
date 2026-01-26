@@ -6173,12 +6173,14 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should throw error when parent ip is not registered", async () => {
-      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered")
+      stub(IpAssetRegistryClient.prototype, "isRegistered")
         .onCall(0)
         .resolves(true)
         .onCall(1)
         .resolves(true)
         .onCall(2)
+        .resolves(true)
+        .onCall(3)
         .resolves(false);
       await expect(ipAssetClient.batchRegisterDerivatives({
           requests: [
@@ -6194,7 +6196,7 @@ describe("Test IpAssetClient", () => {
             },
           ],
       })).to.be.rejectedWith(
-        `Failed to batch register derivatives at index 1: Failed to register derivative: The parent IP with id ${ipId} is not registered.`,
+        `Failed to batch register derivatives at index 1: Failed to register derivative: The parent IP with id 0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4 is not registered.`,
       );
     });
 
@@ -6208,7 +6210,7 @@ describe("Test IpAssetClient", () => {
           {
             childIpId: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
             parentIpIds: ["0xd142822Dc1674154EaF4DDF38bbF7EF8f0D8ECe4"],
-            licenseTermsIds: [1n],
+            licenseTermsIds: [1n,2n],
           },
         ],
       })).to.be.rejectedWith(
@@ -6253,7 +6255,7 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should throw error when maxRevenueShare is less than royalty percent", async () => {
-      stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+      stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100000000,
       });
       stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
@@ -6275,11 +6277,11 @@ describe("Test IpAssetClient", () => {
     });
 
     it("should throw error when license terms are not attached to parent ip", async () => {
-      stub(ipAssetClient.ipAssetRegistryClient, "isRegistered").resolves(true);
-      stub(ipAssetClient.licenseRegistryReadOnlyClient, "hasIpAttachedLicenseTerms").resolves(
+      stub(IpAssetRegistryClient.prototype, "isRegistered").resolves(true);
+      stub(LicenseRegistryReadOnlyClient.prototype, "hasIpAttachedLicenseTerms").resolves(
         false,
       );
-      stub(ipAssetClient.licenseRegistryReadOnlyClient, "getRoyaltyPercent").resolves({
+      stub(LicenseRegistryReadOnlyClient.prototype, "getRoyaltyPercent").resolves({
         royaltyPercent: 100,
       });
       await expect(ipAssetClient.batchRegisterDerivatives({
