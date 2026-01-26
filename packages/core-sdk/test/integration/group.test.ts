@@ -472,7 +472,7 @@ describe("Group Functions", () => {
       await client.license.mintLicenseTokens({
         licensorIpId: ipId,
         licenseTermsId,
-        amount: 100,
+        amount: 1,
         maxMintingFee: 1,
         maxRevenueShare: 100,
       });
