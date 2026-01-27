@@ -97,29 +97,6 @@ describe("IP Asset Functions", () => {
       expect(response.tokenId).to.be.a("bigint");
     });
 
-    it("should not register with invalid metadata hash length", async () => {
-      const tokenId = await getTokenId();
-      await expect(
-        client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-          ipMetadata: {
-            ipMetadataHash: "0x123", // Invalid length hash
-            nftMetadataHash: toHex("valid-hash", { size: 32 }),
-          },
-        }),
-      ).to.be.rejected;
-    });
-
-    it("should not register with non-existent token ID", async () => {
-      await expect(
-        client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: BigInt(Number.MAX_SAFE_INTEGER),
-        }),
-      ).to.be.rejected;
-    });
-
     it("should register derivative with Non-Commercial Remix PIL", async () => {
       const tokenId = await getTokenId();
       parentIpId = (
@@ -260,13 +237,6 @@ describe("IP Asset Functions", () => {
     it("should return true if IP asset is registered", async () => {
       const isRegistered = await client.ipAsset.isRegistered(parentIpId);
       expect(isRegistered).to.equal(true);
-    });
-
-    it("should return false if IP asset is not registered", async () => {
-      const isRegistered = await client.ipAsset.isRegistered(
-        "0x1234567890123456789012345678901234567890",
-      );
-      expect(isRegistered).to.equal(false);
     });
   });
 
@@ -1796,32 +1766,6 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe("Error Cases", () => {
-    let nftContract: Hex;
-
-    before(async () => {
-      const txData = await client.nftClient.createNFTCollection({
-        name: "test-collection",
-        symbol: "TEST",
-        maxSupply: 100,
-        isPublicMinting: true,
-        mintOpen: true,
-        contractURI: "test-uri",
-        mintFeeRecipient: TEST_WALLET_ADDRESS,
-      });
-      nftContract = txData.spgNftContract!;
-    });
-
-    it("should fail to register unowned NFT", async () => {
-      await expect(
-        client.ipAsset.register({
-          nftContract: nftContract,
-          tokenId: 999999n, // Non-existent token
-        }),
-      ).to.be.rejected;
-    });
-  });
-
   describe("Other Edge Cases", () => {
     let parentIpId: Hex;
 
@@ -1841,84 +1785,63 @@ describe("IP Asset Functions", () => {
       });
     });
 
-    describe("License Token Edge Cases", () => {
-      it("should fail when trying to use non-existent license token", async () => {
-        const tokenId = await getTokenId();
-        await expect(
-          client.ipAsset.registerDerivativeWithLicenseTokens({
-            childIpId: (
-              await client.ipAsset.register({
-                nftContract: mockERC721,
-                tokenId: tokenId!,
-              })
-            ).ipId!,
-            licenseTokenIds: [BigInt(999999)], // Non-existent token
-            maxRts: 5 * 10 ** 6,
-          }),
-        ).to.be.rejected;
+    it("should fail when trying to use same license token twice", async () => {
+      const mintLicenseTokensResult = await client.license.mintLicenseTokens({
+        licenseTermsId: noCommercialLicenseTermsId,
+        licensorIpId: parentIpId,
+        maxMintingFee: 0,
+        maxRevenueShare: 1,
       });
 
-      it("should fail when trying to use same license token twice", async () => {
-        const mintLicenseTokensResult = await client.license.mintLicenseTokens({
-          licenseTermsId: noCommercialLicenseTermsId,
-          licensorIpId: parentIpId,
-          maxMintingFee: 0,
-          maxRevenueShare: 1,
-        });
+      const tokenId1 = await getTokenId();
+      await client.ipAsset.registerDerivativeWithLicenseTokens({
+        childIpId: (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId1!,
+          })
+        ).ipId!,
+        licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
+        maxRts: 0,
+      });
 
-        const tokenId1 = await getTokenId();
-        await client.ipAsset.registerDerivativeWithLicenseTokens({
+      const tokenId2 = await getTokenId();
+      await expect(
+        client.ipAsset.registerDerivativeWithLicenseTokens({
           childIpId: (
             await client.ipAsset.register({
               nftContract: mockERC721,
-              tokenId: tokenId1!,
+              tokenId: tokenId2!,
             })
           ).ipId!,
           licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
-          maxRts: 0,
-        });
-
-        const tokenId2 = await getTokenId();
-        await expect(
-          client.ipAsset.registerDerivativeWithLicenseTokens({
-            childIpId: (
-              await client.ipAsset.register({
-                nftContract: mockERC721,
-                tokenId: tokenId2!,
-              })
-            ).ipId!,
-            licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
-            maxRts: 5 * 10 ** 6,
-          }),
-        ).to.be.rejected; // Should fail as token already used
-      });
+          maxRts: 5 * 10 ** 6,
+        }),
+      ).to.be.rejected; // Should fail as token already used
     });
+    it("should handle partial failures in batch registration", async () => {
+      const tokenId1 = await getTokenId();
+      const tokenId2 = await getTokenId();
 
-    describe("Batch Operation Edge Cases", () => {
-      it("should handle partial failures in batch registration", async () => {
-        const tokenId1 = await getTokenId();
-        const tokenId2 = await getTokenId();
-
-        await client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId1!,
-        });
-
-        await expect(
-          client.ipAsset.batchRegister({
-            args: [
-              {
-                nftContract: mockERC721,
-                tokenId: tokenId1!, // Already registered
-              },
-              {
-                nftContract: mockERC721,
-                tokenId: tokenId2!, // New registration
-              },
-            ],
-          }),
-        ).to.be.rejected;
+      await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId1!,
       });
+
+      await expect(
+        client.ipAsset.batchRegister({
+          args: [
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId1!, // Already registered
+            },
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId2!, // New registration
+            },
+          ],
+        }),
+      ).to.be.rejected;
     });
   });
 

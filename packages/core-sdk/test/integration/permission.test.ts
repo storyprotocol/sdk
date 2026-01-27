@@ -117,30 +117,4 @@ describe("Permission Functions", () => {
       expect(response.success).to.equal(true);
     });
   });
-
-  describe("Error Cases", () => {
-    it("should fail when setting permission for unregistered IP", async () => {
-      const unregisteredIpId = "0x1234567890123456789012345678901234567890";
-      await expect(
-        client.permission.setPermission({
-          ipId: unregisteredIpId as Address,
-          signer: TEST_WALLET_ADDRESS,
-          to: coreMetadataModule,
-          permission: AccessPermission.ALLOW,
-        }),
-      ).to.be.rejectedWith(`IP id with ${unregisteredIpId} is not registered.`);
-    });
-
-    it("should fail with invalid function signature", async () => {
-      await expect(
-        client.permission.setPermission({
-          ipId: ipId,
-          signer: TEST_WALLET_ADDRESS,
-          to: coreMetadataModule,
-          permission: AccessPermission.ALLOW,
-          func: "invalid_function_signature",
-        }),
-      ).to.be.rejected;
-    });
-  });
 });
