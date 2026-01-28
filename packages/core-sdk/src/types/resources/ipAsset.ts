@@ -99,10 +99,11 @@ export type RegisterDerivativeRequest = WithErc20AndWipOptions &
     childIpId: Address;
   };
 
-export type LicenseTermsData = Omit<
-  LicenseTermsDataInput<LicenseTerms, LicensingConfig>,
-  "licensingConfig"
-> & {
+/**
+ * Processed license terms data with fully resolved license terms.
+ */
+export type LicenseTermsData = {
+  terms: LicenseTerms;
   licensingConfig: LicensingConfig;
 };
 

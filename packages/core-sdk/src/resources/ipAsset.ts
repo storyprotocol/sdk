@@ -736,23 +736,36 @@ export class IPAssetClient {
           licenseTermsIds: [],
         }));
 
-      // Due to emit event log by sequence, we need to get license terms id from request.args
+      // Get license terms id and max license tokens mapping relationship by the sequence of the request.args
       for (let j = 0; j < request.args.length; j++) {
         const licenseTerms: LicenseTerms[] = [];
+        const termsIndexes: number[] = [];
         const licenseTermsData = request.args[j].licenseTermsData;
+        const licenseTermsIds = new Array(licenseTermsData.length).fill(null);
         for (let i = 0; i < licenseTermsData.length; i++) {
-          const licenseTerm = PILFlavor.validateLicenseTerms(
-            licenseTermsData[i].terms,
-            this.chainId,
-          );
-          licenseTerms.push(licenseTerm);
+          const licenseTermsDataInput = licenseTermsData[i];
+          if (licenseTermsDataInput.terms) {
+            const validatedTerms = PILFlavor.validateLicenseTerms(
+              licenseTermsDataInput.terms,
+              this.chainId,
+            );
+            validatedTerms.commercialRevShare = getRevenueShare(validatedTerms.commercialRevShare);
+            licenseTerms.push(validatedTerms);
+            termsIndexes.push(i);
+          } else if (licenseTermsDataInput.licenseTermsId !== undefined) {
+            licenseTermsIds[i] = BigInt(licenseTermsDataInput.licenseTermsId);
+          }
         }
-        const licenseTermsIds = await this.getLicenseTermsId(licenseTerms);
-        results[j].licenseTermsIds = licenseTermsIds;
+        const resolvedIds = await this.getLicenseTermsId(licenseTerms);
+        termsIndexes.forEach((value, index) => {
+          licenseTermsIds[value] = resolvedIds[index];
+        });
+        const filteredLicenseTermsIds = licenseTermsIds.filter((id): id is bigint => id !== null);
+        results[j].licenseTermsIds = filteredLicenseTermsIds;
         const maxLicenseTokensTxHashes = await setMaxLicenseTokens({
           maxLicenseTokensData: licenseTermsData,
           licensorIpId: results[j].ipId,
-          licenseTermsIds,
+          licenseTermsIds: filteredLicenseTermsIds,
           totalLicenseTokenLimitHookClient: this.totalLicenseTokenLimitHookClient,
           templateAddress: this.licenseTemplateAddress,
         });
