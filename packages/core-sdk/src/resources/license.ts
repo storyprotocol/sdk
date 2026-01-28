@@ -429,6 +429,7 @@ export class LicenseClient {
             expectMinimumGroupRewardShare: Math.trunc(
               licensingConfig.expectMinimumGroupRewardShare / 1000000,
             ),
+            commercialRevShare: Math.trunc(licensingConfig.commercialRevShare / 1000000),
           },
         });
       }
