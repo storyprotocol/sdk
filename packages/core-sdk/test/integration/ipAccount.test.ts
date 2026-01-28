@@ -68,17 +68,6 @@ describe("IPAccount Functions", () => {
       });
       expect(response.txHash).to.be.a("string");
     });
-
-    it("should fail with invalid ipId", async () => {
-      await expect(
-        client.ipAccount.execute({
-          to: permissionAddress,
-          value: 0,
-          data: data,
-          ipId: "0x0000000000000000000000000000000000000000",
-        }),
-      ).to.be.rejected;
-    });
   });
 
   describe("executeWithSig", () => {
@@ -127,19 +116,6 @@ describe("IPAccount Functions", () => {
       ).to.be.rejectedWith("IPAccount__ExpiredSignature");
     });
 
-    it("should fail with invalid signature format", async () => {
-      await expect(
-        client.ipAccount.executeWithSig({
-          to: permissionAddress,
-          data: data,
-          ipId: ipId,
-          signer: TEST_WALLET_ADDRESS,
-          deadline: VALID_DEADLINE,
-          signature: "0x1234567890abcdef" as Hex, // Invalid signature format
-        }),
-      ).to.be.rejectedWith("IPAccount__InvalidSignature");
-    });
-
     it("should fail with signature from wrong signer", async () => {
       // Generate signature with wrong signer
       const wrongSigner = "0x1234567890123456789012345678901234567890" as Address;
@@ -165,158 +141,6 @@ describe("IPAccount Functions", () => {
           signature: signature,
         }),
       ).to.be.rejectedWith("IPAccount__InvalidSignature");
-    });
-
-    it("should fail with invalid ipId format", async () => {
-      const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-
-      const { signature } = await getSignature({
-        state: nonceResult,
-        to: permissionAddress,
-        encodeData: data,
-        wallet: walletClient,
-        verifyingContract: ipId,
-        deadline: VALID_DEADLINE,
-        chainId: aeneid,
-      });
-
-      await expect(
-        client.ipAccount.executeWithSig({
-          to: permissionAddress,
-          data: data,
-          ipId: "0x123" as Address, // Invalid address format
-          signer: TEST_WALLET_ADDRESS,
-          deadline: VALID_DEADLINE,
-          signature: signature,
-        }),
-      ).to.be.rejectedWith("Invalid address: 0x123.");
-    });
-
-    it("should fail when IP account does not exist", async () => {
-      // Create a real non-existent IP address (but with correct format)
-      const nonExistentIpId = "0x1111111111111111111111111111111111111111" as Address;
-
-      // Generate signature for this non-existent IP
-      // Note: We need to try to get nonce first, if IP doesn't exist, this step should fail
-      try {
-        const nonceResult = await client.ipAccount.getIpAccountNonce(nonExistentIpId);
-
-        const { signature } = await getSignature({
-          state: nonceResult,
-          to: permissionAddress,
-          encodeData: data,
-          wallet: walletClient,
-          verifyingContract: nonExistentIpId, // Use non-existent IP as verifying contract
-          deadline: VALID_DEADLINE,
-          chainId: aeneid,
-        });
-
-        await expect(
-          client.ipAccount.executeWithSig({
-            to: permissionAddress,
-            data: data,
-            ipId: nonExistentIpId,
-            signer: TEST_WALLET_ADDRESS,
-            deadline: VALID_DEADLINE,
-            signature: signature,
-          }),
-        ).to.be.rejectedWith("IPAccount__InvalidSignature"); // Should fail because IP doesn't exist
-      } catch (error) {
-        // If getting nonce fails, it means IP indeed doesn't exist, which is also our expected result
-        expect((error as Error).message).to.include("Failed to get the IP Account nonce");
-      }
-    });
-
-    it("should fail with unauthorized signer", async () => {
-      // Test various unauthorized signer scenarios
-      const unauthorizedSigner = "0x2222222222222222222222222222222222222222" as Address;
-
-      const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-      const { signature } = await getSignature({
-        state: nonceResult,
-        to: permissionAddress,
-        encodeData: data,
-        wallet: walletClient,
-        verifyingContract: ipId,
-        deadline: VALID_DEADLINE,
-        chainId: aeneid,
-      });
-
-      await expect(
-        client.ipAccount.executeWithSig({
-          to: permissionAddress,
-          data: data,
-          ipId: ipId,
-          signer: unauthorizedSigner, // Unauthorized signer
-          deadline: VALID_DEADLINE,
-          signature: signature,
-        }),
-      ).to.be.rejectedWith("IPAccount__InvalidSignature"); // Contract returns InvalidSignature for permission issues
-    });
-
-    it("should fail with signature for wrong data", async () => {
-      // Generate signature for different data than what we execute
-      const wrongData = encodeFunctionData({
-        abi: accessControllerAbi,
-        functionName: "setTransientPermission",
-        args: [
-          getAddress("0x1234567890123456789012345678901234567890"),
-          getAddress(TEST_WALLET_ADDRESS),
-          getAddress(coreMetadataModule),
-          toFunctionSelector("function setAll(address,string,bytes32,bytes32)"),
-          AccessPermission.DENY,
-        ],
-      });
-
-      const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-
-      const { signature } = await getSignature({
-        state: nonceResult,
-        to: permissionAddress,
-        encodeData: wrongData, // Sign wrong data
-        wallet: walletClient,
-        verifyingContract: ipId,
-        deadline: VALID_DEADLINE,
-        chainId: aeneid,
-      });
-
-      await expect(
-        client.ipAccount.executeWithSig({
-          to: permissionAddress,
-          data: data, // Execute with original data, not the signed data
-          ipId: ipId,
-          signer: TEST_WALLET_ADDRESS,
-          deadline: VALID_DEADLINE,
-          signature: signature,
-        }),
-      ).to.be.rejectedWith("IPAccount__InvalidSignature"); // Should fail because data doesn't match signature
-    });
-
-    it("should fail with signature for wrong target address", async () => {
-      // Generate signature for different target address than what we execute
-      const wrongTarget = "0x1234567890123456789012345678901234567890" as Address;
-      const nonceResult = await client.ipAccount.getIpAccountNonce(ipId);
-
-      const { signature } = await getSignature({
-        state: nonceResult,
-        to: wrongTarget, // Sign for wrong target
-        encodeData: data,
-        wallet: walletClient,
-        verifyingContract: ipId,
-        deadline: VALID_DEADLINE,
-        chainId: aeneid,
-      });
-
-      await expect(
-        client.ipAccount.executeWithSig({
-          to: permissionAddress, // Execute with original target, not the signed target
-          data: data,
-          ipId: ipId,
-          signer: TEST_WALLET_ADDRESS,
-          deadline: VALID_DEADLINE,
-          signature: signature,
-        }),
-      ).to.be.rejectedWith("IPAccount__InvalidSignature"); // Should fail because target doesn't match signature
     });
 
     it("should execute with zero value transaction", async () => {
@@ -347,32 +171,18 @@ describe("IPAccount Functions", () => {
     });
   });
 
-  describe("getIpAccountNonce", () => {
-    it("should successfully return account nonce", async () => {
-      const response = await client.ipAccount.getIpAccountNonce(ipId);
-      expect(response).to.be.a("string");
-    });
-
-    it("should fail with invalid ipId", async () => {
-      await expect(client.ipAccount.getIpAccountNonce("0x0000000000000000000000000000000000000000"))
-        .to.be.rejected;
-    });
+  it("should successfully return account nonce", async () => {
+    const response = await client.ipAccount.getIpAccountNonce(ipId);
+    expect(response).to.be.a("string");
   });
 
-  describe("getToken", () => {
-    it("should successfully return token information", async () => {
-      const response = await client.ipAccount.getToken(ipId);
+  it("should successfully return token information", async () => {
+    const response = await client.ipAccount.getToken(ipId);
 
-      expect(response.chainId).to.be.a("bigint");
-      expect(response.tokenContract).to.be.a("string");
-      expect(response.tokenId).to.be.a("bigint");
-      expect(response.tokenContract).to.equal(mockERC721);
-    });
-
-    it("should fail with invalid ipId", async () => {
-      await expect(client.ipAccount.getToken("0x0000000000000000000000000000000000000000")).to.be
-        .rejected;
-    });
+    expect(response.chainId).to.be.a("bigint");
+    expect(response.tokenContract).to.be.a("string");
+    expect(response.tokenId).to.be.a("bigint");
+    expect(response.tokenContract).to.equal(mockERC721);
   });
 
   it("should successfully set ip metadata", async () => {

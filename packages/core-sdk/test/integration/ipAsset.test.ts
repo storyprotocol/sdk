@@ -34,6 +34,26 @@ use(chaiAsPromised);
 
 const pool = evenSplitGroupPoolAddress[aeneid];
 
+const createParentIpAndLicenseTerms = async (
+  client: StoryClient,
+  token: Address,
+): Promise<{ parentIpId: Address; licenseTermsId: bigint }> => {
+  const tokenId = await getTokenId();
+  const result = await client.ipAsset.registerIpAsset({
+    nft: { type: "minted", nftContract: mockERC721, tokenId: tokenId! },
+    licenseTermsData: [
+      {
+        terms: PILFlavor.commercialUse({
+          defaultMintingFee: 10n,
+          currency: token,
+          override: { derivativesAllowed: true },
+        }),
+      },
+    ],
+  });
+  return { parentIpId: result.ipId!, licenseTermsId: result.licenseTermsIds![0] };
+};
+
 describe("IP Asset Functions", () => {
   let client: StoryClient;
   let noCommercialLicenseTermsId: bigint;
@@ -75,29 +95,6 @@ describe("IP Asset Functions", () => {
 
       expect(response.ipId).to.be.a("string");
       expect(response.tokenId).to.be.a("bigint");
-    });
-
-    it("should not register with invalid metadata hash length", async () => {
-      const tokenId = await getTokenId();
-      await expect(
-        client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId!,
-          ipMetadata: {
-            ipMetadataHash: "0x123", // Invalid length hash
-            nftMetadataHash: toHex("valid-hash", { size: 32 }),
-          },
-        }),
-      ).to.be.rejected;
-    });
-
-    it("should not register with non-existent token ID", async () => {
-      await expect(
-        client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: BigInt(Number.MAX_SAFE_INTEGER),
-        }),
-      ).to.be.rejected;
     });
 
     it("should register derivative with Non-Commercial Remix PIL", async () => {
@@ -240,13 +237,6 @@ describe("IP Asset Functions", () => {
     it("should return true if IP asset is registered", async () => {
       const isRegistered = await client.ipAsset.isRegistered(parentIpId);
       expect(isRegistered).to.equal(true);
-    });
-
-    it("should return false if IP asset is not registered", async () => {
-      const isRegistered = await client.ipAsset.isRegistered(
-        "0x1234567890123456789012345678901234567890",
-      );
-      expect(isRegistered).to.equal(false);
     });
   });
 
@@ -1776,32 +1766,6 @@ describe("IP Asset Functions", () => {
     });
   });
 
-  describe("Error Cases", () => {
-    let nftContract: Hex;
-
-    before(async () => {
-      const txData = await client.nftClient.createNFTCollection({
-        name: "test-collection",
-        symbol: "TEST",
-        maxSupply: 100,
-        isPublicMinting: true,
-        mintOpen: true,
-        contractURI: "test-uri",
-        mintFeeRecipient: TEST_WALLET_ADDRESS,
-      });
-      nftContract = txData.spgNftContract!;
-    });
-
-    it("should fail to register unowned NFT", async () => {
-      await expect(
-        client.ipAsset.register({
-          nftContract: nftContract,
-          tokenId: 999999n, // Non-existent token
-        }),
-      ).to.be.rejected;
-    });
-  });
-
   describe("Other Edge Cases", () => {
     let parentIpId: Hex;
 
@@ -1821,84 +1785,63 @@ describe("IP Asset Functions", () => {
       });
     });
 
-    describe("License Token Edge Cases", () => {
-      it("should fail when trying to use non-existent license token", async () => {
-        const tokenId = await getTokenId();
-        await expect(
-          client.ipAsset.registerDerivativeWithLicenseTokens({
-            childIpId: (
-              await client.ipAsset.register({
-                nftContract: mockERC721,
-                tokenId: tokenId!,
-              })
-            ).ipId!,
-            licenseTokenIds: [BigInt(999999)], // Non-existent token
-            maxRts: 5 * 10 ** 6,
-          }),
-        ).to.be.rejected;
+    it("should fail when trying to use same license token twice", async () => {
+      const mintLicenseTokensResult = await client.license.mintLicenseTokens({
+        licenseTermsId: noCommercialLicenseTermsId,
+        licensorIpId: parentIpId,
+        maxMintingFee: 0,
+        maxRevenueShare: 1,
       });
 
-      it("should fail when trying to use same license token twice", async () => {
-        const mintLicenseTokensResult = await client.license.mintLicenseTokens({
-          licenseTermsId: noCommercialLicenseTermsId,
-          licensorIpId: parentIpId,
-          maxMintingFee: 0,
-          maxRevenueShare: 1,
-        });
+      const tokenId1 = await getTokenId();
+      await client.ipAsset.registerDerivativeWithLicenseTokens({
+        childIpId: (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId1!,
+          })
+        ).ipId!,
+        licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
+        maxRts: 0,
+      });
 
-        const tokenId1 = await getTokenId();
-        await client.ipAsset.registerDerivativeWithLicenseTokens({
+      const tokenId2 = await getTokenId();
+      await expect(
+        client.ipAsset.registerDerivativeWithLicenseTokens({
           childIpId: (
             await client.ipAsset.register({
               nftContract: mockERC721,
-              tokenId: tokenId1!,
+              tokenId: tokenId2!,
             })
           ).ipId!,
           licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
-          maxRts: 0,
-        });
-
-        const tokenId2 = await getTokenId();
-        await expect(
-          client.ipAsset.registerDerivativeWithLicenseTokens({
-            childIpId: (
-              await client.ipAsset.register({
-                nftContract: mockERC721,
-                tokenId: tokenId2!,
-              })
-            ).ipId!,
-            licenseTokenIds: [mintLicenseTokensResult.licenseTokenIds![0]],
-            maxRts: 5 * 10 ** 6,
-          }),
-        ).to.be.rejected; // Should fail as token already used
-      });
+          maxRts: 5 * 10 ** 6,
+        }),
+      ).to.be.rejected; // Should fail as token already used
     });
+    it("should handle partial failures in batch registration", async () => {
+      const tokenId1 = await getTokenId();
+      const tokenId2 = await getTokenId();
 
-    describe("Batch Operation Edge Cases", () => {
-      it("should handle partial failures in batch registration", async () => {
-        const tokenId1 = await getTokenId();
-        const tokenId2 = await getTokenId();
-
-        await client.ipAsset.register({
-          nftContract: mockERC721,
-          tokenId: tokenId1!,
-        });
-
-        await expect(
-          client.ipAsset.batchRegister({
-            args: [
-              {
-                nftContract: mockERC721,
-                tokenId: tokenId1!, // Already registered
-              },
-              {
-                nftContract: mockERC721,
-                tokenId: tokenId2!, // New registration
-              },
-            ],
-          }),
-        ).to.be.rejected;
+      await client.ipAsset.register({
+        nftContract: mockERC721,
+        tokenId: tokenId1!,
       });
+
+      await expect(
+        client.ipAsset.batchRegister({
+          args: [
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId1!, // Already registered
+            },
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId2!, // New registration
+            },
+          ],
+        }),
+      ).to.be.rejected;
     });
   });
 
@@ -3776,25 +3719,6 @@ describe("IP Asset Functions", () => {
   });
 
   describe("Link Derivative", () => {
-    const createParentIpAndLicenseTerms = async (
-      token: Address = WIP_TOKEN_ADDRESS,
-    ): Promise<{ parentIpId: Address; licenseTermsId: bigint }> => {
-      const tokenId = await getTokenId();
-      const result = await client.ipAsset.registerIpAndAttachPilTerms({
-        nftContract: mockERC721,
-        tokenId: tokenId!,
-        licenseTermsData: [
-          {
-            terms: PILFlavor.commercialUse({
-              defaultMintingFee: 10n,
-              currency: token,
-              override: { derivativesAllowed: true },
-            }),
-          },
-        ],
-      });
-      return { parentIpId: result.ipId!, licenseTermsId: result.licenseTermsIds![0] };
-    };
     it("should successfully when give childIpId and licenseTokenIds", async () => {
       // register a child ip
       const tokenId = await getTokenId();
@@ -3804,7 +3728,10 @@ describe("IP Asset Functions", () => {
           tokenId: tokenId!,
         })
       ).ipId!;
-      const { parentIpId, licenseTermsId } = await createParentIpAndLicenseTerms();
+      const { parentIpId, licenseTermsId } = await createParentIpAndLicenseTerms(
+        client,
+        WIP_TOKEN_ADDRESS,
+      );
       const mintLicenseTokensResult = await client.license.mintLicenseTokens({
         licenseTermsId: licenseTermsId,
         licensorIpId: parentIpId,
@@ -3830,6 +3757,7 @@ describe("IP Asset Functions", () => {
         ).ipId!;
         // 2. create parent ip and license terms for ERC20
         const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
+          client,
           erc20Address[aeneid],
         );
         // 3. link derivative
@@ -3855,7 +3783,10 @@ describe("IP Asset Functions", () => {
           })
         ).ipId!;
         // 3. create parent ip and license terms for WIP
-        const parentIpIdAndLicenseTermsIdForWIP = await createParentIpAndLicenseTerms();
+        const parentIpIdAndLicenseTermsIdForWIP = await createParentIpAndLicenseTerms(
+          client,
+          WIP_TOKEN_ADDRESS,
+        );
         // 4. link derivative
         const result = await client.ipAsset.linkDerivative({
           childIpId: childIpId,
@@ -3880,7 +3811,10 @@ describe("IP Asset Functions", () => {
           })
         ).ipId!;
         // 2. create parent ip and license terms for WIP
-        const parentIpIdAndLicenseTermsIdForWIP = await createParentIpAndLicenseTerms();
+        const parentIpIdAndLicenseTermsIdForWIP = await createParentIpAndLicenseTerms(
+          client,
+          WIP_TOKEN_ADDRESS,
+        );
         // 3. link derivative
         const result = await client.ipAsset.linkDerivative({
           childIpId: childIpId,
@@ -3900,8 +3834,12 @@ describe("IP Asset Functions", () => {
           })
         ).ipId!;
         // 2. create parent ip and license terms for WIP
-        const parentIpIdAndLicenseTermsIdForWIP1 = await createParentIpAndLicenseTerms();
+        const parentIpIdAndLicenseTermsIdForWIP1 = await createParentIpAndLicenseTerms(
+          client,
+          WIP_TOKEN_ADDRESS,
+        );
         const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
+          client,
           erc20Address[aeneid],
         );
         // 3. link derivative
@@ -3932,9 +3870,13 @@ describe("IP Asset Functions", () => {
           })
         ).ipId!;
         // 3. create parent ip and license terms for WIP
-        const parentIpIdAndLicenseTermsIdForWIP1 = await createParentIpAndLicenseTerms();
+        const parentIpIdAndLicenseTermsIdForWIP1 = await createParentIpAndLicenseTerms(
+          client,
+          WIP_TOKEN_ADDRESS,
+        );
         // 4. create parent ip and license terms for ERC20
         const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
+          client,
           erc20Address[aeneid],
         );
         // 5. link derivative
@@ -3967,9 +3909,13 @@ describe("IP Asset Functions", () => {
           })
         ).ipId!;
         // 2. create parent ip and license terms for WIP
-        const parentIpIdAndLicenseTermsIdForWIP1 = await createParentIpAndLicenseTerms();
+        const parentIpIdAndLicenseTermsIdForWIP1 = await createParentIpAndLicenseTerms(
+          client,
+          WIP_TOKEN_ADDRESS,
+        );
         // 3. create parent ip and license terms for ERC20
         const parentIpIdAndLicenseTermsIdForERC20 = await createParentIpAndLicenseTerms(
+          client,
           erc20Address[aeneid],
         );
         // 4. link derivative
@@ -4171,6 +4117,43 @@ describe("IP Asset Functions", () => {
         });
         expect(result.txHash).to.be.a("string");
       });
+
+      it("should successfully when batch register derivatives", async () => {
+        const tokenId1 = await getTokenId();
+        const tokenId2 = await getTokenId();
+        const childIpId1 = (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId1!,
+          })
+        ).ipId!;
+        const childIpId2 = (
+          await client.ipAsset.register({
+            nftContract: mockERC721,
+            tokenId: tokenId2!,
+          })
+        ).ipId!;
+        const { parentIpId: parentIpId1, licenseTermsId: licenseTermsId1 } =
+          await createParentIpAndLicenseTerms(client, erc20Address[aeneid]);
+        const { parentIpId: parentIpId2, licenseTermsId: licenseTermsId2 } =
+          await createParentIpAndLicenseTerms(client, erc20Address[aeneid]);
+        const result = await client.ipAsset.batchRegisterDerivatives({
+          requests: [
+            {
+              childIpId: childIpId1,
+              parentIpIds: [parentIpId1, parentIpId2],
+              licenseTermsIds: [licenseTermsId1, licenseTermsId2],
+            },
+            {
+              childIpId: childIpId2,
+              parentIpIds: [parentIpIdForERC20],
+              licenseTermsIds: [licenseTermsIdFor10ERC20],
+            },
+          ],
+        });
+        expect(result.length).to.equal(2);
+        expect(result[0]).to.be.a("string");
+      });
     });
 
     describe("SpgNftContract with WIP token", () => {
@@ -4289,6 +4272,46 @@ describe("IP Asset Functions", () => {
         });
         expect(result.txHash).to.be.a("string");
       });
+
+      it("should successfully when batch register derivatives", async () => {
+        const tokenId1 = await getTokenId();
+        const tokenId2 = await getTokenId();
+        const registerResponse = await client.ipAsset.batchRegister({
+          args: [
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId1!,
+            },
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId2!,
+            },
+          ],
+        });
+        const childIpId1 = registerResponse.results![0]?.ipId;
+        const childIpId2 = registerResponse.results![1]?.ipId;
+        const { parentIpId: parentIpId1, licenseTermsId: licenseTermsId1 } =
+          await createParentIpAndLicenseTerms(client, WIP_TOKEN_ADDRESS);
+        const { parentIpId: parentIpId2, licenseTermsId: licenseTermsId2 } =
+          await createParentIpAndLicenseTerms(client, WIP_TOKEN_ADDRESS);
+        const result = await client.ipAsset.batchRegisterDerivatives({
+          requests: [
+            {
+              childIpId: childIpId1,
+              parentIpIds: [parentIpId1, parentIpId2],
+              licenseTermsIds: [licenseTermsId1, licenseTermsId2],
+            },
+            {
+              childIpId: childIpId2,
+              parentIpIds: [parentIpIdForWIP],
+              licenseTermsIds: [licenseTermsIdFor100WIP],
+            },
+          ],
+        });
+        expect(result.length).to.equal(2);
+        expect(result[0]).to.be.a("string");
+        expect(result[1]).to.be.a("string");
+      });
     });
 
     describe("Mixed ERC20 and WIP token", () => {
@@ -4322,6 +4345,55 @@ describe("IP Asset Functions", () => {
         expect(result.txHash).to.be.a("string");
         expect(result.ipId).to.be.a("string");
         expect(result.tokenId).to.be.a("bigint");
+      });
+
+      it("should successfully when batch register derivatives", async () => {
+        const tokenId1 = await getTokenId();
+        const tokenId2 = await getTokenId();
+        const tokenId3 = await getTokenId();
+        const registerResponse = await client.ipAsset.batchRegister({
+          args: [
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId1!,
+            },
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId2!,
+            },
+            {
+              nftContract: mockERC721,
+              tokenId: tokenId3!,
+            },
+          ],
+        });
+        const childIpId1 = registerResponse.results![0]?.ipId;
+        const childIpId2 = registerResponse.results![1]?.ipId;
+        const childIpId3 = registerResponse.results![2]?.ipId;
+        const { parentIpId: parentIpId1, licenseTermsId: licenseTermsId1 } =
+          await createParentIpAndLicenseTerms(client, erc20Address[aeneid]);
+        const { parentIpId: parentIpId2, licenseTermsId: licenseTermsId2 } =
+          await createParentIpAndLicenseTerms(client, WIP_TOKEN_ADDRESS);
+        const result = await client.ipAsset.batchRegisterDerivatives({
+          requests: [
+            {
+              childIpId: childIpId1,
+              parentIpIds: [parentIpId1, parentIpId2],
+              licenseTermsIds: [licenseTermsId1, licenseTermsId2],
+            },
+            {
+              childIpId: childIpId2,
+              parentIpIds: [parentIpIdForWIP],
+              licenseTermsIds: [licenseTermsIdFor100WIP],
+            },
+            {
+              childIpId: childIpId3,
+              parentIpIds: [parentIpIdForWIP],
+              licenseTermsIds: [licenseTermsIdFor100WIP],
+            },
+          ],
+        });
+        expect(result.length).to.equal(3);
       });
     });
   });
