@@ -221,7 +221,7 @@ describe("License Functions", () => {
         isSet: true,
         licensingHook: zeroAddress,
         hookData: randomHookData,
-        commercialRevShare: 0,
+        commercialRevShare: 100,
         disabled: false,
         expectMinimumGroupRewardShare: 1,
         expectGroupRewardPool: zeroAddress,
@@ -244,6 +244,7 @@ describe("License Functions", () => {
         expect(result).to.deep.equal({
           ...licensingConfig,
           expectMinimumGroupRewardShare: 1 * 10 ** 6,
+          commercialRevShare: 100 * 10 ** 6,
         });
       });
 
