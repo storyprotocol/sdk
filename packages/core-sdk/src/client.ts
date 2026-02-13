@@ -11,7 +11,13 @@ import { NftClient } from "./resources/nftClient";
 import { PermissionClient } from "./resources/permission";
 import { RoyaltyClient } from "./resources/royalty";
 import { WipClient } from "./resources/wip";
-import { ChainIds, StoryConfig, UseAccountStoryConfig, UseWalletStoryConfig } from "./types/config";
+import {
+  ChainIds,
+  StoryConfig,
+  TxHashResolver,
+  UseAccountStoryConfig,
+  UseWalletStoryConfig,
+} from "./types/config";
 import { chain, chainStringToViemChain, validateAddress } from "./utils/utils";
 
 if (typeof process !== "undefined") {
@@ -52,6 +58,12 @@ export class StoryClient {
 
     this.rpcClient = createPublicClient(clientConfig);
 
+    // If a txHashResolver is provided (e.g. for AA wallets like ZeroDev/Dynamic),
+    // patch waitForTransactionReceipt to resolve the hash first.
+    if (config.txHashResolver) {
+      this.applyTxHashResolver(config.txHashResolver);
+    }
+
     if (this.config.wallet) {
       this.wallet = this.config.wallet;
     } else if (this.config.account) {
@@ -64,6 +76,23 @@ export class StoryClient {
     } else {
       throw new Error("must specify a wallet or account");
     }
+  }
+
+  /**
+   * Patches rpcClient.waitForTransactionReceipt to first resolve the hash
+   * through the provided resolver. This transparently supports AA wallets
+   * where writeContract returns a UserOperation hash instead of a tx hash.
+   */
+  private applyTxHashResolver(resolver: TxHashResolver): void {
+    const originalWaitForReceipt = this.rpcClient.waitForTransactionReceipt.bind(
+      this.rpcClient,
+    );
+    this.rpcClient.waitForTransactionReceipt = async (
+      args,
+    ): ReturnType<PublicClient["waitForTransactionReceipt"]> => {
+      const resolvedHash = await resolver(args.hash);
+      return originalWaitForReceipt({ ...args, hash: resolvedHash });
+    };
   }
 
   private get chainId(): ChainIds {
@@ -86,6 +115,7 @@ export class StoryClient {
       chainId: config.chainId,
       transport: config.transport,
       wallet: config.wallet,
+      txHashResolver: config.txHashResolver,
     });
   }
 
@@ -97,6 +127,7 @@ export class StoryClient {
       account: config.account,
       chainId: config.chainId,
       transport: config.transport,
+      txHashResolver: config.txHashResolver,
     });
   }
 
