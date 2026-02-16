@@ -275,7 +275,7 @@ describe("Dispute Functions", () => {
       // This timeout guarantees that the assertion is expired
       // its intended to be longer than the current block time
       // so it won't be included in the same block
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 15000));
     });
 
     it("should tag infringing ip", async () => {
@@ -368,7 +368,7 @@ describe("Dispute Functions", () => {
       // This timeout guarantees that the assertion is expired
       // its intended to be longer than the current block time
       // so it won't be included in the same block
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 15000));
 
       const { currentTag, targetTag } = await getDisputeState(testDisputeId);
       expect(currentTag).to.equal(targetTag);
