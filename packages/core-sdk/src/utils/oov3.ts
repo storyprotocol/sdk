@@ -58,6 +58,10 @@ export const getMinimumBond = async (
  * - Executing the settlement transaction
  * - Waiting for transaction confirmation
  *
+ * Retry behavior: If the OOV3 contract reverts with "Assertion not expired" (because
+ * the assertion liveness period has not yet elapsed), the function retries up to 5 times
+ * with a 3-second delay between attempts. Other errors are not retried.
+ *
  * @see https://docs.story.foundation/docs/uma-arbitration-policy#/
  * @see https://docs.uma.xyz/developers/optimistic-oracle-v3
  *
@@ -71,30 +75,42 @@ export const settleAssertion = async (
   disputeId: DisputeId,
   transport?: string,
 ): Promise<Hex> => {
-  try {
-    const baseConfig = {
-      chain: chainStringToViemChain("aeneid"),
-      transport: http(transport ?? aeneid.rpcUrls.default.http[0]),
-    };
-    const rpcClient = createPublicClient(baseConfig);
-    const walletClient = createWalletClient({
-      ...baseConfig,
-      account: privateKeyToAccount(privateKey),
-    });
-    const arbitrationPolicyUmaClient = new ArbitrationPolicyUmaClient(rpcClient, walletClient);
-    const oov3Contract = await getOov3Contract(arbitrationPolicyUmaClient);
-    const assertionId = await arbitrationPolicyUmaClient.disputeIdToAssertionId({
-      disputeId: BigInt(disputeId),
-    });
-    const txHash = await walletClient.writeContract({
-      address: oov3Contract,
-      abi: ASSERTION_ABI,
-      functionName: "settleAssertion",
-      args: [assertionId],
-    });
-    await rpcClient.waitForTransactionReceipt({ hash: txHash });
-    return txHash;
-  } catch (error) {
-    return handleError(error, "Failed to settle assertion");
+  const maxAttempts = 5;
+  const retryDelayMs = 3000;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const baseConfig = {
+        chain: chainStringToViemChain("aeneid"),
+        transport: http(transport ?? aeneid.rpcUrls.default.http[0]),
+      };
+      const rpcClient = createPublicClient(baseConfig);
+      const walletClient = createWalletClient({
+        ...baseConfig,
+        account: privateKeyToAccount(privateKey),
+      });
+      const arbitrationPolicyUmaClient = new ArbitrationPolicyUmaClient(rpcClient, walletClient);
+      const oov3Contract = await getOov3Contract(arbitrationPolicyUmaClient);
+      const assertionId = await arbitrationPolicyUmaClient.disputeIdToAssertionId({
+        disputeId: BigInt(disputeId),
+      });
+      const txHash = await walletClient.writeContract({
+        address: oov3Contract,
+        abi: ASSERTION_ABI,
+        functionName: "settleAssertion",
+        args: [assertionId],
+      });
+      await rpcClient.waitForTransactionReceipt({ hash: txHash });
+      return txHash;
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      if (attempt < maxAttempts && msg.includes("Assertion not expired")) {
+        await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+        continue;
+      }
+      return handleError(error, "Failed to settle assertion");
+    }
   }
+  // Unreachable — the last iteration always throws via handleError.
+  throw new Error("Failed to settle assertion: max retries exceeded");
 };
