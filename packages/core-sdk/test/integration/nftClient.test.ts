@@ -22,6 +22,19 @@ describe("nftClient Functions", () => {
 
   before(async function () {
     client = getStoryClient();
+    // Create shared collection for Mint Fee, set/get tokenURI, getNFTBalance tests (decoupled)
+    const txData = await client.nftClient.createNFTCollection({
+      name: "paid-collection",
+      symbol: "PAID",
+      maxSupply: 100,
+      isPublicMinting: true,
+      mintFeeRecipient: TEST_WALLET_ADDRESS,
+      mintOpen: true,
+      contractURI: "test-uri",
+      mintFee: 10000000,
+      mintFeeToken: erc20Address[aeneid],
+    });
+    spgNftContract = txData.spgNftContract!;
   });
 
   describe("createNFTCollection", () => {
@@ -98,21 +111,6 @@ describe("nftClient Functions", () => {
   });
 
   describe("Mint Fee", () => {
-    before(async function () {
-      const txData = await client.nftClient.createNFTCollection({
-        name: "paid-collection",
-        symbol: "PAID",
-        maxSupply: 100,
-        isPublicMinting: true,
-        mintFeeRecipient: TEST_WALLET_ADDRESS,
-        mintOpen: true,
-        contractURI: "test-uri",
-        mintFee: 10000000,
-        mintFeeToken: erc20Address[aeneid],
-      });
-      spgNftContract = txData.spgNftContract!;
-    });
-    
     it("should successfully get mint fee token", async () => {
       const mintFeeToken = await client.nftClient.getMintFeeToken(spgNftContract);
       expect(mintFeeToken).to.equal(erc20Address[aeneid]);
@@ -125,21 +123,6 @@ describe("nftClient Functions", () => {
   });
 
   describe("set and get tokenURI", () => {
-    before(async function () {
-      const txData = await client.nftClient.createNFTCollection({
-        name: "paid-collection",
-        symbol: "PAID",
-        maxSupply: 100,
-        isPublicMinting: true,
-        mintFeeRecipient: TEST_WALLET_ADDRESS,
-        mintOpen: true,
-        contractURI: "test-uri",
-        mintFee: 10000000,
-        mintFeeToken: erc20Address[aeneid],
-      });
-      spgNftContract = txData.spgNftContract!;
-    });
-
     it("should successfully set token URI", async () => {
       // Setup: Approve the contract for ERC20 transfers
       const erc20Client = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
@@ -182,7 +165,7 @@ describe("nftClient Functions", () => {
     it("should successfully get NFT balance for wallet (default owner)", async () => {
       const balance = await client.nftClient.getNFTBalance({ spgNftContract });
       expect(balance).to.be.a("bigint");
-      expect(balance >= 1n).to.be.true;
+      expect(Number(balance)).to.be.at.least(1);
     });
 
     it("should successfully get NFT balance for explicit owner address", async () => {
@@ -191,7 +174,7 @@ describe("nftClient Functions", () => {
         owner: TEST_WALLET_ADDRESS,
       });
       expect(balance).to.be.a("bigint");
-      expect(balance >= 1n).to.be.true;
+      expect(Number(balance)).to.be.at.least(1);
     });
   });
 });
