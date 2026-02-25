@@ -20,7 +20,7 @@ describe("nftClient Functions", () => {
   let client: StoryClient;
   let spgNftContract: Address;
 
-  before(() => {
+  before(async function () {
     client = getStoryClient();
   });
 
@@ -41,8 +41,8 @@ describe("nftClient Functions", () => {
 
     it("should successfully create collection with custom mint fee", async () => {
       const txData = await client.nftClient.createNFTCollection({
-        name: "paid-collection",
-        symbol: "PAID",
+        name: "paid-collection-2",
+        symbol: "PAID2",
         maxSupply: 100,
         isPublicMinting: true,
         mintFeeRecipient: TEST_WALLET_ADDRESS,
@@ -52,7 +52,7 @@ describe("nftClient Functions", () => {
         mintFeeToken: erc20Address[aeneid],
       });
       expect(txData.spgNftContract).to.be.a("string");
-      spgNftContract = txData.spgNftContract!;
+      expect(txData.txHash).to.be.a("string");
     });
 
     it("should successfully create private collection", async () => {
@@ -98,6 +98,21 @@ describe("nftClient Functions", () => {
   });
 
   describe("Mint Fee", () => {
+    before(async function () {
+      const txData = await client.nftClient.createNFTCollection({
+        name: "paid-collection",
+        symbol: "PAID",
+        maxSupply: 100,
+        isPublicMinting: true,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        mintOpen: true,
+        contractURI: "test-uri",
+        mintFee: 10000000,
+        mintFeeToken: erc20Address[aeneid],
+      });
+      spgNftContract = txData.spgNftContract!;
+    });
+    
     it("should successfully get mint fee token", async () => {
       const mintFeeToken = await client.nftClient.getMintFeeToken(spgNftContract);
       expect(mintFeeToken).to.equal(erc20Address[aeneid]);
@@ -110,6 +125,21 @@ describe("nftClient Functions", () => {
   });
 
   describe("set and get tokenURI", () => {
+    before(async function () {
+      const txData = await client.nftClient.createNFTCollection({
+        name: "paid-collection",
+        symbol: "PAID",
+        maxSupply: 100,
+        isPublicMinting: true,
+        mintFeeRecipient: TEST_WALLET_ADDRESS,
+        mintOpen: true,
+        contractURI: "test-uri",
+        mintFee: 10000000,
+        mintFeeToken: erc20Address[aeneid],
+      });
+      spgNftContract = txData.spgNftContract!;
+    });
+
     it("should successfully set token URI", async () => {
       // Setup: Approve the contract for ERC20 transfers
       const erc20Client = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
@@ -137,6 +167,31 @@ describe("nftClient Functions", () => {
         spgNftContract,
       });
       expect(tokenURI).to.equal(updatedMetadata);
+    });
+  });
+
+  describe("getNFTBalance", () => {
+    before(async function () {
+      // Self-contained setup: mint at least 1 NFT for balance assertions
+      const erc20Client = new ERC20Client(publicClient, walletClient, erc20Address[aeneid]);
+      const txHash = await erc20Client.approve(spgNftContract, maxUint256);
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
+      await mintBySpg(spgNftContract, "ipfs://QmBalanceTest/");
+    });
+
+    it("should successfully get NFT balance for wallet (default owner)", async () => {
+      const balance = await client.nftClient.getNFTBalance({ spgNftContract });
+      expect(balance).to.be.a("bigint");
+      expect(balance >= 1n).to.be.true;
+    });
+
+    it("should successfully get NFT balance for explicit owner address", async () => {
+      const balance = await client.nftClient.getNFTBalance({
+        spgNftContract,
+        owner: TEST_WALLET_ADDRESS,
+      });
+      expect(balance).to.be.a("bigint");
+      expect(balance >= 1n).to.be.true;
     });
   });
 });

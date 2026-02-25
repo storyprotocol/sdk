@@ -11,6 +11,7 @@ import { TransactionResponse } from "../types/options";
 import {
   CreateNFTCollectionRequest,
   CreateNFTCollectionResponse,
+  GetNFTBalanceRequest,
   GetTokenURIRequest,
   SetTokenURIRequest,
 } from "../types/resources/nftClient";
@@ -147,5 +148,17 @@ export class NftClient {
   public async getTokenURI({ tokenId, spgNftContract }: GetTokenURIRequest): Promise<string> {
     const spgNftClient = new SpgnftImplReadOnlyClient(this.rpcClient, spgNftContract);
     return await spgNftClient.tokenUri({ tokenId: BigInt(tokenId) });
+  }
+
+  /**
+   * Returns the number of NFTs owned by an address in a specific SPG NFT collection.
+   */
+  public async getNFTBalance({ spgNftContract, owner }: GetNFTBalanceRequest): Promise<bigint> {
+    const spgNftClient = new SpgnftImplReadOnlyClient(
+      this.rpcClient,
+      validateAddress(spgNftContract),
+    );
+    const ownerAddress = validateAddress(owner ?? this.wallet.account!.address);
+    return spgNftClient.balanceOf({ owner: ownerAddress });
   }
 }
