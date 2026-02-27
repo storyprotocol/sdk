@@ -152,4 +152,22 @@ describe("Test NftClient", () => {
       expect(tokenURI).equal("test-uri");
     });
   });
+
+  describe("test for getNFTBalance", () => {
+    it("should successfully get NFT balance with default owner (wallet)", async () => {
+      stub(SpgnftImplReadOnlyClient.prototype, "balanceOf").resolves(5n);
+      const balance = await nftClient.getNFTBalance({ spgNftContract: mockERC20 });
+      expect(balance).equal(5n);
+    });
+
+    it("should successfully get NFT balance with explicit owner", async () => {
+      const ownerAddress = "0x73fcb515cee99e4991465ef586cfe2b072ebb512";
+      stub(SpgnftImplReadOnlyClient.prototype, "balanceOf").resolves(3n);
+      const balance = await nftClient.getNFTBalance({
+        spgNftContract: mockERC20,
+        owner: ownerAddress,
+      });
+      expect(balance).equal(3n);
+    });
+  });
 });
