@@ -4,9 +4,24 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - '.github/**'
+      - '.github/CODEOWNERS'
+      - '**/*.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+      
   push:
     branches:
       - main
+    paths-ignore:
+      - '.github/**'
+      - '.github/CODEOWNERS'
+      - '**/*.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE' 
 
 jobs:
   Timestamp:
