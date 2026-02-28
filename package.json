@@ -8,12 +8,15 @@
   "scripts": {
     "build": "turbo run build",
     "lint": "turbo run lint",
+    "typecheck": "turbo run tsc",
     "fix": "turbo run fix",
     "test": "turbo run test --no-cache --concurrency=1",
-    "test:integration": "turbo run test:integration --no-cache"
+    "test:integration": "turbo run test:integration --no-cache",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@changesets/cli": "2.29.6",
+    "husky": "^9.1.7",
     "turbo": "^1.10.13"
   },
   "engines": {

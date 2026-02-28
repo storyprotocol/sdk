@@ -45,6 +45,9 @@ importers:
       '@changesets/cli':
         specifier: 2.29.6
         version: 2.29.6(@types/node@20.19.9)
+      husky:
+        specifier: ^9.1.7
+        version: 9.1.7
       turbo:
         specifier: ^1.10.13
         version: 1.13.4
@@ -190,6 +193,9 @@ importers:
       eslint-plugin-tsdoc:
         specifier: ^0.4.0
         version: 0.4.0
+      eslint-plugin-turbo:
+        specifier: ^1.13.4
+        version: 1.13.4(eslint@9.27.0)
       globals:
         specifier: ^16.1.0
         version: 16.1.0
@@ -3636,6 +3642,11 @@ packages:
 
   human-id@4.1.1:
     resolution: {integrity: sha512-3gKm/gCSUipeLsRYZbbdA1BD83lBoWUkZ7G9VFrhWPAU76KwYo5KR8V28bpoPm/ygy0x5/GCbpRQdY7VLYCoIg==}
+    hasBin: true
+
+  husky@9.1.7:
+    resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
+    engines: {node: '>=18'}
     hasBin: true
 
   i18next-browser-languagedetector@7.1.0:
@@ -10944,6 +10955,8 @@ snapshots:
       - supports-color
 
   human-id@4.1.1: {}
+
+  husky@9.1.7: {}
 
   i18next-browser-languagedetector@7.1.0:
     dependencies:
