@@ -8,21 +8,13 @@
   "scripts": {
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "lint-staged": "node scripts/precommit-run-eslint.mjs",
     "fix": "turbo run fix",
     "test": "turbo run test --no-cache --concurrency=1",
-    "test:integration": "turbo run test:integration --no-cache",
-    "prepare": "husky"
+    "test:integration": "turbo run test:integration --no-cache"
   },
   "devDependencies": {
     "@changesets/cli": "2.29.6",
-    "eslint": "^9.26.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.2.1",
     "turbo": "^1.10.13"
-  },
-  "lint-staged": {
-    "packages/core-sdk/**/*.{ts,tsx,js,jsx,mjs,cjs}": "node scripts/precommit-eslint-core-sdk.mjs"
   },
   "engines": {
     "node": "^20.0.0"

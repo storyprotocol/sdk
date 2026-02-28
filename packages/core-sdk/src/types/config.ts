@@ -1,4 +1,4 @@
-import { Account, Address, Transport } from "viem";
+import { Account, Address, Hash, Transport } from "viem";
 
 import { SimpleWalletClient } from "../abi/generated";
 
@@ -8,6 +8,34 @@ import { SimpleWalletClient } from "../abi/generated";
  * @public
  */
 export type SupportedChainIds = "aeneid" | "mainnet" | ChainIds;
+
+/**
+ * A function that resolves a hash returned by `writeContract` into an actual
+ * transaction hash that can be used with `waitForTransactionReceipt`.
+ *
+ * This is required when using Account Abstraction wallets (e.g. ZeroDev, Dynamic)
+ * because `writeContract` returns a UserOperation hash instead of a regular
+ * transaction hash. The resolver should wait for the UserOperation to be bundled
+ * and return the resulting on-chain transaction hash.
+ *
+ * @example ZeroDev
+ * ```typescript
+ * const client = StoryClient.newClientUseWallet({
+ *   transport: http("https://..."),
+ *   wallet: kernelClient,
+ *   txHashResolver: async (userOpHash) => {
+ *     const receipt = await bundlerClient.waitForUserOperationReceipt({
+ *       hash: userOpHash,
+ *     });
+ *     return receipt.receipt.transactionHash;
+ *   },
+ * });
+ * ```
+ *
+ * @param hash - The hash returned by `writeContract` (could be a userOpHash or txHash)
+ * @returns The resolved on-chain transaction hash
+ */
+export type TxHashResolver = (hash: Hash) => Promise<Hash>;
 
 /**
  * Configuration for the SDK Client.
@@ -23,6 +51,11 @@ export type UseAccountStoryConfig = {
    */
   readonly chainId?: SupportedChainIds;
   readonly transport: Transport;
+  /**
+   * Optional resolver for Account Abstraction wallets.
+   * @see TxHashResolver
+   */
+  readonly txHashResolver?: TxHashResolver;
 };
 
 export type UseWalletStoryConfig = {
@@ -34,6 +67,11 @@ export type UseWalletStoryConfig = {
   readonly chainId?: SupportedChainIds;
   readonly transport: Transport;
   readonly wallet: SimpleWalletClient;
+  /**
+   * Optional resolver for Account Abstraction wallets.
+   * @see TxHashResolver
+   */
+  readonly txHashResolver?: TxHashResolver;
 };
 
 export type StoryConfig = {
@@ -46,6 +84,16 @@ export type StoryConfig = {
   readonly chainId?: SupportedChainIds;
   readonly wallet?: SimpleWalletClient;
   readonly account?: Account | Address;
+  /**
+   * Optional resolver for Account Abstraction wallets (e.g. ZeroDev, Dynamic).
+   *
+   * When provided, the SDK will call this function to resolve the hash returned
+   * by `writeContract` into the actual on-chain transaction hash before waiting
+   * for the transaction receipt.
+   *
+   * @see TxHashResolver
+   */
+  readonly txHashResolver?: TxHashResolver;
 };
 
 export type ContractAddress = { [key in SupportedChainIds]: Record<string, string> };

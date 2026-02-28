@@ -4,9 +4,24 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - '.github/**'
+      - '.github/CODEOWNERS'
+      - '**/*.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+      
   push:
     branches:
       - main
+    paths-ignore:
+      - '.github/**'
+      - '.github/CODEOWNERS'
+      - '**/*.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE' 
 
 jobs:
   Timestamp:
@@ -19,6 +34,4 @@ jobs:
     with:
       sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       ENVIRONMENT: "odyssey"
-    secrets:
-      WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
-      TEST_WALLET_ADDRESS: ${{ secrets.TEST_WALLET_ADDRESS }}
+    secrets: inherit
