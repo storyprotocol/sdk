@@ -50,6 +50,8 @@
     "@types/mocha": "^10.0.2",
     "@types/node": "^20.8.2",
     "@types/sinon": "^10.0.18",
+    "@zerodev/ecdsa-validator": "^5.4.9",
+    "@zerodev/sdk": "^5.5.7",
     "c8": "^8.0.1",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",

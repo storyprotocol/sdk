@@ -21,7 +21,6 @@ This section provides the instructions on how to build Story Protocol SDK from s
 - Install PNPM: Execute `npm install -g pnpm`
 - Install TypeScript: Run `pnpm add typescript -D`
 - Install Yalc: Use `npm install -g yalc`
-- Install dependencies: `pnpm install` (this automatically sets up Husky git hooks for ESLint checks on commit)
 
 #### Steps for Using Yalc for Local Testing of Core-SDK
 

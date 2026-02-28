@@ -1,7 +1,6 @@
-import { Evaluate } from "@wagmi/core/internal";
-import { Plugin } from "@wagmi/cli/dist/types/config";
-import { RequiredBy } from "viem/_types/types/utils";
-import { Contract } from "@wagmi/cli/src/config";
+import type { Plugin } from "@wagmi/cli";
+import type { RequiredBy } from "viem/_types/types/utils";
+import type { Contract } from "@wagmi/cli";
 import { pascalCase, camelCase } from "change-case";
 import { AbiFunction, AbiEvent, AbiParameter } from "abitype";
 
@@ -10,6 +9,7 @@ export type SDKConfig = {
   whiteList?: Record<string, Array<string>>;
 };
 
+type Evaluate<T> = { [K in keyof T]: T[K] } & unknown;
 type SDKResult = Evaluate<RequiredBy<Plugin, "run">>;
 type RunConfig = {
   contracts: Array<Contract>;

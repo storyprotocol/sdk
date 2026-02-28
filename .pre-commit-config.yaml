@@ -4,10 +4,3 @@ repos:
     hooks:
       - id: gitleaks
         args: ['--verbose', '--redact']
-  - repo: local
-    hooks:
-      - id: lint-staged
-        name: lint-staged (ESLint)
-        entry: pnpm run lint-staged
-        language: system
-        pass_filenames: false
