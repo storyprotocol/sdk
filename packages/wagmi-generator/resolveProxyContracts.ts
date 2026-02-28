@@ -1,9 +1,10 @@
-import type { ContractConfig } from "@wagmi/cli";
+import type { Evaluate } from "@wagmi/cli/src/types";
+import type { ContractConfig } from "@wagmi/cli/src/config";
 import { Address } from "viem";
 
 export type Config = {
   baseUrl: string;
-  contracts: Omit<ContractConfig, "abi">[];
+  contracts: Evaluate<Omit<ContractConfig, "abi">>[];
   chainId: number;
 };
 export type ProxyMap = (config: {

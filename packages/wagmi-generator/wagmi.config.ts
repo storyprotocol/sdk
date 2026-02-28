@@ -1,6 +1,7 @@
 import { defineConfig } from "@wagmi/cli";
 import { sdk } from "./sdk";
-import type { ContractConfig } from "@wagmi/cli";
+import type { Evaluate } from "@wagmi/cli/src/types";
+import type { ContractConfig } from "@wagmi/cli/src/config";
 import { resolveProxyContracts } from "./resolveProxyContracts";
 import { optimizedBlockExplorer } from "./optimizedBlockExplorer";
 const aeneidChainId = 1315;
@@ -8,7 +9,7 @@ const mainnetChainId = 1514;
 import "dotenv/config";
 
 export default defineConfig(async () => {
-  const contracts: Omit<ContractConfig, "abi">[] = [
+  const contracts: Evaluate<Omit<ContractConfig, "abi">>[] = [
     {
       name: "AccessController",
       address: {
@@ -389,7 +390,6 @@ export default defineConfig(async () => {
             "tokenURI",
             "Transfer",
             "hasRole",
-            "balanceOf",
           ],
           TotalLicenseTokenLimitHook: ["setTotalLicenseTokenLimit"],
         },

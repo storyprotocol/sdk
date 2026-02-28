@@ -45,10 +45,3 @@ export type GetTokenURIRequest = {
   tokenId: TokenIdInput;
   spgNftContract: Address;
 };
-
-export type GetNFTBalanceRequest = {
-  /** The SPG NFT collection contract address. */
-  spgNftContract: Address;
-  /** The owner address to query. Defaults to the connected wallet address if not provided. */
-  owner?: Address;
-};
