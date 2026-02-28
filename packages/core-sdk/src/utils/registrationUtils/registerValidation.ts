@@ -10,7 +10,6 @@ import {
   totalLicenseTokenLimitHookAddress,
 } from "../../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../../constants/common";
-import { validateCurrencyToken } from "../currencyValidation";
 import { DeadlineInput, RevShareType } from "../../types/common";
 import { ChainIds } from "../../types/config";
 import {
@@ -25,6 +24,7 @@ import {
   ValidateDerivativeDataConfig,
 } from "../../types/utils/registerHelper";
 import { TokenSpender } from "../../types/utils/token";
+import { validateCurrencyToken } from "../currencyValidation";
 import { PILFlavor } from "../pilFlavor";
 import { getRevenueShare } from "../royalty";
 import { getDeadline } from "../sign";

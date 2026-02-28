@@ -23,11 +23,17 @@ const CHAIN_CURRENCY_HINT: Record<ChainIds, string> = {
   [AENEID_CHAIN_ID]: "On Aeneid Testnet, only WIP or MERC20 is allowed as currency token.",
 };
 
-function toChainId(chainId: SupportedChainIds): ChainIds {
-  if (chainId === "mainnet" || chainId === 1514) return 1514;
-  if (chainId === "aeneid" || chainId === 1315) return 1315;
+const toChainId = (chainId: SupportedChainIds): ChainIds => {
+  if (chainId === "mainnet" || chainId === 1514) {
+    return 1514;
+  }
+
+  if (chainId === "aeneid" || chainId === 1315) {
+    return 1315;
+  }
+
   return chainId as ChainIds;
-}
+};
 
 /**
  * Validates that the currency token is allowed for the given chain.
@@ -38,18 +44,18 @@ function toChainId(chainId: SupportedChainIds): ChainIds {
  * @param chainId - The chain ID (1315 or "aeneid" for Aeneid, 1514 or "mainnet" for Mainnet)
  * @throws Error if token is zero address or not allowed for the chain
  */
-export function validateCurrencyToken(
+export const validateCurrencyToken = (
   token: Address,
   chainId: SupportedChainIds | ChainIds,
-): void {
-  if (token == null || token === zeroAddress) {
+): void => {
+  if (token === null || token === undefined || token === zeroAddress) {
     throw new Error("Currency token cannot be zero address.");
   }
 
   const resolvedChainId = toChainId(chainId as SupportedChainIds);
   const allowedTokens = CURRENCY_TOKEN_WHITELIST[resolvedChainId];
 
-  if (allowedTokens == null) {
+  if (allowedTokens === null || allowedTokens === undefined) {
     throw new Error(`Unsupported chain ID: ${chainId}.`);
   }
 
@@ -59,4 +65,4 @@ export function validateCurrencyToken(
       `${CHAIN_CURRENCY_HINT[resolvedChainId]} The provided token is not allowed.`,
     );
   }
-}
+};

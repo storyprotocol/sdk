@@ -1,7 +1,7 @@
 import { zeroAddress } from "viem";
 
-import { PILFlavorError } from "./errors";
 import { validateCurrencyToken } from "./currencyValidation";
+import { PILFlavorError } from "./errors";
 import { royaltyPolicyInputToAddress } from "./royalty";
 import { ChainIds, SupportedChainIds } from "../types/config";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
@@ -207,7 +207,8 @@ export class PILFlavor {
 
     // Validate currency token is allowed for the chain when currency is set (Aeneid: WIP or MERC20; Mainnet: WIP only). Zero address is allowed (e.g. no royalty).
     if (
-      currency != null &&
+      currency !== null &&
+      currency !== undefined &&
       currency !== zeroAddress &&
       chainId !== undefined
     ) {
