@@ -385,8 +385,7 @@ describe("Group Functions", () => {
       groupIpId = await registerGroupAndAttachLicenseHelper(licenseTermsId, [ipId]);
     });
 
-    it("should successfully collect royalties", async function () {
-      this.retries(2);
+    it("should successfully collect royalties", async () => {
       // Mint and register child IP id
       const childIpId = await mintAndRegisterIpAndMakeDerivativeHelper(groupIpId, licenseTermsId);
 
@@ -403,8 +402,7 @@ describe("Group Functions", () => {
       expect(result.collectedRoyalties).to.equal(10n);
     });
 
-    it("should successfully get claimable reward", async function () {
-      this.retries(2);
+    it("should successfully get claimable reward", async () => {
       const result = await client.groupClient.getClaimableReward({
         groupIpId: groupIpId,
         currencyToken: WIP_TOKEN_ADDRESS,
@@ -414,8 +412,7 @@ describe("Group Functions", () => {
       expect(result).to.deep.equal([10n]);
     });
 
-    it("should successfully claim reward", async function () {
-      this.retries(2);
+    it("should successfully claim reward", async () => {
       // Mint license tokens to the IP id which doesn't have a royalty vault
       await client.license.mintLicenseTokens({
         licensorIpId: ipId,

@@ -108,7 +108,13 @@ export const mintBySpg = async (
     account: walletClient.account,
   });
 
-  const hash = await walletClient.writeContract(request);
+  // Explicit gas params to avoid "replacement transaction underpriced" when same nonce is reused in CI
+  const hash = await walletClient.writeContract({
+    ...request,
+    gas: 300_000n,
+    maxFeePerGas: 50_000_000_000n,
+    maxPriorityFeePerGas: 2_000_000_000n,
+  } as typeof request);
   const receipt = await publicClient.waitForTransactionReceipt({
     hash,
   });

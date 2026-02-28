@@ -2994,8 +2994,7 @@ describe("IP Asset Functions", () => {
       expect(result.registrationResults[2].ipRoyaltyVault?.length).equal(0);
     });
 
-    it("should successfully register IP assets with multicall disabled", async function () {
-      this.retries(2);
+    it("should successfully register IP assets with multicall disabled", async () => {
       const tokenId1 = await getTokenId();
       const tokenId2 = await getTokenId();
 
