@@ -1,8 +1,9 @@
 import { zeroAddress } from "viem";
 
+import { validateCurrencyToken } from "./currencyValidation";
 import { PILFlavorError } from "./errors";
 import { royaltyPolicyInputToAddress } from "./royalty";
-import { SupportedChainIds } from "../types/config";
+import { ChainIds, SupportedChainIds } from "../types/config";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
   CommercialRemixRequest,
@@ -202,6 +203,16 @@ export class PILFlavor {
     // Validate royalty policy and currency relationship
     if (royaltyPolicy !== zeroAddress && currency === zeroAddress) {
       throw new PILFlavorError("Royalty policy requires currency token.");
+    }
+
+    // Validate currency token is allowed for the chain when currency is set (Aeneid: WIP or MERC20; Mainnet: WIP only). Zero address is allowed (e.g. no royalty).
+    if (
+      currency !== null &&
+      currency !== undefined &&
+      currency !== zeroAddress &&
+      chainId !== undefined
+    ) {
+      validateCurrencyToken(currency, chainId as ChainIds);
     }
 
     // Validate defaultMintingFee

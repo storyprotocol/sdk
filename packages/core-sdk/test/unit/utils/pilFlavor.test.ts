@@ -2,7 +2,10 @@ import { expect } from "chai";
 import { zeroAddress } from "viem";
 
 import { NativeRoyaltyPolicy, PILFlavor } from "../../../src";
+import { wrappedIpAddress } from "../../../src/abi/generated";
 import { mockAddress } from "../mockData";
+
+const mainnetWip = wrappedIpAddress[1514];
 
 describe("PILFlavor", () => {
   describe("nonCommercialSocialRemixing", () => {
@@ -95,7 +98,7 @@ describe("PILFlavor", () => {
           commercialRevShare: 10,
           defaultMintingFee: 100,
           royaltyPolicy: NativeRoyaltyPolicy.LAP,
-          currency: mockAddress,
+          currency: mainnetWip,
         },
       });
       expect(pil).deep.equal({
@@ -105,7 +108,7 @@ describe("PILFlavor", () => {
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        currency: mockAddress,
+        currency: mainnetWip,
         derivativeRevCeiling: 0n,
         derivativesAllowed: false,
         derivativesApproval: false,
@@ -159,7 +162,7 @@ describe("PILFlavor", () => {
           commercialRevShare: 1,
           defaultMintingFee: 800,
           royaltyPolicy: NativeRoyaltyPolicy.LRP,
-          currency: mockAddress,
+          currency: mainnetWip,
         },
       });
       expect(pil).deep.equal({
@@ -169,7 +172,7 @@ describe("PILFlavor", () => {
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        currency: mockAddress,
+        currency: mainnetWip,
         derivativeRevCeiling: 0n,
         derivativesAllowed: true,
         derivativesApproval: false,
@@ -214,12 +217,12 @@ describe("PILFlavor", () => {
     it("should override by custom terms", () => {
       const pil = PILFlavor.creativeCommonsAttribution({
         royaltyPolicy: NativeRoyaltyPolicy.LAP,
-        currency: mockAddress,
+        currency: mainnetWip,
         chainId: "mainnet",
         override: {
           royaltyPolicy: mockAddress,
           commercialRevShare: 100,
-          currency: mockAddress,
+          currency: mainnetWip,
         },
       });
       expect(pil).deep.equal({
@@ -238,7 +241,7 @@ describe("PILFlavor", () => {
         derivativesApproval: false,
         derivativesReciprocal: true,
         derivativeRevCeiling: 0n,
-        currency: mockAddress,
+        currency: mainnetWip,
         uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
       });
     });

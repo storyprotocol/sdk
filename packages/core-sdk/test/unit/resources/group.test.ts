@@ -4,12 +4,16 @@ import { stub } from "sinon";
 import { Address, PublicClient, WalletClient, zeroAddress, zeroHash } from "viem";
 
 import { GroupClient } from "../../../src";
-import { IpAccountImplClient } from "../../../src/abi/generated";
+import { IpAccountImplClient, wrappedIpAddress } from "../../../src/abi/generated";
 import { LicenseDataInput } from "../../../src/types/resources/group";
-import { mockAddress, txHash, walletAddress } from "../mockData";
+import { aeneid, mockAddress, txHash, walletAddress } from "../mockData";
 import { createMockPublicClient, createMockWalletClient } from "../testUtils";
 
 use(chaiAsPromised);
+
+// Aeneid (1315) allows WIP or MERC20; group tests use chainId 1315
+const validCurrencyToken = wrappedIpAddress[aeneid];
+
 const mockLicenseData: LicenseDataInput = {
   licenseTermsId: 100,
   licensingConfig: {
@@ -529,7 +533,7 @@ describe("Test IpAssetClient", () => {
 
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
-        currencyTokens: [mockAddress],
+        currencyTokens: [validCurrencyToken],
         memberIpIds: [mockAddress],
       });
       await expect(result).to.be.rejectedWith(
@@ -545,7 +549,7 @@ describe("Test IpAssetClient", () => {
         .resolves(false);
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
-        currencyTokens: [mockAddress],
+        currencyTokens: [validCurrencyToken],
         memberIpIds: [mockAddress],
       });
       await expect(result).to.be.rejectedWith(
@@ -557,7 +561,7 @@ describe("Test IpAssetClient", () => {
       stub(groupClient.ipAssetRegistryClient, "isRegistered").resolves(true);
       const result = groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
-        currencyTokens: [mockAddress],
+        currencyTokens: [validCurrencyToken],
         memberIpIds: [],
       });
       await expect(result).to.be.rejectedWith(
@@ -616,7 +620,7 @@ describe("Test IpAssetClient", () => {
 
       const result = await groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
-        currencyTokens: [mockAddress],
+        currencyTokens: [validCurrencyToken],
         memberIpIds: [mockAddress],
       });
       expect(result.txHash).equal(txHash);
@@ -648,7 +652,7 @@ describe("Test IpAssetClient", () => {
       stub(groupClient.groupingWorkflowsClient, "collectRoyaltiesAndClaimReward").resolves(txHash);
       const result = await groupClient.collectAndDistributeGroupRoyalties({
         groupIpId: mockAddress,
-        currencyTokens: [mockAddress],
+        currencyTokens: [validCurrencyToken],
         memberIpIds: [mockAddress],
       });
       expect(result.txHash).equal(txHash);
@@ -725,7 +729,7 @@ describe("Test IpAssetClient", () => {
       stub(groupClient.groupingModuleClient, "getClaimableReward").rejects(new Error("rpc error"));
       const result = groupClient.getClaimableReward({
         groupIpId: mockAddress,
-        currencyToken: mockAddress,
+        currencyToken: validCurrencyToken,
         memberIpIds: [mockAddress],
       });
       await expect(result).to.be.rejectedWith("Failed to get claimable reward: rpc error");
@@ -735,7 +739,7 @@ describe("Test IpAssetClient", () => {
       stub(groupClient.groupingModuleClient, "getClaimableReward").resolves([10n]);
       const result = await groupClient.getClaimableReward({
         groupIpId: mockAddress,
-        currencyToken: mockAddress,
+        currencyToken: validCurrencyToken,
         memberIpIds: [mockAddress],
       });
       expect(result).to.deep.equal([10n]);
@@ -767,7 +771,7 @@ describe("Test IpAssetClient", () => {
       stub(groupClient.groupingModuleClient, "claimReward").rejects(new Error("rpc error"));
       const result = groupClient.claimReward({
         groupIpId: mockAddress,
-        currencyToken: mockAddress,
+        currencyToken: validCurrencyToken,
         memberIpIds: [mockAddress],
       });
       await expect(result).to.be.rejectedWith("Failed to claim reward: rpc error");
@@ -785,7 +789,7 @@ describe("Test IpAssetClient", () => {
       ]);
       const result = await groupClient.claimReward({
         groupIpId: mockAddress,
-        currencyToken: mockAddress,
+        currencyToken: validCurrencyToken,
         memberIpIds: [mockAddress],
       });
       expect(result.txHash).equal(txHash);
@@ -803,7 +807,7 @@ describe("Test IpAssetClient", () => {
       ]);
       const result = await groupClient.claimReward({
         groupIpId: mockAddress,
-        currencyToken: mockAddress,
+        currencyToken: validCurrencyToken,
         memberIpIds: [mockAddress],
       });
       expect(result.txHash).equal(txHash);
@@ -824,7 +828,7 @@ describe("Test IpAssetClient", () => {
 
       const result = groupClient.collectRoyalties({
         groupIpId: mockAddress,
-        currencyToken: mockAddress,
+        currencyToken: validCurrencyToken,
       });
       await expect(result).to.be.rejectedWith("Failed to collect royalties: rpc error");
     });
@@ -844,7 +848,7 @@ describe("Test IpAssetClient", () => {
       ]);
       const result = await groupClient.collectRoyalties({
         groupIpId: mockAddress,
-        currencyToken: mockAddress,
+        currencyToken: validCurrencyToken,
       });
       expect(result.txHash).equal(txHash);
       expect(result.collectedRoyalties).to.equal(100n);
@@ -866,7 +870,7 @@ describe("Test IpAssetClient", () => {
 
       const result = await groupClient.collectRoyalties({
         groupIpId: mockAddress,
-        currencyToken: mockAddress,
+        currencyToken: validCurrencyToken,
       });
       expect(result.txHash).equal(txHash);
       expect(result.collectedRoyalties).to.equal(100n);
