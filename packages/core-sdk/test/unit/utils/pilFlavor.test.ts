@@ -1,8 +1,12 @@
 import { expect } from "chai";
-import { zeroAddress } from "viem";
+import { Address, zeroAddress } from "viem";
 
+import { erc20Address, wrappedIpAddress } from "../../../src/abi/generated";
 import { NativeRoyaltyPolicy, PILFlavor } from "../../../src";
-import { mockAddress } from "../mockData";
+import { aeneid, mockAddress } from "../mockData";
+
+const allowedCurrencyAeneid = erc20Address[aeneid] as Address;
+const allowedCurrencyMainnet = wrappedIpAddress[1514] as Address;
 
 describe("PILFlavor", () => {
   describe("nonCommercialSocialRemixing", () => {
@@ -63,7 +67,7 @@ describe("PILFlavor", () => {
     it("should get commercial use PIL when royaltyPolicy is not provided", () => {
       const pil = PILFlavor.commercialUse({
         defaultMintingFee: 100n,
-        currency: mockAddress,
+        currency: allowedCurrencyAeneid,
       });
       expect(pil).deep.equal({
         commercialAttribution: true,
@@ -72,7 +76,7 @@ describe("PILFlavor", () => {
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        currency: mockAddress,
+        currency: allowedCurrencyAeneid,
         derivativeRevCeiling: 0n,
         derivativesAllowed: false,
         derivativesApproval: false,
@@ -95,7 +99,7 @@ describe("PILFlavor", () => {
           commercialRevShare: 10,
           defaultMintingFee: 100,
           royaltyPolicy: NativeRoyaltyPolicy.LAP,
-          currency: mockAddress,
+          currency: allowedCurrencyMainnet,
         },
       });
       expect(pil).deep.equal({
@@ -105,7 +109,7 @@ describe("PILFlavor", () => {
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        currency: mockAddress,
+        currency: allowedCurrencyMainnet,
         derivativeRevCeiling: 0n,
         derivativesAllowed: false,
         derivativesApproval: false,
@@ -124,7 +128,7 @@ describe("PILFlavor", () => {
     it("should get commercial remix PIL when royaltyPolicy is not provided", () => {
       const pil = PILFlavor.commercialRemix({
         defaultMintingFee: 100n,
-        currency: mockAddress,
+        currency: allowedCurrencyAeneid,
         commercialRevShare: 10,
       });
       expect(pil).deep.equal({
@@ -134,7 +138,7 @@ describe("PILFlavor", () => {
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        currency: mockAddress,
+        currency: allowedCurrencyAeneid,
         derivativeRevCeiling: 0n,
         derivativesAllowed: true,
         derivativesApproval: false,
@@ -159,7 +163,7 @@ describe("PILFlavor", () => {
           commercialRevShare: 1,
           defaultMintingFee: 800,
           royaltyPolicy: NativeRoyaltyPolicy.LRP,
-          currency: mockAddress,
+          currency: allowedCurrencyMainnet,
         },
       });
       expect(pil).deep.equal({
@@ -169,7 +173,7 @@ describe("PILFlavor", () => {
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        currency: mockAddress,
+        currency: allowedCurrencyMainnet,
         derivativeRevCeiling: 0n,
         derivativesAllowed: true,
         derivativesApproval: false,
@@ -188,7 +192,7 @@ describe("PILFlavor", () => {
     it("should get creative commons attribution PIL ", () => {
       const pil = PILFlavor.creativeCommonsAttribution({
         royaltyPolicy: NativeRoyaltyPolicy.LAP,
-        currency: mockAddress,
+        currency: allowedCurrencyAeneid,
       });
       expect(pil).deep.equal({
         transferable: true,
@@ -206,7 +210,7 @@ describe("PILFlavor", () => {
         derivativesApproval: false,
         derivativesReciprocal: true,
         derivativeRevCeiling: 0n,
-        currency: mockAddress,
+        currency: allowedCurrencyAeneid,
         uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
       });
     });
@@ -214,12 +218,12 @@ describe("PILFlavor", () => {
     it("should override by custom terms", () => {
       const pil = PILFlavor.creativeCommonsAttribution({
         royaltyPolicy: NativeRoyaltyPolicy.LAP,
-        currency: mockAddress,
+        currency: allowedCurrencyMainnet,
         chainId: "mainnet",
         override: {
           royaltyPolicy: mockAddress,
           commercialRevShare: 100,
-          currency: mockAddress,
+          currency: allowedCurrencyMainnet,
         },
       });
       expect(pil).deep.equal({
@@ -238,7 +242,7 @@ describe("PILFlavor", () => {
         derivativesApproval: false,
         derivativesReciprocal: true,
         derivativeRevCeiling: 0n,
-        currency: mockAddress,
+        currency: allowedCurrencyMainnet,
         uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
       });
     });
@@ -246,6 +250,15 @@ describe("PILFlavor", () => {
 
   describe("validate license terms", () => {
     describe("royalty policy and currency validation", () => {
+      it("should throw error when currency is not allowed on chain", () => {
+        expect(() => {
+          PILFlavor.commercialUse({
+            defaultMintingFee: 100n,
+            currency: mockAddress,
+          });
+        }).to.throw(/Currency token .* is not allowed on chain/);
+      });
+
       it("should throw error when royaltyPolicy is not zeroAddress but currency is zeroAddress", () => {
         expect(() => {
           PILFlavor.commercialUse({
@@ -260,7 +273,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 100n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             royaltyPolicy: NativeRoyaltyPolicy.LAP,
           });
         }).to.not.throw();
@@ -283,7 +296,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: -100n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
           });
         }).to.throw("DefaultMintingFee should be greater than or equal to 0.");
       });
@@ -292,7 +305,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
           });
         }).to.not.throw();
       });
@@ -301,7 +314,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 100n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             royaltyPolicy: zeroAddress,
           });
         }).to.throw("Royalty policy is required when defaultMintingFee is greater than 0.");
@@ -314,7 +327,7 @@ describe("PILFlavor", () => {
           PILFlavor.commercialRemix({
             commercialRevShare: 0,
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               commercialUse: false,
               commercialAttribution: true,
@@ -327,7 +340,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               commercialUse: false,
               commercialAttribution: false,
@@ -341,7 +354,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               commercialUse: false,
               commercialAttribution: false,
@@ -355,7 +368,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               commercialUse: false,
               commercialAttribution: false,
@@ -369,7 +382,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               commercialUse: false,
               commercialAttribution: false,
@@ -383,7 +396,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               commercialUse: false,
               commercialAttribution: false,
@@ -397,7 +410,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             royaltyPolicy: zeroAddress,
           });
         }).to.throw("Royalty policy is required when commercial use is enabled.");
@@ -409,7 +422,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               derivativesAttribution: true,
             },
@@ -421,7 +434,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               derivativesApproval: true,
             },
@@ -433,7 +446,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               derivativesReciprocal: true,
             },
@@ -445,7 +458,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               derivativeRevCeiling: 100n,
             },
@@ -457,7 +470,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialRemix({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             commercialRevShare: 0,
             override: {
               derivativesAttribution: true,
@@ -475,7 +488,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               commercialRevShare: 101,
             },
@@ -487,7 +500,7 @@ describe("PILFlavor", () => {
         expect(() => {
           PILFlavor.commercialUse({
             defaultMintingFee: 0n,
-            currency: mockAddress,
+            currency: allowedCurrencyAeneid,
             override: {
               commercialRevShare: -1,
             },
@@ -500,14 +513,14 @@ describe("PILFlavor", () => {
       it("should normalize defaultMintingFee to BigInt", () => {
         const pil = PILFlavor.commercialUse({
           defaultMintingFee: 100,
-          currency: mockAddress,
+          currency: allowedCurrencyAeneid,
         });
         expect(pil.defaultMintingFee).to.equal(100n);
       });
       it("should normalize expiration to BigInt", () => {
         const pil = PILFlavor.commercialUse({
           defaultMintingFee: 0n,
-          currency: mockAddress,
+          currency: allowedCurrencyAeneid,
           override: {
             expiration: 1234567890,
           },
@@ -518,7 +531,7 @@ describe("PILFlavor", () => {
       it("should normalize commercialRevCeiling to BigInt", () => {
         const pil = PILFlavor.commercialRemix({
           defaultMintingFee: 0n,
-          currency: mockAddress,
+          currency: allowedCurrencyAeneid,
           commercialRevShare: 0,
           override: {
             commercialRevCeiling: 1000000,
@@ -530,7 +543,7 @@ describe("PILFlavor", () => {
       it("should normalize derivativeRevCeiling to BigInt", () => {
         const pil = PILFlavor.commercialRemix({
           defaultMintingFee: 0n,
-          currency: mockAddress,
+          currency: allowedCurrencyAeneid,
           commercialRevShare: 0,
           override: {
             derivativeRevCeiling: 500000,

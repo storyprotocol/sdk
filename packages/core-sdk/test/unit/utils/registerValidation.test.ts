@@ -3,6 +3,7 @@ import { SinonStub, stub } from "sinon";
 import { zeroAddress, zeroHash } from "viem";
 
 import {
+  erc20Address,
   PiLicenseTemplateReadOnlyClient,
   RoyaltyModuleReadOnlyClient,
   totalLicenseTokenLimitHookAddress,
@@ -11,6 +12,8 @@ import { LicensingConfig } from "../../../src/types/common";
 import { LicenseTerms } from "../../../src/types/resources/license";
 import { validateLicenseTermsData } from "../../../src/utils/registrationUtils/registerValidation";
 import { aeneid, mockAddress } from "../mockData";
+
+const allowedCurrencyAeneid = erc20Address[aeneid];
 import { createMockPublicClient } from "../testUtils";
 
 describe("validateLicenseTermsData", () => {
@@ -63,7 +66,7 @@ describe("validateLicenseTermsData", () => {
             terms: {
               ...mockLicenseTerms,
               royaltyPolicy: mockAddress,
-              currency: mockAddress,
+              currency: allowedCurrencyAeneid,
               commercialUse: true,
             },
           },
@@ -82,7 +85,7 @@ describe("validateLicenseTermsData", () => {
           {
             terms: {
               ...mockLicenseTerms,
-              currency: mockAddress,
+              currency: allowedCurrencyAeneid,
               royaltyPolicy: mockAddress,
               commercialUse: true,
             },
@@ -91,7 +94,7 @@ describe("validateLicenseTermsData", () => {
         rpcClient,
         aeneid,
       ),
-    ).to.be.rejectedWith(`The currency token ${mockAddress} is not whitelisted.`);
+    ).to.be.rejectedWith(`The currency token ${allowedCurrencyAeneid} is not whitelisted.`);
   });
 
   it("should throw error when revenue share is more than 100", async () => {
@@ -104,7 +107,7 @@ describe("validateLicenseTermsData", () => {
               commercialRevShare: 101,
               commercialUse: true,
               royaltyPolicy: mockAddress,
-              currency: mockAddress,
+              currency: allowedCurrencyAeneid,
             },
           },
         ],
@@ -239,14 +242,14 @@ describe("validateLicenseTermsData", () => {
     const firstLicenseTerms: LicenseTerms = {
       ...mockLicenseTerms,
       royaltyPolicy: mockAddress,
-      currency: mockAddress,
+      currency: allowedCurrencyAeneid,
       defaultMintingFee: 1n,
       commercialUse: true,
     };
     const secondLicenseTerms: LicenseTerms = {
       ...mockLicenseTerms,
       royaltyPolicy: mockAddress,
-      currency: mockAddress,
+      currency: allowedCurrencyAeneid,
       defaultMintingFee: 2n,
       commercialUse: true,
     };

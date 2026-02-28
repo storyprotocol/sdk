@@ -73,7 +73,7 @@ const licenseTerms: LicenseTerms = {
   derivativesApproval: false,
   derivativesReciprocal: true,
   derivativeRevCeiling: BigInt(0),
-  currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+  currency: erc20Address[aeneid],
   uri: "",
 };
 
@@ -1059,7 +1059,7 @@ describe("Test IpAssetClient", () => {
           {
             terms: PILFlavor.commercialRemix({
               defaultMintingFee: 0n,
-              currency: mockAddress,
+              currency: erc20Address[aeneid],
               commercialRevShare: 90,
               royaltyPolicy: NativeRoyaltyPolicy.LAP,
               override: {
@@ -1078,7 +1078,7 @@ describe("Test IpAssetClient", () => {
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        currency: mockAddress,
+        currency: erc20Address[aeneid],
         defaultMintingFee: 0n,
         derivativeRevCeiling: 0n,
         derivativesAllowed: true,
@@ -1414,7 +1414,7 @@ describe("Test IpAssetClient", () => {
           {
             terms: PILFlavor.commercialUse({
               defaultMintingFee: 100n,
-              currency: mockAddress,
+              currency: erc20Address[aeneid],
               royaltyPolicy: NativeRoyaltyPolicy.LRP,
             }),
           },
@@ -1429,7 +1429,7 @@ describe("Test IpAssetClient", () => {
         commercialUse: true,
         commercializerChecker: zeroAddress,
         commercializerCheckerData: zeroAddress,
-        currency: mockAddress,
+        currency: erc20Address[aeneid],
         defaultMintingFee: 100n,
         derivativeRevCeiling: 0n,
         derivativesAllowed: false,
@@ -3011,7 +3011,7 @@ describe("Test IpAssetClient", () => {
         licenseTermsData: [
           {
             terms: PILFlavor.creativeCommonsAttribution({
-              currency: mockAddress,
+              currency: erc20Address[aeneid],
               royaltyPolicy: mockAddress,
             }),
           },
@@ -3040,7 +3040,7 @@ describe("Test IpAssetClient", () => {
         derivativesApproval: false,
         derivativesReciprocal: true,
         derivativeRevCeiling: 0n,
-        currency: mockAddress,
+        currency: erc20Address[aeneid],
         uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
         defaultMintingFee: 0n,
         expiration: 0n,
@@ -3703,7 +3703,7 @@ describe("Test IpAssetClient", () => {
         licenseTermsData: [
           {
             terms: PILFlavor.creativeCommonsAttribution({
-              currency: mockAddress,
+              currency: erc20Address[aeneid],
               royaltyPolicy: mockAddress,
             }),
           },
@@ -3728,7 +3728,7 @@ describe("Test IpAssetClient", () => {
         derivativesApproval: false,
         derivativesReciprocal: true,
         derivativeRevCeiling: 0n,
-        currency: mockAddress,
+        currency: erc20Address[aeneid],
         uri: "https://github.com/piplabs/pil-document/blob/998c13e6ee1d04eb817aefd1fe16dfe8be3cd7a2/off-chain-terms/CC-BY.json",
         defaultMintingFee: 0n,
         expiration: 0n,

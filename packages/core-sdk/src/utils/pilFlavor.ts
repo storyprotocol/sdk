@@ -2,6 +2,7 @@ import { zeroAddress } from "viem";
 
 import { PILFlavorError } from "./errors";
 import { royaltyPolicyInputToAddress } from "./royalty";
+import { assertCurrencyAllowed } from "./utils";
 import { SupportedChainIds } from "../types/config";
 import { LicenseTerms, LicenseTermsInput } from "../types/resources/license";
 import {
@@ -189,15 +190,19 @@ export class PILFlavor {
     params: LicenseTermsInput,
     chainId?: SupportedChainIds,
   ): LicenseTerms => {
+    const resolvedChainId: SupportedChainIds = chainId ?? "aeneid";
     const normalized: LicenseTerms = {
       ...params,
       defaultMintingFee: BigInt(params.defaultMintingFee),
       expiration: BigInt(params.expiration),
       commercialRevCeiling: BigInt(params.commercialRevCeiling),
       derivativeRevCeiling: BigInt(params.derivativeRevCeiling),
-      royaltyPolicy: royaltyPolicyInputToAddress(params.royaltyPolicy, chainId),
+      royaltyPolicy: royaltyPolicyInputToAddress(params.royaltyPolicy, resolvedChainId),
     };
     const { royaltyPolicy, currency } = normalized;
+
+    // Validate currency whitelist for the resolved chain.
+    assertCurrencyAllowed(currency, resolvedChainId);
 
     // Validate royalty policy and currency relationship
     if (royaltyPolicy !== zeroAddress && currency === zeroAddress) {
