@@ -51,7 +51,11 @@ export const getTokenId = async (): Promise<number | undefined> => {
     args: [process.env.TEST_WALLET_ADDRESS as Hex],
     account: walletClient.account,
   });
-  const hash = await walletClient.writeContract(request);
+  const nonce = await publicClient.getTransactionCount({
+    address: walletClient.account!.address,
+    blockTag: "pending",
+  });
+  const hash = await walletClient.writeContract({ ...request, nonce });
   const { logs } = await publicClient.waitForTransactionReceipt({
     hash,
   });
@@ -108,7 +112,11 @@ export const mintBySpg = async (
     account: walletClient.account,
   });
 
-  const hash = await walletClient.writeContract(request);
+  const nonce = await publicClient.getTransactionCount({
+    address: walletClient.account!.address,
+    blockTag: "pending",
+  });
+  const hash = await walletClient.writeContract({ ...request, nonce });
   const receipt = await publicClient.waitForTransactionReceipt({
     hash,
   });
