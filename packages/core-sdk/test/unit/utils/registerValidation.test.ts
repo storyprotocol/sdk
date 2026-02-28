@@ -6,6 +6,7 @@ import {
   PiLicenseTemplateReadOnlyClient,
   RoyaltyModuleReadOnlyClient,
   totalLicenseTokenLimitHookAddress,
+  wrappedIpAddress,
 } from "../../../src/abi/generated";
 import { LicensingConfig } from "../../../src/types/common";
 import { LicenseTerms } from "../../../src/types/resources/license";
@@ -35,6 +36,7 @@ describe("validateLicenseTermsData", () => {
     currency: zeroAddress,
     uri: "",
   };
+
   let isWhitelistedRoyaltyPolicyStub: SinonStub;
   let isWhitelistedRoyaltyTokenStub: SinonStub;
   let existsStub: SinonStub;
@@ -63,7 +65,7 @@ describe("validateLicenseTermsData", () => {
             terms: {
               ...mockLicenseTerms,
               royaltyPolicy: mockAddress,
-              currency: mockAddress,
+              currency: wrappedIpAddress[aeneid],
               commercialUse: true,
             },
           },
@@ -82,7 +84,7 @@ describe("validateLicenseTermsData", () => {
           {
             terms: {
               ...mockLicenseTerms,
-              currency: mockAddress,
+              currency: wrappedIpAddress[aeneid],
               royaltyPolicy: mockAddress,
               commercialUse: true,
             },
@@ -91,7 +93,7 @@ describe("validateLicenseTermsData", () => {
         rpcClient,
         aeneid,
       ),
-    ).to.be.rejectedWith(`The currency token ${mockAddress} is not whitelisted.`);
+    ).to.be.rejectedWith(`The currency token ${wrappedIpAddress[aeneid]} is not whitelisted.`);
   });
 
   it("should throw error when revenue share is more than 100", async () => {
@@ -104,7 +106,7 @@ describe("validateLicenseTermsData", () => {
               commercialRevShare: 101,
               commercialUse: true,
               royaltyPolicy: mockAddress,
-              currency: mockAddress,
+              currency: wrappedIpAddress[aeneid],
             },
           },
         ],
@@ -239,14 +241,14 @@ describe("validateLicenseTermsData", () => {
     const firstLicenseTerms: LicenseTerms = {
       ...mockLicenseTerms,
       royaltyPolicy: mockAddress,
-      currency: mockAddress,
+      currency: wrappedIpAddress[aeneid],
       defaultMintingFee: 1n,
       commercialUse: true,
     };
     const secondLicenseTerms: LicenseTerms = {
       ...mockLicenseTerms,
       royaltyPolicy: mockAddress,
-      currency: mockAddress,
+      currency: wrappedIpAddress[aeneid],
       defaultMintingFee: 2n,
       commercialUse: true,
     };

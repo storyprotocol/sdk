@@ -10,6 +10,7 @@ import {
   totalLicenseTokenLimitHookAddress,
 } from "../../abi/generated";
 import { MAX_ROYALTY_TOKEN } from "../../constants/common";
+import { validateCurrencyToken } from "../currencyValidation";
 import { DeadlineInput, RevShareType } from "../../types/common";
 import { ChainIds } from "../../types/config";
 import {
@@ -68,6 +69,7 @@ export const validateLicenseTermsData = async (
       }
 
       if (validateAddress(licenseTerm.currency) !== zeroAddress) {
+        validateCurrencyToken(licenseTerm.currency, chainId);
         const isWhitelistedRoyaltyToken =
           await royaltyModuleReadOnlyClient.isWhitelistedRoyaltyToken({
             token: licenseTerm.currency,

@@ -31,7 +31,7 @@ use(chaiAsPromised);
 const txHash = "0x129f7dd802200f096221dd89d5b086e4bd3ad6eafb378a0c75e3b04fc375f997";
 const licenseTerms: LicenseTerms = {
   defaultMintingFee: 1513n,
-  currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+  currency: WIP_TOKEN_ADDRESS,
   royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
   transferable: false,
   expiration: 0n,
@@ -100,7 +100,7 @@ describe("Test LicenseClient", () => {
           ...licenseTerms,
           commercialUse: true,
           defaultMintingFee: 1,
-          currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          currency: WIP_TOKEN_ADDRESS,
           commercialRevShare: 101,
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
@@ -117,7 +117,7 @@ describe("Test LicenseClient", () => {
           ...licenseTerms,
           commercialUse: true,
           defaultMintingFee: 1,
-          currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+          currency: WIP_TOKEN_ADDRESS,
           commercialRevShare: -1,
           royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
         }),
@@ -186,7 +186,7 @@ describe("Test LicenseClient", () => {
         ...licenseTerms,
         commercialUse: true,
         defaultMintingFee: 1,
-        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        currency: WIP_TOKEN_ADDRESS,
         commercialRevShare: 90,
         royaltyPolicy: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
       });
@@ -227,7 +227,7 @@ describe("Test LicenseClient", () => {
         uri: "",
         commercialUse: true,
         defaultMintingFee: 1,
-        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        currency: WIP_TOKEN_ADDRESS,
         commercialRevShare: 90,
       });
 
@@ -257,7 +257,7 @@ describe("Test LicenseClient", () => {
         ...licenseTerms,
         commercialUse: true,
         defaultMintingFee: 1,
-        currency: "0x1daAE3197Bc469Cb97B917aa460a12dD95c6627c",
+        currency: WIP_TOKEN_ADDRESS,
         commercialRevShare: 90,
         royaltyPolicy: NativeRoyaltyPolicy.LRP,
       });
@@ -1580,7 +1580,7 @@ describe("Test LicenseClient", () => {
 
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: 1,
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
 
       expect(result.licenseTermsId).to.equal(1n);
@@ -1601,7 +1601,7 @@ describe("Test LicenseClient", () => {
       ]);
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -1620,7 +1620,7 @@ describe("Test LicenseClient", () => {
       try {
         await licenseClient.registerCommercialUsePIL({
           defaultMintingFee: "1",
-          currency: mockAddress,
+          currency: WIP_TOKEN_ADDRESS,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -1641,7 +1641,7 @@ describe("Test LicenseClient", () => {
 
       const result = await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -1670,7 +1670,7 @@ describe("Test LicenseClient", () => {
 
       await licenseClient.registerCommercialUsePIL({
         defaultMintingFee: "1",
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
 
       expect(registerLicenseTermsStub.firstCall.args[0].terms.commercialRevShare).to.equal(0);
@@ -1686,7 +1686,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
 
       expect(result.licenseTermsId).to.equal(1n);
@@ -1708,7 +1708,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
 
       expect(result.txHash).to.equal(txHash);
@@ -1727,7 +1727,7 @@ describe("Test LicenseClient", () => {
         await licenseClient.registerCommercialRemixPIL({
           defaultMintingFee: "1",
           commercialRevShare: 100,
-          currency: mockAddress,
+          currency: WIP_TOKEN_ADDRESS,
         });
       } catch (error) {
         expect((error as Error).message).equal(
@@ -1749,7 +1749,7 @@ describe("Test LicenseClient", () => {
       const result = await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 100,
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
         txOptions: {
           encodedTxDataOnly: true,
         },
@@ -1768,7 +1768,7 @@ describe("Test LicenseClient", () => {
       await expect(
         licenseClient.registerCommercialRemixPIL({
           defaultMintingFee: "1",
-          currency: mockAddress,
+          currency: WIP_TOKEN_ADDRESS,
           commercialRevShare: 101,
         }),
       ).to.be.rejectedWith(
@@ -1782,7 +1782,7 @@ describe("Test LicenseClient", () => {
       await expect(
         licenseClient.registerCommercialRemixPIL({
           defaultMintingFee: "1",
-          currency: mockAddress,
+          currency: WIP_TOKEN_ADDRESS,
           commercialRevShare: -1,
         }),
       ).to.be.rejectedWith(
@@ -1808,7 +1808,7 @@ describe("Test LicenseClient", () => {
       await licenseClient.registerCommercialRemixPIL({
         defaultMintingFee: "1",
         commercialRevShare: 10,
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
 
       expect(registerLicenseTermsStub.firstCall.args[0].terms.commercialRevShare).to.equal(
@@ -1826,7 +1826,7 @@ describe("Test LicenseClient", () => {
         selectedLicenseTermsId: 0n,
       });
       const result = licenseClient.registerCreativeCommonsAttributionPIL({
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
       await expect(result).to.rejectedWith(
         "Failed to register creative commons attribution PIL: rpc error",
@@ -1837,7 +1837,7 @@ describe("Test LicenseClient", () => {
         selectedLicenseTermsId: 1n,
       });
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
       expect(result.licenseTermsId).to.equal(1n);
       expect(result.txHash).to.equal(undefined);
@@ -1857,7 +1857,7 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTermsId).to.equal(1n);
@@ -1877,7 +1877,7 @@ describe("Test LicenseClient", () => {
         },
       ]);
       const result = await licenseClient.registerCreativeCommonsAttributionPIL({
-        currency: mockAddress,
+        currency: WIP_TOKEN_ADDRESS,
       });
       expect(result.txHash).to.equal(txHash);
       expect(result.licenseTermsId).to.equal(1n);

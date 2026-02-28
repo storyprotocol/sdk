@@ -53,6 +53,7 @@ import {
   RemoveIpsFromGroupRequest,
 } from "../types/resources/group";
 import { AccessPermission } from "../types/resources/permission";
+import { validateCurrencyToken } from "../utils/currencyValidation";
 import { handleError } from "../utils/errors";
 import { getFunctionSignature } from "../utils/getFunctionSignature";
 import { getIpMetadataForWorkflow } from "../utils/getIpMetadataForWorkflow";
@@ -430,6 +431,9 @@ export class GroupClient {
       if (currencyTokens.some((token) => token === zeroAddress)) {
         throw new Error("Currency token cannot be the zero address.");
       }
+      currencyTokens.forEach((token) =>
+        validateCurrencyToken(validateAddress(token), this.chainId),
+      );
       const collectAndClaimParams = {
         groupIpId: validateAddress(groupIpId),
         currencyTokens: validateAddresses(currencyTokens),
@@ -527,6 +531,7 @@ export class GroupClient {
     memberIpIds,
   }: GetClaimableRewardRequest): Promise<bigint[]> {
     try {
+      validateCurrencyToken(validateAddress(currencyToken), this.chainId);
       const claimableReward = await this.groupingModuleClient.getClaimableReward({
         groupId: validateAddress(groupIpId),
         ipIds: validateAddresses(memberIpIds),
@@ -576,6 +581,7 @@ export class GroupClient {
     txOptions,
   }: ClaimRewardRequest): Promise<ClaimRewardResponse> {
     try {
+      validateCurrencyToken(validateAddress(currencyToken), this.chainId);
       const claimRewardParam: GroupingModuleClaimRewardRequest = {
         groupId: validateAddress(groupIpId),
         ipIds: validateAddresses(memberIpIds),
@@ -608,6 +614,7 @@ export class GroupClient {
     txOptions,
   }: CollectRoyaltiesRequest): Promise<CollectRoyaltiesResponse> {
     try {
+      validateCurrencyToken(validateAddress(currencyToken), this.chainId);
       const collectRoyaltiesParam: GroupingModuleCollectRoyaltiesRequest = {
         groupId: validateAddress(groupIpId),
         token: validateAddress(currencyToken),
