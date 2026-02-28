@@ -1,11 +1,5 @@
 import { expect } from "chai";
-import {
-  createWalletClient,
-  Hash,
-  http,
-  PublicClient,
-  Transport,
-} from "viem";
+import { createWalletClient, Hash, http, PublicClient, Transport } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
 import { aeneid, StoryClient, StoryConfig, TxHashResolver } from "../../src/index";
@@ -120,7 +114,8 @@ describe("Test StoryClient", () => {
 
   describe("Test txHashResolver", () => {
     const userOpHash: Hash = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-    const resolvedTxHash: Hash = "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+    const resolvedTxHash: Hash =
+      "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 
     it("should resolve hash before calling original waitForTransactionReceipt", async () => {
       let resolverCallCount = 0;

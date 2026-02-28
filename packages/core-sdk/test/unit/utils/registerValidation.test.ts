@@ -12,9 +12,9 @@ import { LicensingConfig } from "../../../src/types/common";
 import { LicenseTerms } from "../../../src/types/resources/license";
 import { validateLicenseTermsData } from "../../../src/utils/registrationUtils/registerValidation";
 import { aeneid, mockAddress } from "../mockData";
+import { createMockPublicClient } from "../testUtils";
 
 const allowedCurrencyAeneid = erc20Address[aeneid];
-import { createMockPublicClient } from "../testUtils";
 
 describe("validateLicenseTermsData", () => {
   let rpcClient: ReturnType<typeof createMockPublicClient>;

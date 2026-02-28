@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { Address, zeroAddress } from "viem";
 
-import { erc20Address, wrappedIpAddress } from "../../../src/abi/generated";
 import { NativeRoyaltyPolicy, PILFlavor } from "../../../src";
+import { erc20Address, wrappedIpAddress } from "../../../src/abi/generated";
 import { aeneid, mockAddress } from "../mockData";
 
 const allowedCurrencyAeneid = erc20Address[aeneid] as Address;

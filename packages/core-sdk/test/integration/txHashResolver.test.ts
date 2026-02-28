@@ -1,8 +1,5 @@
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
-import {
-  createKernelAccount,
-  createKernelAccountClient,
-} from "@zerodev/sdk";
+import { createKernelAccount, createKernelAccountClient } from "@zerodev/sdk";
 import { getEntryPoint, KERNEL_V3_1 } from "@zerodev/sdk/constants";
 import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -19,13 +16,7 @@ import {
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-import {
-  aeneid,
-  StoryClient,
-  StoryConfig,
-  TxHashResolver,
-  UseWalletStoryConfig,
-} from "../../src";
+import { aeneid, StoryClient, StoryConfig, TxHashResolver, UseWalletStoryConfig } from "../../src";
 import { RPC, TEST_PRIVATE_KEY, TEST_WALLET_ADDRESS } from "./utils/util";
 
 use(chaiAsPromised);
@@ -80,9 +71,7 @@ const USER_OP_RECEIPT_TIMEOUT = 180_000;
  * If the balance is below MIN_SA_BALANCE, transfers SA_FUND_AMOUNT from
  * the EOA signer.
  */
-const ensureSmartAccountFunded = async (
-  smartAccountAddress: `0x${string}`,
-): Promise<void> => {
+const ensureSmartAccountFunded = async (smartAccountAddress: `0x${string}`): Promise<void> => {
   const storyPublicClient = createPublicClient({
     transport: http(RPC),
     chain: aeneid,
@@ -227,7 +216,7 @@ const getZeroDevHelper = async (): Promise<ZeroDevHelper | undefined> => {
 
   return {
     wallet: kernelClient as unknown as ZeroDevWallet,
-    rawUserOpWallet: createRawUserOpWallet(kernelClient as KernelClient, account),
+    rawUserOpWallet: createRawUserOpWallet(kernelClient, account),
     bundlerClient: kernelClient as unknown as ZeroDevBundlerClient,
   };
 };
@@ -361,10 +350,8 @@ describe("TxHashResolver Integration Tests", () => {
     });
 
     it("should invoke resolver before querying transaction receipt", async () => {
-      const fakeTxHash: Hash =
-        "0x1111111111111111111111111111111111111111111111111111111111111111";
-      const realTxHash: Hash =
-        "0x2222222222222222222222222222222222222222222222222222222222222222";
+      const fakeTxHash: Hash = "0x1111111111111111111111111111111111111111111111111111111111111111";
+      const realTxHash: Hash = "0x2222222222222222222222222222222222222222222222222222222222222222";
 
       const resolverCalls: Hash[] = [];
       const resolver: TxHashResolver = (hash) => {

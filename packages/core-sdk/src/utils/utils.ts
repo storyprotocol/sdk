@@ -13,8 +13,8 @@ import {
   zeroAddress,
 } from "viem";
 
-import { erc20Address, wrappedIpAddress } from "../abi/generated";
 import { aeneid, mainnet } from "./chain";
+import { erc20Address, wrappedIpAddress } from "../abi/generated";
 import { ChainIds, SupportedChainIds } from "../types/config";
 
 /** Allowed currency token addresses per chain (whitelist for licensing, group, OOV3, dispute, etc.). */
@@ -61,7 +61,9 @@ export const assertCurrenciesAllowed = (
   }
 
   if (currencies.some((c) => c !== zeroAddress && !getAllowedCurrencies(chainId).includes(c))) {
-    throw new Error(`Currency token ${currencies.toString()} is not allowed on chain ${String(chainId)}.`);
+    throw new Error(
+      `Currency token ${currencies.toString()} is not allowed on chain ${String(chainId)}.`,
+    );
   }
 };
 

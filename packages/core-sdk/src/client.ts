@@ -84,9 +84,7 @@ export class StoryClient {
    * where writeContract returns a UserOperation hash instead of a tx hash.
    */
   private applyTxHashResolver(resolver: TxHashResolver): void {
-    const originalWaitForReceipt = this.rpcClient.waitForTransactionReceipt.bind(
-      this.rpcClient,
-    );
+    const originalWaitForReceipt = this.rpcClient.waitForTransactionReceipt.bind(this.rpcClient);
     this.rpcClient.waitForTransactionReceipt = async (
       args,
     ): ReturnType<PublicClient["waitForTransactionReceipt"]> => {

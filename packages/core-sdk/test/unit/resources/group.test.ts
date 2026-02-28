@@ -7,9 +7,9 @@ import { GroupClient } from "../../../src";
 import { erc20Address, IpAccountImplClient } from "../../../src/abi/generated";
 import { LicenseDataInput } from "../../../src/types/resources/group";
 import { aeneid, mockAddress, txHash, walletAddress } from "../mockData";
+import { createMockPublicClient, createMockWalletClient } from "../testUtils";
 
 const allowedCurrency = erc20Address[aeneid];
-import { createMockPublicClient, createMockWalletClient } from "../testUtils";
 
 use(chaiAsPromised);
 const mockLicenseData: LicenseDataInput = {
