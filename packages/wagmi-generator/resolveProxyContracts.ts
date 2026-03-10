@@ -23,7 +23,9 @@ function getAddress(
   if (typeof address == "string") {
     return address as Address;
   } else {
-    return address[chainId];
+    const resolved = address[chainId];
+    if (!resolved) throw new Error(`Address not found for chainId ${chainId}`);
+    return resolved;
   }
 }
 
