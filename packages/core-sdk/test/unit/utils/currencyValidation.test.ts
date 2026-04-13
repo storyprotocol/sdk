@@ -34,8 +34,9 @@ describe("validateCurrencyToken", () => {
   });
 
   it("should allow WIP on Mainnet", () => {
-    expect(() => validateCurrencyToken(wrappedIpAddress[mainnetChainId], mainnetChainId)).to.not
-      .throw();
+    expect(() =>
+      validateCurrencyToken(wrappedIpAddress[mainnetChainId], mainnetChainId),
+    ).to.not.throw();
   });
 
   it("should throw when token is MERC20 on Mainnet", () => {
@@ -46,7 +47,10 @@ describe("validateCurrencyToken", () => {
 
   it("should throw when token is not WIP on Mainnet", () => {
     expect(() =>
-      validateCurrencyToken("0x73fcb515cee99e4991465ef586cfe2b072ebb513" as `0x${string}`, mainnetChainId),
+      validateCurrencyToken(
+        "0x73fcb515cee99e4991465ef586cfe2b072ebb513" as `0x${string}`,
+        mainnetChainId,
+      ),
     ).to.throw(
       "On Mainnet, only WIP is allowed as currency token. The provided token is not allowed.",
     );
@@ -54,8 +58,8 @@ describe("validateCurrencyToken", () => {
 
   it("should throw for unsupported chain ID", () => {
     const validAddress = "0x1514000000000000000000000000000000000000" as Address;
-    expect(() =>
-      validateCurrencyToken(validAddress, 9999 as 1315 | 1514),
-    ).to.throw("Unsupported chain ID: 9999.");
+    expect(() => validateCurrencyToken(validAddress, 9999 as 1315 | 1514)).to.throw(
+      "Unsupported chain ID: 9999.",
+    );
   });
 });

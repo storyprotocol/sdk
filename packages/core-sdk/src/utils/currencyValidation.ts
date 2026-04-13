@@ -8,9 +8,7 @@ const AENEID_CHAIN_ID = 1315;
 
 /** Per-chain whitelist: chainId -> set of allowed currency token addresses (checksummed). */
 const CURRENCY_TOKEN_WHITELIST: Record<ChainIds, ReadonlySet<string>> = {
-  [MAINNET_CHAIN_ID]: new Set([
-    getAddress(wrappedIpAddress[MAINNET_CHAIN_ID]),
-  ]),
+  [MAINNET_CHAIN_ID]: new Set([getAddress(wrappedIpAddress[MAINNET_CHAIN_ID])]),
   [AENEID_CHAIN_ID]: new Set([
     getAddress(wrappedIpAddress[AENEID_CHAIN_ID]),
     getAddress(erc20Address[AENEID_CHAIN_ID]),
@@ -61,8 +59,6 @@ export const validateCurrencyToken = (
 
   const normalizedToken = getAddress(token);
   if (!allowedTokens.has(normalizedToken)) {
-    throw new Error(
-      `${CHAIN_CURRENCY_HINT[resolvedChainId]} The provided token is not allowed.`,
-    );
+    throw new Error(`${CHAIN_CURRENCY_HINT[resolvedChainId]} The provided token is not allowed.`);
   }
 };

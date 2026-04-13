@@ -130,9 +130,7 @@ describe("oov3", () => {
       });
       const promise = settleAssertion(privateKey, 1n);
       await clock.tickAsync(12000);
-      await expect(promise).to.be.rejectedWith(
-        "Failed to settle assertion: Assertion not expired",
-      );
+      await expect(promise).to.be.rejectedWith("Failed to settle assertion: Assertion not expired");
     });
   });
 });
